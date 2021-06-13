@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.newdawn.slick.util.Log;
 import org.newdawn.slick.util.ResourceLoader;
@@ -33,6 +34,14 @@ import org.newdawn.slick.util.ResourceLoader;
 public class Deck {
 	/** List of cards. */
 	private ArrayList<Card> deck;
+	private List<Card> cartasEspecificas;
+	
+	public Deck(List<Card> cartas) {
+		this();
+		this.cartasEspecificas = cartas;
+		
+	}
+	
 
 	/**
 	 * Creates a deck by parsing all cards.
@@ -122,15 +131,29 @@ public class Deck {
 			Log.error("Not enough cards loaded (10 minimum).");
 			return;
 		}
-
-		Collections.shuffle(deck);
-		for (int i = 0; i < playerCards.length; i++) {
-			playerCards[i] = new Card(deck.get(i));
-			playerCards[i].setOwner(TripleTriad.PLAYER);
+		
+		if (cartasEspecificas != null && !cartasEspecificas.isEmpty()) {
+			for (int i = 0; i < cartasEspecificas.size(); i++) {
+				playerCards[i] = cartasEspecificas.get(i);
+				playerCards[i].setOwner(TripleTriad.PLAYER);
+			}
+		} else {
+			Collections.shuffle(deck);
+			for (int i = 0; i < playerCards.length; i++) {
+				playerCards[i] = new Card(deck.get(i));
+				playerCards[i].setOwner(TripleTriad.PLAYER);
+			}
 		}
+
 		for (int i = 0; i < opponentCards.length; i++) {
 			opponentCards[i] = new Card(deck.get(i + playerCards.length));
 			opponentCards[i].setOwner(TripleTriad.OPPONENT);
 		}
 	}
+
+
+	public ArrayList<Card> getDeck() {
+		return deck;
+	}
+	
 }

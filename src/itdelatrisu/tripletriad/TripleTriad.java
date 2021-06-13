@@ -18,18 +18,13 @@
 
 package itdelatrisu.tripletriad;
 
-import itdelatrisu.tripletriad.ai.AI;
-import itdelatrisu.tripletriad.ai.BalancedAI;
-import itdelatrisu.tripletriad.ai.DefensiveAI;
-import itdelatrisu.tripletriad.ai.OffensiveAI;
-import itdelatrisu.tripletriad.ai.RandomAI;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 
 import org.newdawn.slick.AppGameContainer;
@@ -44,6 +39,12 @@ import org.newdawn.slick.util.DefaultLogSystem;
 import org.newdawn.slick.util.FileSystemLocation;
 import org.newdawn.slick.util.Log;
 import org.newdawn.slick.util.ResourceLoader;
+
+import itdelatrisu.tripletriad.ai.AI;
+import itdelatrisu.tripletriad.ai.BalancedAI;
+import itdelatrisu.tripletriad.ai.DefensiveAI;
+import itdelatrisu.tripletriad.ai.OffensiveAI;
+import itdelatrisu.tripletriad.ai.RandomAI;
 
 /**
  * Main class.
@@ -111,12 +112,19 @@ public class TripleTriad extends BasicGame {
 
 	/** Game container. */
 	private GameContainer container;
+	
+	private static List<Card> listaCardsStatic;
 
 	public TripleTriad() {
 		super("Triple Triad");
 	}
 
 	public static void main(String[] args) {
+		initGame(null);
+	}
+
+	public static void initGame(List<Card> listaCards) {
+		listaCardsStatic = listaCards;
 		// log all errors to a file
 		Log.setVerbose(false);
 		try {
@@ -173,7 +181,7 @@ public class TripleTriad extends BasicGame {
 		Spinner.init();
 
 		// build deck
-		this.deck = new Deck();
+		this.deck = new Deck(listaCardsStatic);
 
 		restart(true);
 	}
