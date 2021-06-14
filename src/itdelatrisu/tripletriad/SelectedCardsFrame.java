@@ -22,12 +22,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
 import javax.swing.border.EmptyBorder;
 
-public class SelectedCardsFrame extends JFrame {
+public class SelectedCardsFrame extends JFrame{
 
+	private static final long serialVersionUID = 1391482831207151808L;
 	private JPanel contentPane;
 	private JTextField fieldCodeCard;
 	private Vector<Card> cardsSelected;
@@ -70,24 +69,84 @@ public class SelectedCardsFrame extends JFrame {
 		contentPane.add(panel, BorderLayout.CENTER);
 		panel.setLayout(null);
 
-		JLabel lblCartas = new JLabel("Cartas");
-		lblCartas.setBounds(12, 56, 70, 15);
-		panel.add(lblCartas);
+		createLabelCards(panel);
+		createFieldCodeCard(panel);
+		createButtonAdd(panel, createComboBoxCards(panel));
+		createButtonPlay(panel);
+		createCardList(panel);
+		createButtonRandom(panel);
+		createButtonRemove(panel);
 
-		Vector<Card> cards = new Vector<Card>();
-		cards.add(null);
-		cards.addAll(getCards());
-		JComboBox<Card> comboCard = new JComboBox(cards);
-		comboCard.setRenderer(new cellRenderComboCard());
-		comboCard.setBounds(66, 33, 241, 24);
-		panel.add(comboCard);
+	}
 
-		fieldCodeCard = new JTextField();
-		fieldCodeCard.setToolTipText("You can add cards by their number");
-		fieldCodeCard.setBounds(66, 70, 241, 19);
-		panel.add(fieldCodeCard);
-		fieldCodeCard.setColumns(10);
+	private void createButtonRemove(JPanel panel) {
+		JButton btnRemove = new JButton("Remove");
+		btnRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Card selected = (Card) cardListSelected.getSelectedValue();
+				cardModel.removeElement(selected);
+			}
+		});
+		btnRemove.setBounds(319, 183, 117, 25);
+		panel.add(btnRemove);
+	}
 
+	private void createButtonRandom(JPanel panel) {
+		JButton btnRandom = new JButton("Random");
+		btnRandom.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				Vector<Card> cards = new Vector<Card>();
+				cards.addAll(getCards());
+				Collections.shuffle(cards);
+				if (!cardModel.isEmpty()) {
+					cardModel.removeAllElements();
+				}
+				for (int i = 0; i <= 4; i++) {
+					cardModel.addElement(cards.get(i));
+				}
+			}
+		});
+		btnRandom.setBounds(319, 67, 91, 25);
+		panel.add(btnRandom);
+	}
+
+	private void createCardList(JPanel panel) {
+		cardModel = new DefaultListModel<Card>();
+		cardListSelected = new JList(cardModel);
+		cardListSelected.setVisibleRowCount(5);
+		cardListSelected.setForeground(Color.BLUE);
+		cardListSelected.setBackground(Color.WHITE);
+		cardListSelected.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		cardListSelected.setCellRenderer(new cellRenderListCardSelected());
+		cardListSelected.setBounds(66, 119, 241, 102);
+		panel.add(cardListSelected);
+	}
+
+	private void createButtonPlay(JPanel panel) {
+		JButton btnPlay = new JButton("Play");
+		btnPlay.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent e) {
+
+				ArrayList<Card> cards = new ArrayList<Card>();
+				ListModel model = cardListSelected.getModel();
+				for (int i = 0; i < model.getSize(); i++) {
+					Card item = (Card) model.getElementAt(i);
+					cards.add(item);
+				}
+				if (cards.size() == 5) {
+					TripleTriad.initGame(cards);
+				} else {
+					JOptionPane.showMessageDialog(SelectedCardsFrame.this, "PLEASE SELECT JUST 5 CARDS", "",
+							JOptionPane.ERROR_MESSAGE);
+				}
+			}
+		});
+		btnPlay.setBounds(319, 253, 117, 25);
+		panel.add(btnPlay);
+	}
+
+	private void createButtonAdd(JPanel panel, JComboBox<Card> comboCard) {
 		JButton btnAdd = new JButton("Add");
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -117,66 +176,31 @@ public class SelectedCardsFrame extends JFrame {
 		});
 		btnAdd.setBounds(319, 33, 63, 25);
 		panel.add(btnAdd);
+	}
 
-		JButton btnPlay = new JButton("Play");
-		btnPlay.addActionListener(new ActionListener() {
+	private void createFieldCodeCard(JPanel panel) {
+		fieldCodeCard = new JTextField();
+		fieldCodeCard.setToolTipText("You can add cards by their number");
+		fieldCodeCard.setBounds(66, 70, 241, 19);
+		panel.add(fieldCodeCard);
+		fieldCodeCard.setColumns(10);
+	}
 
-			public void actionPerformed(ActionEvent e) {
+	private JComboBox<Card> createComboBoxCards(JPanel panel) {
+		Vector<Card> cards = new Vector<Card>();
+		cards.add(null);
+		cards.addAll(getCards());
+		JComboBox<Card> comboCard = new JComboBox(cards);
+		comboCard.setRenderer(new cellRenderComboCard());
+		comboCard.setBounds(66, 33, 241, 24);
+		panel.add(comboCard);
+		return comboCard;
+	}
 
-				ArrayList<Card> cards = new ArrayList<Card>();
-				ListModel model = cardListSelected.getModel();
-				for (int i = 0; i < model.getSize(); i++) {
-					Card item = (Card) model.getElementAt(i);
-					cards.add(item);
-				}
-				if (cards.size() == 5) {
-					TripleTriad.initGame(cards);
-				} else {
-					JOptionPane.showMessageDialog(SelectedCardsFrame.this, "PLEASE SELECT JUST 5 CARDS", "",
-							JOptionPane.ERROR_MESSAGE);
-				}
-			}
-		});
-		btnPlay.setBounds(319, 253, 117, 25);
-		panel.add(btnPlay);
-
-		cardModel = new DefaultListModel<Card>();
-		cardListSelected = new JList(cardModel);
-		cardListSelected.setVisibleRowCount(5);
-		cardListSelected.setForeground(Color.BLUE);
-		cardListSelected.setBackground(Color.WHITE);
-		cardListSelected.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		cardListSelected.setCellRenderer(new cellRenderListCardSelected());
-		cardListSelected.setBounds(66, 119, 241, 102);
-		panel.add(cardListSelected);
-
-		JButton btnRandom = new JButton("Random");
-		btnRandom.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Vector<Card> cards = new Vector<Card>();
-				cards.addAll(getCards());
-				Collections.shuffle(cards);
-				if (!cardModel.isEmpty()) {
-					cardModel.removeAllElements();
-				}
-				for (int i = 0; i <= 4; i++) {
-					cardModel.addElement(cards.get(i));
-				}
-			}
-		});
-		btnRandom.setBounds(319, 67, 91, 25);
-		panel.add(btnRandom);
-
-		JButton btnRemove = new JButton("Remove");
-		btnRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Card selected = (Card) cardListSelected.getSelectedValue();
-				cardModel.removeElement(selected);
-			}
-		});
-		btnRemove.setBounds(319, 183, 117, 25);
-		panel.add(btnRemove);
-
+	private void createLabelCards(JPanel panel) {
+		JLabel lblCartas = new JLabel("Cartas");
+		lblCartas.setBounds(12, 56, 70, 15);
+		panel.add(lblCartas);
 	}
 
 	private Vector<Card> getCards() {
