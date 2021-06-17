@@ -4,14 +4,18 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.EventQueue;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -23,6 +27,8 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 public class SelectedCardsFrame extends JFrame{
 
@@ -32,6 +38,7 @@ public class SelectedCardsFrame extends JFrame{
 	private Vector<Card> cardsSelected;
 	private DefaultListModel<Card> cardModel;
 	private JList cardListSelected;
+	private JLabel labelImagem;
 
 	/**
 	 * Launch the application.
@@ -53,10 +60,12 @@ public class SelectedCardsFrame extends JFrame{
 	 * Create the frame.
 	 */
 	public SelectedCardsFrame() {
+		setResizable(false);
+		setIconImage(Toolkit.getDefaultToolkit().getImage("/home/marciliojr/Projetos/Java/triple-triad/res/card-back.png"));
 		this.cardsSelected = new Vector<Card>();
 		setTitle("Select Yours Cards");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 483, 325);
+		setBounds(100, 100, 526, 393);
 		setLocationRelativeTo(null);
 
 		contentPane = new JPanel();
@@ -64,19 +73,27 @@ public class SelectedCardsFrame extends JFrame{
 		contentPane.setLayout(new BorderLayout(0, 0));
 		setContentPane(contentPane);
 
-		JPanel panel = new JPanel();
-		panel.setToolTipText("");
-		contentPane.add(panel, BorderLayout.CENTER);
-		panel.setLayout(null);
+		JPanel panelMain = new JPanel();
+		panelMain.setToolTipText("");
+		contentPane.add(panelMain, BorderLayout.CENTER);
+		panelMain.setLayout(null);
 
-		createLabelCards(panel);
-		createFieldCodeCard(panel);
-		createButtonAdd(panel, createComboBoxCards(panel));
-		createButtonPlay(panel);
-		createCardList(panel);
-		createButtonRandom(panel);
-		createButtonRemove(panel);
+		createLabelCards(panelMain);
+		createFieldCodeCard(panelMain);
+		createButtonAdd(panelMain, createComboBoxCards(panelMain));
+		createButtonPlay(panelMain);
+		createCardList(panelMain);
+		createLabelImage(panelMain);
+		createButtonRandom(panelMain);
+		createButtonRemove(panelMain);
+		
 
+	}
+
+	private void createLabelImage(JPanel panelMain) {
+		labelImagem = new JLabel("");
+		labelImagem.setBounds(319, 119, 91, 95);
+		panelMain.add(labelImagem);
 	}
 
 	private void createButtonRemove(JPanel panel) {
@@ -85,9 +102,10 @@ public class SelectedCardsFrame extends JFrame{
 			public void actionPerformed(ActionEvent e) {
 				Card selected = (Card) cardListSelected.getSelectedValue();
 				cardModel.removeElement(selected);
+				labelImagem.setIcon(null);
 			}
 		});
-		btnRemove.setBounds(319, 183, 117, 25);
+		btnRemove.setBounds(319, 227, 117, 25);
 		panel.add(btnRemove);
 	}
 
@@ -100,6 +118,7 @@ public class SelectedCardsFrame extends JFrame{
 				Collections.shuffle(cards);
 				if (!cardModel.isEmpty()) {
 					cardModel.removeAllElements();
+					labelImagem.setIcon(null);
 				}
 				for (int i = 0; i <= 4; i++) {
 					cardModel.addElement(cards.get(i));
@@ -118,7 +137,22 @@ public class SelectedCardsFrame extends JFrame{
 		cardListSelected.setBackground(Color.WHITE);
 		cardListSelected.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		cardListSelected.setCellRenderer(new cellRenderListCardSelected());
-		cardListSelected.setBounds(66, 119, 241, 102);
+		cardListSelected.setBounds(66, 119, 241, 133);
+		cardListSelected.addListSelectionListener(new ListSelectionListener() {
+			
+			@Override
+			public void valueChanged(ListSelectionEvent e) {
+				Card cardSelected = (Card)cardListSelected.getSelectedValue();
+				if(cardSelected != null) {
+				ImageIcon imageIcon = new ImageIcon("cards/"+String.format("%03d.png", cardSelected.getID()));
+				Image image = imageIcon.getImage(); // transform it 
+				Image newimg = image.getScaledInstance(80, 80,  java.awt.Image.SCALE_SMOOTH); // scale it the smooth way  
+				imageIcon = new ImageIcon(newimg);  // transform it back
+				labelImagem.setIcon(imageIcon);
+				}
+			}
+		});
+			
 		panel.add(cardListSelected);
 	}
 
@@ -142,7 +176,7 @@ public class SelectedCardsFrame extends JFrame{
 				}
 			}
 		});
-		btnPlay.setBounds(319, 253, 117, 25);
+		btnPlay.setBounds(319, 309, 117, 25);
 		panel.add(btnPlay);
 	}
 
@@ -198,7 +232,7 @@ public class SelectedCardsFrame extends JFrame{
 	}
 
 	private void createLabelCards(JPanel panel) {
-		JLabel lblCartas = new JLabel("Cartas");
+		JLabel lblCartas = new JLabel("Cards");
 		lblCartas.setBounds(12, 56, 70, 15);
 		panel.add(lblCartas);
 	}

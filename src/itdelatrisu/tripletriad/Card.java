@@ -192,6 +192,7 @@ public class Card {
 	 * @return the image
 	 */
 	public Image getImage() { return img; }
+	
 
 	/**
 	 * Draws the card at a location.
@@ -386,4 +387,5 @@ public class Card {
 	 * @return true if card playing
 	 */
 	public static boolean isCardPlaying() { return isCardPlaying; }
+	
 }
