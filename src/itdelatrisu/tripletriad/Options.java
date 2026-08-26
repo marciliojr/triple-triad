@@ -28,12 +28,12 @@ import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.UnicodeFont;
-import org.newdawn.slick.font.effects.ColorEffect;
-import org.newdawn.slick.util.Log;
+import itdelatrisu.tripletriad.gfx.AppGameContainer;
+import itdelatrisu.tripletriad.gfx.GameContainer;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.SlickException;
+import itdelatrisu.tripletriad.gfx.UnicodeFont;
+import itdelatrisu.tripletriad.gfx.font.effects.ColorEffect;
 
 public class Options {
 	/** Card data file. */
@@ -59,6 +59,9 @@ public class Options {
 
 	/** Default font. */
 	private static UnicodeFont font;
+
+	/** Smaller font for menus and hints. */
+	private static UnicodeFont smallFont;
 
 	/** Font file. */
 	private static File fontFile = new File("OpenSans-Light.ttf");
@@ -97,6 +100,12 @@ public class Options {
 	public static UnicodeFont getFont() { return font; }
 
 	/**
+	 * Returns the smaller UI font.
+	 * @return the UnicodeFont
+	 */
+	public static UnicodeFont getSmallFont() { return smallFont != null ? smallFont : font; }
+
+	/**
 	 * Returns the player AI type.
 	 * @return the AIType
 	 */
@@ -127,7 +136,7 @@ public class Options {
 
 		app.setDisplayMode(width, height, false);
 		if (screenWidth == width && screenHeight == height)
-			System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
+			app.setDecorated(false);
 
 		// set card length
 		cardLength = (int) (width * 0.17f);
@@ -147,11 +156,20 @@ public class Options {
 		container.setSoundVolume(soundVolume);
 
 		try {
+			String extraGlyphs = "áàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ";
 			font = new UnicodeFont(fontFile.getName(),
 					(int) (32 * (cardLength / 256f) * 1.6f), false, false);
 			font.addAsciiGlyphs();
+			font.addGlyphs(extraGlyphs);
 			font.getEffects().add(new ColorEffect());
 			font.loadGlyphs();
+
+			smallFont = new UnicodeFont(fontFile.getName(),
+					Math.max(14, (int) (18 * (cardLength / 256f) * 1.6f)), false, false);
+			smallFont.addAsciiGlyphs();
+			smallFont.addGlyphs(extraGlyphs);
+			smallFont.getEffects().add(new ColorEffect());
+			smallFont.loadGlyphs();
 		} catch (SlickException e) {
 			Log.error("Failed to load fonts.", e);
 		}

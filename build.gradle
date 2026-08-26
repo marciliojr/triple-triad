@@ -1,0 +1,43 @@
+plugins {
+	id 'application'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_17
+	targetCompatibility = JavaVersion.VERSION_17
+}
+
+application {
+	mainClass = 'itdelatrisu.tripletriad.TripleTriad'
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src']
+		}
+	}
+}
+
+def gdxVersion = '1.13.1'
+
+dependencies {
+	implementation "com.badlogicgames.gdx:gdx:$gdxVersion"
+	implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+	implementation "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+	implementation "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+	implementation "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+tasks.named('run', JavaExec) {
+	workingDir = rootDir
+	standardInput = System.in
+}

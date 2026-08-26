@@ -18,9 +18,9 @@
 
 package itdelatrisu.tripletriad;
 
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.util.Log;
+import itdelatrisu.tripletriad.gfx.Animation;
+import itdelatrisu.tripletriad.gfx.Image;
+import itdelatrisu.tripletriad.gfx.Log;
 
 /**
  * Character spinners.

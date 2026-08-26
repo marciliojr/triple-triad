@@ -1,0 +1,45 @@
+# Changelog
+
+Todas as mudanças relevantes deste fork são registradas aqui.
+
+O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o projeto adota [SemVer](https://semver.org/lang/pt-BR/).
+
+## [Unreleased]
+
+## [0.2.0] - 2026-08-26
+
+Modernização do cliente desktop: build Gradle, Java 17, libGDX e meta-jogo local. As regras de captura (Same, Plus, Combo, Elemental, Sudden Death) e a IA não foram reescritas.
+
+### Added
+
+- Build Gradle (`./gradlew run` / `./gradlew build`) com wrapper 9.1.0
+- Perfil obrigatório persistido em `.triple-triad-profile`
+- Menu principal (Jogo Rápido; Campeonato e Versus reservados)
+- Construtor e seletor de decks de 5 cartas
+- Camada gráfica `itdelatrisu.tripletriad.gfx` sobre libGDX 1.13.1 (janela, input, sprites, fonte TTF com glifos PT-BR, BGM/SFX)
+- Fonte menor para menus e dicas
+- Memory bank em `memory-bank/`
+
+### Changed
+
+- Linguagem-alvo de Java 7 para **Java 17**
+- Apresentação de Slick2D + LWJGL 2.9.1 para **libGDX** (LWJGL 3 via backend)
+- Assets continuam em `res/` e `cards/`, resolvidos pelo cwd da raiz
+- `.classpath` aponta para JavaSE-17
+- README descreve o fluxo atual e o build Gradle
+
+### Removed
+
+- Dependência de JARs locais `lib/slick.jar`, `lib/lwjgl-2.9.1.jar`, `lib/jorbis-0.0.17-2.jar`
+- Natives LWJGL 2 em `native/`
+- Ant como caminho oficial de build (`build.xml` permanece no repo, sem suporte)
+
+### Fixed
+
+- Esc na partida volta ao menu em vez de encerrar o processo
+- F5 faz rematch com o mesmo deck do Jogo Rápido
+- `isGameOver()` tolera mãos ainda não inicializadas (telas de menu)
+
+## [0.1.1] - 2014-08-01
+
+Release original de Jeffrey Han ([itdelatrisu/triple-triad](https://github.com/itdelatrisu/triple-triad)): Slick2D, LWJGL 2, Ant/Eclipse, partida imediata contra a IA.

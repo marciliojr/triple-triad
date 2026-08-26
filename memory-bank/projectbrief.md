@@ -1,0 +1,15 @@
+# Project brief
+
+Triple Triad desktop (Final Fantasy VIII): partida local contra IA com as regras clássicas e um meta-jogo simples (perfil + decks + Jogo Rápido).
+
+## Objetivos
+
+- Preservar o motor de captura (`CardResult`, `Rule`, Same/Plus/Combo/Elemental/Sudden Death) e as IAs
+- Cliente moderno: Gradle, Java 17, libGDX
+- Não implementar ainda Campeonato, Versus, trade rules nem coleção
+
+## Fora de escopo (por enquanto)
+
+- Multijogador, ranking, servidor
+- Migrar para LWJGL 3 “cru” (o backend do libGDX já o usa)
+- Java 17+ language features só por estética no motor de regras

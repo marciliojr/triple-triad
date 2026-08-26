@@ -24,8 +24,8 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import org.newdawn.slick.util.Log;
-import org.newdawn.slick.util.ResourceLoader;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.ResourceLoader;
 
 /**
  * Deck data type.
@@ -131,6 +131,76 @@ public class Deck {
 		for (int i = 0; i < opponentCards.length; i++) {
 			opponentCards[i] = new Card(deck.get(i + playerCards.length));
 			opponentCards[i].setOwner(TripleTriad.OPPONENT);
+		}
+	}
+
+	/**
+	 * Returns the full catalog of cards.
+	 * @return the cards
+	 */
+	public ArrayList<Card> getCards() { return deck; }
+
+	/**
+	 * Returns a catalog card by ID.
+	 * @param id the card ID
+	 * @return the card, or null
+	 */
+	public Card getCardById(int id) {
+		for (int i = 0; i < deck.size(); i++) {
+			if (deck.get(i).getID() == id)
+				return deck.get(i);
+		}
+		return null;
+	}
+
+	/**
+	 * Creates a playable copy of a catalog card.
+	 * @param id the card ID
+	 * @param owner PLAYER or OPPONENT
+	 * @return the copy, or null if the ID is unknown
+	 */
+	public Card createCard(int id, boolean owner) {
+		Card prototype = getCardById(id);
+		if (prototype == null)
+			return null;
+		Card copy = new Card(prototype);
+		copy.setOwner(owner);
+		return copy;
+	}
+
+	/**
+	 * Fills a hand from explicit card IDs.
+	 * @param ids the card IDs
+	 * @param cards the hand to fill
+	 * @param owner PLAYER or OPPONENT
+	 */
+	public void buildHand(int[] ids, Card[] cards, boolean owner) {
+		for (int i = 0; i < cards.length; i++) {
+			int id = (ids != null && i < ids.length) ? ids[i] : 0;
+			Card copy = createCard(id, owner);
+			if (copy == null && !deck.isEmpty()) {
+				copy = new Card(deck.get(i % deck.size()));
+				copy.setOwner(owner);
+			}
+			cards[i] = copy;
+		}
+	}
+
+	/**
+	 * Fills a hand with random catalog cards (no repeats in the hand).
+	 * @param cards the hand to fill
+	 * @param owner PLAYER or OPPONENT
+	 */
+	public void buildRandomHand(Card[] cards, boolean owner) {
+		if (deck.size() < cards.length) {
+			Log.error("Not enough cards loaded.");
+			return;
+		}
+		ArrayList<Card> shuffled = new ArrayList<Card>(deck);
+		Collections.shuffle(shuffled);
+		for (int i = 0; i < cards.length; i++) {
+			cards[i] = new Card(shuffled.get(i));
+			cards[i].setOwner(owner);
 		}
 	}
 }

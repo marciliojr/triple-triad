@@ -18,10 +18,10 @@
 
 package itdelatrisu.tripletriad;
 
-import org.newdawn.slick.Music;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.Sound;
-import org.newdawn.slick.util.Log;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.Music;
+import itdelatrisu.tripletriad.gfx.SlickException;
+import itdelatrisu.tripletriad.gfx.Sound;
 
 /**
  * Controller for all audio.

@@ -18,9 +18,9 @@
 
 package itdelatrisu.tripletriad;
 
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.util.Log;
+import itdelatrisu.tripletriad.gfx.Graphics;
+import itdelatrisu.tripletriad.gfx.Image;
+import itdelatrisu.tripletriad.gfx.Log;
 
 /**
  * Card data type.
@@ -242,6 +242,29 @@ public class Card {
 			img.getScaledCopy(scale).draw(x, y);
 		else
 			img.draw(x, y);
+	}
+
+	/**
+	 * Draws the card at a given size.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param size the width and height
+	 * @param playerOwned true to use the player (blue) backing
+	 * @param gray true to use the gray backing
+	 */
+	public void drawSized(float x, float y, float size, boolean playerOwned, boolean gray) {
+		if (img == null)
+			loadCardImage();
+
+		Image colorImg;
+		if (gray)
+			colorImg = GameImage.CARD_GRAY.getImage();
+		else if (playerOwned)
+			colorImg = GameImage.CARD_BLUE.getImage();
+		else
+			colorImg = GameImage.CARD_RED.getImage();
+		colorImg.draw(x, y, size, size);
+		img.draw(x, y, size, size);
 	}
 
 	/**

@@ -23,6 +23,11 @@ import itdelatrisu.tripletriad.ai.BalancedAI;
 import itdelatrisu.tripletriad.ai.DefensiveAI;
 import itdelatrisu.tripletriad.ai.OffensiveAI;
 import itdelatrisu.tripletriad.ai.RandomAI;
+import itdelatrisu.tripletriad.ui.DeckBuilderScreen;
+import itdelatrisu.tripletriad.ui.DeckSelectScreen;
+import itdelatrisu.tripletriad.ui.MenuScreen;
+import itdelatrisu.tripletriad.ui.ProfileScreen;
+import itdelatrisu.tripletriad.ui.Screen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,18 +37,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.util.DefaultLogSystem;
-import org.newdawn.slick.util.FileSystemLocation;
-import org.newdawn.slick.util.Log;
-import org.newdawn.slick.util.ResourceLoader;
+import itdelatrisu.tripletriad.gfx.AppGameContainer;
+import itdelatrisu.tripletriad.gfx.BasicGame;
+import itdelatrisu.tripletriad.gfx.Color;
+import itdelatrisu.tripletriad.gfx.GameContainer;
+import itdelatrisu.tripletriad.gfx.Graphics;
+import itdelatrisu.tripletriad.gfx.Image;
+import itdelatrisu.tripletriad.gfx.Input;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.SlickException;
 
 /**
  * Main class.
@@ -112,6 +114,19 @@ public class TripleTriad extends BasicGame {
 	/** Game container. */
 	private GameContainer container;
 
+	/** Active screen. */
+	private GameScreen currentScreen;
+
+	/** Player profile. */
+	private Profile profile;
+
+	/** Menu screens. */
+	private Screen profileScreen, menuScreen, deckSelectScreen;
+	private DeckBuilderScreen deckBuilderScreen;
+
+	/** Card IDs for the player's current Quick Game deck. */
+	private int[] currentPlayerDeckIds;
+
 	public TripleTriad() {
 		super("Triple Triad");
 	}
@@ -120,7 +135,7 @@ public class TripleTriad extends BasicGame {
 		// log all errors to a file
 		Log.setVerbose(false);
 		try {
-			DefaultLogSystem.out = new PrintStream(new FileOutputStream(Options.LOG_FILE, true));
+			Log.setOut(new PrintStream(new FileOutputStream(Options.LOG_FILE, true)));
 		} catch (FileNotFoundException e) {
 			Log.error(e);
 		}
@@ -133,13 +148,6 @@ public class TripleTriad extends BasicGame {
 
 		// parse configuration file
 		Options.parseOptions();
-
-		// set path for lwjgl natives - NOT NEEDED if using JarSplice
-//		System.setProperty("org.lwjgl.librarypath", new File("native").getAbsolutePath());
-
-		// set the resource paths
-		ResourceLoader.addResourceLocation(new FileSystemLocation(new File("./res/")));
-		ResourceLoader.addResourceLocation(new FileSystemLocation(new File("./cards/")));
 
 		// start the game
 		try {
@@ -175,12 +183,26 @@ public class TripleTriad extends BasicGame {
 		// build deck
 		this.deck = new Deck();
 
-		restart(true);
+		this.profileScreen = new ProfileScreen(this);
+		this.menuScreen = new MenuScreen(this);
+		this.deckSelectScreen = new DeckSelectScreen(this);
+		this.deckBuilderScreen = new DeckBuilderScreen(this);
+
+		this.profile = ProfileStore.load();
+		if (profile != null && profile.isValid())
+			showMenu();
+		else
+			showProfile();
 	}
 
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
+		if (currentScreen != GameScreen.MATCH) {
+			getActiveScreen().render(container, g);
+			return;
+		}
+
 		int width = container.getWidth();
 		int height = container.getHeight();
 		int cardLength = Options.getCardLength();
@@ -320,6 +342,11 @@ public class TripleTriad extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
+		if (currentScreen != GameScreen.MATCH) {
+			getActiveScreen().update(container, delta);
+			return;
+		}
+
 		// card loading
 		if (!init) {
 			// sound effect timer
@@ -448,20 +475,36 @@ public class TripleTriad extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		// exit
-		if (key == Input.KEY_ESCAPE) {
-			Options.saveOptions();
-			container.exit();
+		if (currentScreen != GameScreen.MATCH) {
+			if (key == Input.KEY_ESCAPE &&
+				(currentScreen == GameScreen.MENU || currentScreen == GameScreen.PROFILE)) {
+				Options.saveOptions();
+				container.exit();
+				return;
+			}
+			getActiveScreen().keyPressed(key, c);
 			return;
 		}
 
-		// restart game
-		if (key == Input.KEY_F5 || (
-			isGameOver() && (playerScore != opponentScore || !Rule.SUDDEN_DEATH.isActive()) &&
+		// return to menu
+		if (key == Input.KEY_ESCAPE) {
+			AudioController.Effect.BACK.play();
+			showMenu();
+			return;
+		}
+
+		// rematch with the same player deck
+		if (key == Input.KEY_F5) {
+			if (currentPlayerDeckIds != null)
+				restart(true);
+			return;
+		}
+
+		// after the match, return to the menu
+		if (isGameOver() && (playerScore != opponentScore || !Rule.SUDDEN_DEATH.isActive()) &&
 			textAlpha >= 1f && result == null &&
-			(key == Input.KEY_Z || key == Input.KEY_ENTER)
-		)) {
-			restart(true);
+			(key == Input.KEY_Z || key == Input.KEY_ENTER)) {
+			showMenu();
 			return;
 		}
 
@@ -539,10 +582,15 @@ public class TripleTriad extends BasicGame {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
 
-		// restart game
+		if (currentScreen != GameScreen.MATCH) {
+			getActiveScreen().mousePressed(button, x, y);
+			return;
+		}
+
+		// after the match, return to the menu
 		if (isGameOver() && (playerScore != opponentScore || !Rule.SUDDEN_DEATH.isActive()) &&
 			textAlpha >= 1f && result == null) {
-			restart(true);
+			showMenu();
 			return;
 		}
 
@@ -604,7 +652,11 @@ public class TripleTriad extends BasicGame {
 		if (newHand) {
 			playerCards = new Card[5];
 			opponentCards = new Card[5];
-			deck.buildHands(playerCards, opponentCards);
+			if (currentPlayerDeckIds != null && currentPlayerDeckIds.length == 5)
+				deck.buildHand(currentPlayerDeckIds, playerCards, PLAYER);
+			else
+				deck.buildRandomHand(playerCards, PLAYER);
+			deck.buildRandomHand(opponentCards, OPPONENT);
 			playerHand = new ArrayList<Card>(Arrays.asList(playerCards));
 			opponentHand = new ArrayList<Card>(Arrays.asList(opponentCards));
 			spinner = Spinner.getRandomSpinner();
@@ -663,7 +715,10 @@ public class TripleTriad extends BasicGame {
 	 * Returns whether or not the game is over.
 	 * @return true if over
 	 */
-	private boolean isGameOver() { return (playerHand.isEmpty() || opponentHand.isEmpty()); }
+	private boolean isGameOver() {
+		return playerHand != null && opponentHand != null &&
+			(playerHand.isEmpty() || opponentHand.isEmpty());
+	}
 
 	/**
 	 * Plays a card, unless the board position is occupied by another card.
@@ -710,5 +765,100 @@ public class TripleTriad extends BasicGame {
 			}
 		}
 		AudioController.Effect.TURN.play();
+	}
+
+	@Override
+	public void mouseWheelMoved(int change) {
+		if (currentScreen != GameScreen.MATCH)
+			getActiveScreen().mouseWheelMoved(change);
+	}
+
+	/**
+	 * Returns the active non-match screen.
+	 */
+	private Screen getActiveScreen() {
+		switch (currentScreen) {
+			case PROFILE: return profileScreen;
+			case DECK_SELECT: return deckSelectScreen;
+			case DECK_BUILDER: return deckBuilderScreen;
+			case MENU:
+			default: return menuScreen;
+		}
+	}
+
+	/**
+	 * Returns the loaded card catalog.
+	 * @return the deck
+	 */
+	public Deck getDeck() { return deck; }
+
+	/**
+	 * Returns the current player profile.
+	 * @return the profile, or null
+	 */
+	public Profile getProfile() { return profile; }
+
+	/**
+	 * Persists the current profile to disk.
+	 */
+	public void saveProfile() {
+		ProfileStore.save(profile);
+	}
+
+	/**
+	 * Creates a new profile and opens the menu.
+	 * @param name the player name
+	 */
+	public void createProfile(String name) {
+		profile = new Profile();
+		profile.setName(name);
+		ProfileStore.save(profile);
+		showMenu();
+	}
+
+	/**
+	 * Shows the profile creation screen.
+	 */
+	public void showProfile() {
+		currentScreen = GameScreen.PROFILE;
+		profileScreen.enter();
+	}
+
+	/**
+	 * Shows the main menu.
+	 */
+	public void showMenu() {
+		currentScreen = GameScreen.MENU;
+		menuScreen.enter();
+	}
+
+	/**
+	 * Shows the Quick Game deck list.
+	 */
+	public void showDeckSelect() {
+		currentScreen = GameScreen.DECK_SELECT;
+		deckSelectScreen.enter();
+	}
+
+	/**
+	 * Shows the deck builder.
+	 * @param existing the deck to edit, or null to create a new one
+	 */
+	public void showDeckBuilder(SavedDeck existing) {
+		deckBuilderScreen.edit(existing);
+		currentScreen = GameScreen.DECK_BUILDER;
+		deckBuilderScreen.enter();
+	}
+
+	/**
+	 * Starts a Quick Game match against the computer.
+	 * @param cardIds the player's five card IDs
+	 */
+	public void startQuickMatch(int[] cardIds) {
+		if (cardIds == null || cardIds.length != SavedDeck.SIZE)
+			return;
+		currentPlayerDeckIds = cardIds.clone();
+		currentScreen = GameScreen.MATCH;
+		restart(true);
 	}
 }
