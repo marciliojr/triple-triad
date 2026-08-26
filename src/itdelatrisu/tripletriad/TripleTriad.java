@@ -25,9 +25,11 @@ import itdelatrisu.tripletriad.ai.OffensiveAI;
 import itdelatrisu.tripletriad.ai.RandomAI;
 import itdelatrisu.tripletriad.ui.DeckBuilderScreen;
 import itdelatrisu.tripletriad.ui.DeckSelectScreen;
+import itdelatrisu.tripletriad.ui.HowToPlayScreen;
 import itdelatrisu.tripletriad.ui.MenuScreen;
 import itdelatrisu.tripletriad.ui.ProfileScreen;
 import itdelatrisu.tripletriad.ui.Screen;
+import itdelatrisu.tripletriad.ui.SettingsScreen;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -121,7 +123,7 @@ public class TripleTriad extends BasicGame {
 	private Profile profile;
 
 	/** Menu screens. */
-	private Screen profileScreen, menuScreen, deckSelectScreen;
+	private Screen profileScreen, menuScreen, deckSelectScreen, howToPlayScreen, settingsScreen;
 	private DeckBuilderScreen deckBuilderScreen;
 
 	/** Card IDs for the player's current Quick Game deck. */
@@ -187,6 +189,8 @@ public class TripleTriad extends BasicGame {
 		this.menuScreen = new MenuScreen(this);
 		this.deckSelectScreen = new DeckSelectScreen(this);
 		this.deckBuilderScreen = new DeckBuilderScreen(this);
+		this.howToPlayScreen = new HowToPlayScreen(this);
+		this.settingsScreen = new SettingsScreen(this);
 
 		this.profile = ProfileStore.load();
 		if (profile != null && profile.isValid())
@@ -516,11 +520,11 @@ public class TripleTriad extends BasicGame {
 		case Input.KEY_DOWN:
 			if (selectedPosition == -1) {
 				selectedCard = (selectedCard + 1) % playerHand.size();
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			} else {
 				if (selectedPosition < 6) {
 					selectedPosition += 3;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 			}
 			break;
@@ -528,24 +532,24 @@ public class TripleTriad extends BasicGame {
 			if (selectedPosition == -1) {
 				int size = playerHand.size();
 				selectedCard = (selectedCard + (size - 1)) % size;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			} else {
 				if (selectedPosition > 2) {
 					selectedPosition -= 3;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 			}
 			break;
 		case Input.KEY_LEFT:
 			if (selectedPosition != -1 && selectedPosition % 3 != 0) {
 				selectedPosition--;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_RIGHT:
 			if (selectedPosition != -1 && selectedPosition % 3 != 2) {
 				selectedPosition++;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_Z:
@@ -620,7 +624,7 @@ public class TripleTriad extends BasicGame {
 				} else {
 					selectedCard = index;
 					selectedPosition = -1;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 				return;
 			}
@@ -635,7 +639,7 @@ public class TripleTriad extends BasicGame {
 					(y - (centerY - centerOffset)) / cardLength * 3;
 			if (selectedPosition != boardPosition) {
 				selectedPosition = boardPosition;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			} else if (playCard(playerHand, selectedCard, boardPosition))
 				AudioController.Effect.SELECT.play();
 			else
@@ -781,6 +785,8 @@ public class TripleTriad extends BasicGame {
 			case PROFILE: return profileScreen;
 			case DECK_SELECT: return deckSelectScreen;
 			case DECK_BUILDER: return deckBuilderScreen;
+			case HOW_TO_PLAY: return howToPlayScreen;
+			case SETTINGS: return settingsScreen;
 			case MENU:
 			default: return menuScreen;
 		}
@@ -830,6 +836,22 @@ public class TripleTriad extends BasicGame {
 	public void showMenu() {
 		currentScreen = GameScreen.MENU;
 		menuScreen.enter();
+	}
+
+	/**
+	 * Shows the how-to-play screen.
+	 */
+	public void showHowToPlay() {
+		currentScreen = GameScreen.HOW_TO_PLAY;
+		howToPlayScreen.enter();
+	}
+
+	/**
+	 * Shows the settings screen.
+	 */
+	public void showSettings() {
+		currentScreen = GameScreen.SETTINGS;
+		settingsScreen.enter();
 	}
 
 	/**

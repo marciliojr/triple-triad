@@ -60,4 +60,12 @@ public enum Rule {
 	 * Toggles the active state.
 	 */
 	public void toggle() { state = !state; }
+
+	/**
+	 * Returns a short display name for menus in the current language.
+	 * @return the label
+	 */
+	public String getDisplayName() {
+		return I18n.ruleName(this);
+	}
 }

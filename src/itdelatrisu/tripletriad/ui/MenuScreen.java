@@ -9,7 +9,7 @@
  *
  * Triple Triad is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -20,6 +20,7 @@ package itdelatrisu.tripletriad.ui;
 
 import itdelatrisu.tripletriad.AudioController;
 import itdelatrisu.tripletriad.GameImage;
+import itdelatrisu.tripletriad.I18n;
 import itdelatrisu.tripletriad.Options;
 import itdelatrisu.tripletriad.TripleTriad;
 
@@ -31,14 +32,14 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Main menu: Quick Game, Championship (locked), Versus (locked).
+ * Main menu: Quick Game, how to play, settings, Championship (locked), Versus (locked).
  */
 public class MenuScreen extends Screen {
-	/** Menu entries. */
-	private static final String[] LABELS = { "Jogo R\u00e1pido", "Campeonato", "Versus" };
+	/** Number of menu entries. */
+	private static final int ITEM_COUNT = 5;
 
 	/** Whether each entry is playable. */
-	private static final boolean[] ENABLED = { true, false, false };
+	private static final boolean[] ENABLED = { true, true, true, false, false };
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -67,19 +68,19 @@ public class MenuScreen extends Screen {
 		int height = container.getHeight();
 		int width = container.getWidth();
 
-		Ui.drawCentered(font, "TRIPLE TRIAD", height * 0.12f, Ui.TITLE);
+		Ui.drawCentered(font, "TRIPLE TRIAD", height * 0.10f, Ui.TITLE);
 		if (game.getProfile() != null && game.getProfile().isValid())
-			Ui.drawCentered(small, game.getProfile().getName(), height * 0.22f, Ui.HINT);
+			Ui.drawCentered(small, game.getProfile().getName(), height * 0.19f, Ui.HINT);
 
-		float startY = height * 0.38f;
-		float line = font.getLineHeight() * 1.35f;
-		for (int i = 0; i < LABELS.length; i++) {
+		float startY = height * 0.32f;
+		float line = font.getLineHeight() * 1.28f;
+		for (int i = 0; i < ITEM_COUNT; i++) {
 			float y = startY + i * line;
 			boolean on = (i == selected);
 			Color color = !ENABLED[i] ? Ui.DISABLED : (on ? Ui.SELECTED : Ui.HINT);
-			String label = LABELS[i];
+			String label = label(i);
 			if (!ENABLED[i])
-				label = label + "  (Em breve)";
+				label = label + I18n.comingSoon();
 			Ui.drawCentered(font, label, y, color);
 			if (on) {
 				Image cursor = GameImage.CURSOR.getImage();
@@ -91,19 +92,19 @@ public class MenuScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, "Enter seleciona    Esc sai", height * 0.88f, Ui.HINT);
+		Ui.drawCentered(small, I18n.hintMenu(), height * 0.90f, Ui.HINT);
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
 		switch (key) {
 		case Input.KEY_DOWN:
-			selected = (selected + 1) % LABELS.length;
-			AudioController.Effect.SELECT.play();
+			selected = (selected + 1) % ITEM_COUNT;
+			AudioController.playCursor();
 			break;
 		case Input.KEY_UP:
-			selected = (selected + LABELS.length - 1) % LABELS.length;
-			AudioController.Effect.SELECT.play();
+			selected = (selected + ITEM_COUNT - 1) % ITEM_COUNT;
+			AudioController.playCursor();
 			break;
 		case Input.KEY_Z:
 		case Input.KEY_ENTER:
@@ -123,7 +124,7 @@ public class MenuScreen extends Screen {
 			return;
 		if (index != selected) {
 			selected = index;
-			AudioController.Effect.SELECT.play();
+			AudioController.playCursor();
 			return;
 		}
 		activate(index);
@@ -140,6 +141,21 @@ public class MenuScreen extends Screen {
 		AudioController.Effect.SELECT.play();
 		if (index == 0)
 			game.showDeckSelect();
+		else if (index == 1)
+			game.showHowToPlay();
+		else if (index == 2)
+			game.showSettings();
+	}
+
+	private String label(int index) {
+		switch (index) {
+			case 0: return I18n.menuQuick();
+			case 1: return I18n.menuHowTo();
+			case 2: return I18n.menuSettings();
+			case 3: return I18n.menuChampionship();
+			case 4: return I18n.menuVersus();
+			default: return "";
+		}
 	}
 
 	/**
@@ -147,9 +163,9 @@ public class MenuScreen extends Screen {
 	 */
 	private int hitIndex(int y) {
 		UnicodeFont font = Options.getFont();
-		float startY = Options.getHeight() * 0.38f;
-		float line = font.getLineHeight() * 1.35f;
-		for (int i = 0; i < LABELS.length; i++) {
+		float startY = Options.getHeight() * 0.32f;
+		float line = font.getLineHeight() * 1.28f;
+		for (int i = 0; i < ITEM_COUNT; i++) {
 			float top = startY + i * line;
 			if (y >= top && y < top + font.getLineHeight())
 				return i;

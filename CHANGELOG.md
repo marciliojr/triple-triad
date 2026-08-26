@@ -6,6 +6,22 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-08-26
+
+Tela de Configurações, idioma da interface e regras na seleção de deck.
+
+### Added
+
+- Item de menu **Configurações**: música de fundo, som do cursor e idioma (português do Brasil, inglês, espanhol)
+- Persistência `MUSIC_ENABLED`, `CURSOR_SOUND` e `LANGUAGE` em `.triple-triad.cfg`
+- Painel de regras na tela de Jogo Rápido (Open, Same, Same Wall, Plus, Combo, Elemental, Sudden Death)
+- Tela **Como - Jogar** com manual resumido no idioma escolhido
+
+### Changed
+
+- Textos de menu, perfil, decks e dicas passam por `I18n`
+- Fonte inclui glifos extras do espanhol (`ñ`, `¿`, `¡`)
+
 ## [0.3.0] - 2026-08-26
 
 Sobe o cliente de Java 17 para **Java 21**. Sem mudança de regras, telas ou assets.

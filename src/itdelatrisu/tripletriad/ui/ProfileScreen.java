@@ -19,6 +19,7 @@
 package itdelatrisu.tripletriad.ui;
 
 import itdelatrisu.tripletriad.AudioController;
+import itdelatrisu.tripletriad.I18n;
 import itdelatrisu.tripletriad.Options;
 import itdelatrisu.tripletriad.TripleTriad;
 
@@ -61,13 +62,13 @@ public class ProfileScreen extends Screen {
 		int height = container.getHeight();
 
 		Ui.drawCentered(font, "TRIPLE TRIAD", height * 0.18f, Ui.TITLE);
-		Ui.drawCentered(small, "Crie um perfil para jogar", height * 0.32f, Ui.HINT);
-		Ui.drawCentered(small, "Nome", height * 0.46f, Ui.HINT);
+		Ui.drawCentered(small, I18n.profilePrompt(), height * 0.32f, Ui.HINT);
+		Ui.drawCentered(small, I18n.profileName(), height * 0.46f, Ui.HINT);
 
 		String shown = name.length() == 0 ? "_" : name.toString() + "_";
 		Ui.drawCentered(font, shown, height * 0.52f, Ui.SELECTED);
 
-		Ui.drawCentered(small, "Enter confirma    Esc sai", height * 0.82f, Ui.HINT);
+		Ui.drawCentered(small, I18n.hintProfile(), height * 0.82f, Ui.HINT);
 	}
 
 	@Override

@@ -12,9 +12,15 @@
 
 ## Telas
 
-`GameScreen`: PROFILE, MENU, DECK_SELECT, DECK_BUILDER, MATCH.
+`GameScreen`: PROFILE, MENU, DECK_SELECT, DECK_BUILDER, HOW_TO_PLAY, SETTINGS, MATCH.
 
 `Screen` define `enter` / `render` / `update` / `keyPressed` / `mousePressed` / `mouseWheelMoved`. `TripleTriad` despacha conforme `currentScreen`.
+
+Textos de UI passam por `I18n` + `Lang` (PT_BR, EN, ES). Nomes de regras em `Rule.getDisplayName()`.
+
+## Áudio
+
+`AudioController.applyMusic()` liga/pausa o BGM. `AudioController.playCursor()` toca o SELECT só se `Options.isCursorSoundEnabled()`.
 
 ## Cartas
 

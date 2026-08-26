@@ -9,7 +9,7 @@
  *
  * Triple Triad is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -19,14 +19,28 @@
 package itdelatrisu.tripletriad;
 
 /**
- * Top-level UI / match states.
+ * UI language.
  */
-public enum GameScreen {
-	PROFILE,
-	MENU,
-	DECK_SELECT,
-	DECK_BUILDER,
-	HOW_TO_PLAY,
-	SETTINGS,
-	MATCH
+public enum Lang {
+	PT_BR,
+	EN,
+	ES;
+
+	/**
+	 * Returns the next language in the cycle.
+	 * @return the next language
+	 */
+	public Lang next() {
+		Lang[] all = values();
+		return all[(ordinal() + 1) % all.length];
+	}
+
+	/**
+	 * Returns the previous language in the cycle.
+	 * @return the previous language
+	 */
+	public Lang prev() {
+		Lang[] all = values();
+		return all[(ordinal() + all.length - 1) % all.length];
+	}
 }

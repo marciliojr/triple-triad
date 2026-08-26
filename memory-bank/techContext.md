@@ -20,6 +20,8 @@ Pacote `itdelatrisu.tripletriad.gfx`: fachada no estilo Slick2D (`Image`, `Graph
 
 Câmera y-down (`OrthographicCamera.setToOrtho(true)`), como o Slick.
 
+Textos: `I18n` / `Lang`. Fonte OpenSans com glifos PT-BR e ES.
+
 ## O que não usar
 
 - Slick2D, LWJGL 2, JARs em `lib/` para o jogo, pasta `native/` antiga

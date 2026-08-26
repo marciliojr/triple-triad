@@ -21,6 +21,7 @@ package itdelatrisu.tripletriad.ui;
 import itdelatrisu.tripletriad.AudioController;
 import itdelatrisu.tripletriad.Card;
 import itdelatrisu.tripletriad.Deck;
+import itdelatrisu.tripletriad.I18n;
 import itdelatrisu.tripletriad.Options;
 import itdelatrisu.tripletriad.SavedDeck;
 import itdelatrisu.tripletriad.TripleTriad;
@@ -107,8 +108,8 @@ public class DeckBuilderScreen extends Screen {
 		Deck catalog = game.getDeck();
 		ArrayList<Card> cards = catalog.getCards();
 
-		Ui.drawCentered(font, editing == null ? "Montar deck" : "Editar deck", height * 0.03f, Ui.TITLE);
-		Ui.drawCentered(small, selectedIds.size() + " / 5 cartas", height * 0.09f, Ui.HINT);
+		Ui.drawCentered(font, editing == null ? I18n.buildDeck() : I18n.editDeck(), height * 0.03f, Ui.TITLE);
+		Ui.drawCentered(small, I18n.cardCount(selectedIds.size()), height * 0.09f, Ui.HINT);
 
 		float slotSize = Options.getCardLength() * 0.38f;
 		float slotGap = slotSize * 0.12f;
@@ -160,12 +161,12 @@ public class DeckBuilderScreen extends Screen {
 		if (naming) {
 			g.setColor(new Color(0f, 0f, 0f, 0.7f));
 			g.fillRect(0, height * 0.38f, width, height * 0.24f);
-			Ui.drawCentered(small, "Nome do deck", height * 0.42f, Ui.HINT);
+			Ui.drawCentered(small, I18n.deckNamePrompt(), height * 0.42f, Ui.HINT);
 			String shown = name.length() == 0 ? "_" : name.toString() + "_";
 			Ui.drawCentered(font, shown, height * 0.48f, Ui.SELECTED);
-			Ui.drawCentered(small, "Enter salva    Esc cancela", height * 0.56f, Ui.HINT);
+			Ui.drawCentered(small, I18n.hintNaming(), height * 0.56f, Ui.HINT);
 		} else {
-			Ui.drawCentered(small, "Z adiciona    S salvar    Enter jogar    Esc voltar",
+			Ui.drawCentered(small, I18n.hintBuilder(),
 					height * 0.92f, Ui.HINT);
 		}
 	}
@@ -190,13 +191,13 @@ public class DeckBuilderScreen extends Screen {
 		case Input.KEY_RIGHT:
 			if (cursor < cards.size() - 1) {
 				cursor++;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_LEFT:
 			if (cursor > 0) {
 				cursor--;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_DOWN:
@@ -204,14 +205,14 @@ public class DeckBuilderScreen extends Screen {
 				int next = Math.min(cards.size() - 1, cursor + cols);
 				if (next != cursor) {
 					cursor = next;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 			}
 			break;
 		case Input.KEY_UP:
 			if (row > 0) {
 				cursor -= cols;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_Z:
@@ -247,7 +248,7 @@ public class DeckBuilderScreen extends Screen {
 			return;
 		if (index != cursor) {
 			cursor = index;
-			AudioController.Effect.SELECT.play();
+			AudioController.playCursor();
 			return;
 		}
 		toggleCursor();

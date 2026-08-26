@@ -54,6 +54,15 @@ public class Options {
 	/** Volume. */
 	private static float musicVolume = 0.6f, soundVolume = 0.8f;
 
+	/** Whether background music is enabled. */
+	private static boolean musicEnabled = true;
+
+	/** Whether the cursor navigation sound is enabled. */
+	private static boolean cursorSoundEnabled = true;
+
+	/** UI language. */
+	private static Lang lang = Lang.PT_BR;
+
 	/** Target frame rate. */
 	private static int fps = 60;
 
@@ -118,6 +127,49 @@ public class Options {
 	public static AIType getOpponentAI() { return opponentAI; }
 
 	/**
+	 * Returns whether background music is enabled.
+	 * @return true if enabled
+	 */
+	public static boolean isMusicEnabled() { return musicEnabled; }
+
+	/**
+	 * Sets whether background music is enabled.
+	 * @param enabled true if enabled
+	 */
+	public static void setMusicEnabled(boolean enabled) { musicEnabled = enabled; }
+
+	/**
+	 * Toggles background music.
+	 */
+	public static void toggleMusicEnabled() { musicEnabled = !musicEnabled; }
+
+	/**
+	 * Returns whether the cursor navigation sound is enabled.
+	 * @return true if enabled
+	 */
+	public static boolean isCursorSoundEnabled() { return cursorSoundEnabled; }
+
+	/**
+	 * Toggles the cursor navigation sound.
+	 */
+	public static void toggleCursorSound() { cursorSoundEnabled = !cursorSoundEnabled; }
+
+	/**
+	 * Returns the UI language.
+	 * @return the language
+	 */
+	public static Lang getLang() { return lang; }
+
+	/**
+	 * Sets the UI language.
+	 * @param value the language
+	 */
+	public static void setLang(Lang value) {
+		if (value != null)
+			lang = value;
+	}
+
+	/**
 	 * Sets the container size and makes the window borderless if the container
 	 * size is identical to the screen resolution.
 	 * <p>
@@ -156,7 +208,7 @@ public class Options {
 		container.setSoundVolume(soundVolume);
 
 		try {
-			String extraGlyphs = "áàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ";
+			String extraGlyphs = "áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡";
 			font = new UnicodeFont(fontFile.getName(),
 					(int) (32 * (cardLength / 256f) * 1.6f), false, false);
 			font.addAsciiGlyphs();
@@ -235,6 +287,19 @@ public class Options {
 				case "AI_OPPONENT":
 					opponentAI = AIType.valueOf(value);
 					break;
+				case "MUSIC_ENABLED":
+					musicEnabled = Boolean.parseBoolean(value);
+					break;
+				case "CURSOR_SOUND":
+					cursorSoundEnabled = Boolean.parseBoolean(value);
+					break;
+				case "LANGUAGE":
+					try {
+						lang = Lang.valueOf(value);
+					} catch (IllegalArgumentException e) {
+						lang = Lang.PT_BR;
+					}
+					break;
 				default:
 					try {
 						Rule rule = Rule.valueOf(name);
@@ -283,6 +348,12 @@ public class Options {
 			writer.write(String.format("FPS = %d", fps));
 			writer.newLine();
 			writer.write(String.format("FONT = %s", fontFile.getName()));
+			writer.newLine();
+			writer.write(String.format("MUSIC_ENABLED = %b", musicEnabled));
+			writer.newLine();
+			writer.write(String.format("CURSOR_SOUND = %b", cursorSoundEnabled));
+			writer.newLine();
+			writer.write(String.format("LANGUAGE = %s", lang.toString()));
 			writer.newLine();
 			writer.newLine();
 

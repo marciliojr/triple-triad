@@ -50,4 +50,20 @@ public class Music {
 		music.setVolume(Gfx.getMusicVolume());
 		music.play();
 	}
+
+	/**
+	 * Pauses playback.
+	 */
+	public void pause() {
+		if (music != null)
+			music.pause();
+	}
+
+	/**
+	 * Stops playback.
+	 */
+	public void stop() {
+		if (music != null)
+			music.stop();
+	}
 }

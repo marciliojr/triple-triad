@@ -6,6 +6,7 @@ Triple Triad desktop (Final Fantasy VIII): partida local contra IA com as regras
 
 - Preservar o motor de captura (`CardResult`, `Rule`, Same/Plus/Combo/Elemental/Sudden Death) e as IAs
 - Cliente moderno: Gradle, Java 21, libGDX
+- Interface em português (Brasil), inglês e espanhol
 - Não implementar ainda Campeonato, Versus, trade rules nem coleção
 
 ## Fora de escopo (por enquanto)

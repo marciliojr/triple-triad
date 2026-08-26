@@ -2,12 +2,13 @@
 
 Branch de trabalho típica: `feat/libgdx-java17`.
 
-Último marco: alvo **Java 21** (bytecode major 65). README, CHANGELOG 0.3.0 e memory bank atualizados.
+Último marco: **Configurações** (música, som do cursor, idioma pt-BR/en/es), regras na seleção de deck e tela Como Jogar.
 
 ## Ao continuar
 
 - Não mexer em `CardResult` / regras de captura sem teste de Same/Plus/Combo/Elemental
 - Novas telas: implementar `ui.Screen` e um valor em `GameScreen`
+- Textos de UI: adicionar em `I18n` (PT/EN/ES), não hardcode
 - Assets novos: soltar em `res/` ou `cards/` e carregar pelo nome do arquivo
 - Campeonato / Versus: só quando o produto pedir; o menu já reserva as entradas
 

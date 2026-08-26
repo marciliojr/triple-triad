@@ -5,7 +5,7 @@ Implementação desktop do Triple Triad, o jogo de cartas de *Final Fantasy VIII
 Este repositório é um **fork** do projeto original de Jeffrey Han:
 **[itdelatrisu/triple-triad](https://github.com/itdelatrisu/triple-triad)**.
 
-O original entregava a partida contra a IA, com todas as regras clássicas. Daqui para frente o cliente está em Java 21 + libGDX, com perfil, decks e Jogo Rápido — sem reescrever o motor de captura.
+O original entregava a partida contra a IA, com todas as regras clássicas. Daqui para frente o cliente está em Java 21 + libGDX, com perfil, decks, Jogo Rápido, Como Jogar e Configurações — sem reescrever o motor de captura.
 
 Regras e tutorial: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad).
 
@@ -33,13 +33,15 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1, partida qu
 
 **Apresentação**
 - Slick2D + LWJGL 2 e a pasta `native/` foram trocados por **libGDX** 1.13.1 (LWJGL 3 no backend)
-- Camada fina em `itdelatrisu.tripletriad.gfx` para janela, input, sprites, fonte TTF com acentos PT-BR e áudio
+- Camada fina em `itdelatrisu.tripletriad.gfx` para janela, input, sprites, fonte TTF com acentos PT-BR/ES e áudio
 - Arte e som continuam em `res/` e `cards/` (nada redesenhado)
 
 **Meta-jogo (não existia no original)**
 - Perfil obrigatório na primeira execução (`.triple-triad-profile`)
-- Menu principal: Jogo Rápido (Campeonato e Versus ainda como “Em breve”)
+- Menu principal: Jogo Rápido, Como Jogar, Configurações (Campeonato e Versus ainda como “Em breve”)
 - Construtor e seletor de decks de 5 cartas (criar, editar, apagar, jogar)
+- Regras da partida ligadas/desligadas na tela de Jogo Rápido
+- Interface em português (Brasil), inglês e espanhol
 
 **Partida**
 - Same / Plus / Combo / Elemental / Sudden Death e as IAs **permanecem os do original**
@@ -70,11 +72,13 @@ O diretório de trabalho é a raiz: sprites, fontes e áudio em `res/`, catálog
 ## Fluxo do jogo
 
 1. **Perfil** — nome na primeira execução
-2. **Menu** — Jogo Rápido
-3. **Decks** — montar, editar, apagar ou escolher um deck de 5 cartas
+2. **Menu** — Jogo Rápido, Como Jogar, Configurações
+3. **Decks** — montar, editar, apagar ou escolher um deck de 5 cartas; ligar/desligar regras
 4. **Partida** — contra a IA
 
-Vídeo, volume, FPS, fonte e regras: `.triple-triad.cfg` (criado na primeira execução). Erros: `.triple-triad.log`.
+Vídeo, volume, FPS, fonte, regras, música, som do cursor e idioma: `.triple-triad.cfg` (criado na primeira execução). Erros: `.triple-triad.log`.
+
+Em **Configurações** dá para ligar/desligar a música de fundo e o som do cursor, e escolher o idioma (pt-BR, inglês, espanhol).
 
 ## Controles
 
@@ -89,7 +93,7 @@ Além do mouse:
 | Lance automático (IA do jogador) | F1 |
 | Voltar / sair | Esc |
 
-No construtor de deck: **Z** adiciona/remove carta, **S** salva, **Enter** joga. Na lista: **E** edita, **Del** apaga.
+No construtor de deck: **Z** adiciona/remove carta, **S** salva, **Enter** joga. Na lista: **E** edita, **Del** apaga. Em Configurações: **Enter** liga/desliga; setas esquerda/direita mudam o idioma.
 
 ## Licença
 
