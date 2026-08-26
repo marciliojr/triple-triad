@@ -2,7 +2,8 @@
 
 ## Runtime e build
 
-- JDK 17+ (bytecode `source/target` 17; Gradle 9.1.0 roda em JVM 17–25)
+- JDK **21+** para compilar e rodar (`source/target` 21)
+- Gradle Wrapper 9.1.0 (o daemon sobe em JVM 17–25; o jogo exige 21)
 - `./gradlew run` com `workingDir` na raiz
 - Dependências no Maven Central: libGDX 1.13.1, backend `lwjgl3`, `natives-desktop`, FreeType
 - Entry point: `itdelatrisu.tripletriad.TripleTriad`

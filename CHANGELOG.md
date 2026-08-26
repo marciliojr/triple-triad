@@ -6,6 +6,16 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-26
+
+Sobe o cliente de Java 17 para **Java 21**. Sem mudança de regras, telas ou assets.
+
+### Changed
+
+- `sourceCompatibility` / `targetCompatibility` 21 no Gradle
+- `.classpath` em JavaSE-21
+- README, requisitos e memory bank alinhados ao JDK 21
+
 ## [0.2.0] - 2026-08-26
 
 Modernização do cliente desktop: build Gradle, Java 17, libGDX e meta-jogo local. As regras de captura (Same, Plus, Combo, Elemental, Sudden Death) e a IA não foram reescritas.

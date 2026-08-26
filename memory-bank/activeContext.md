@@ -2,7 +2,7 @@
 
 Branch de trabalho típica: `feat/libgdx-java17`.
 
-Último marco: cliente libGDX + Java 17 + Gradle + perfil/decks/Jogo Rápido, validado com `./gradlew run` (janela abre, sessão fecha com código 0).
+Último marco: alvo **Java 21** (bytecode major 65). README, CHANGELOG 0.3.0 e memory bank atualizados.
 
 ## Ao continuar
 

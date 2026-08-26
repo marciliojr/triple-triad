@@ -5,7 +5,7 @@ Implementação desktop do Triple Triad, o jogo de cartas de *Final Fantasy VIII
 Este repositório é um **fork** do projeto original de Jeffrey Han:
 **[itdelatrisu/triple-triad](https://github.com/itdelatrisu/triple-triad)**.
 
-O original entregava a partida contra a IA, com todas as regras clássicas. Daqui para frente o cliente está em Java 17 + libGDX, com perfil, decks e Jogo Rápido — sem reescrever o motor de captura.
+O original entregava a partida contra a IA, com todas as regras clássicas. Daqui para frente o cliente está em Java 21 + libGDX, com perfil, decks e Jogo Rápido — sem reescrever o motor de captura.
 
 Regras e tutorial: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad).
 
@@ -28,7 +28,7 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1, partida qu
 
 **Build e plataforma**
 - Build oficial passou a ser **Gradle** (`./gradlew run` / `./gradlew build`); Ant deixou de ser o caminho suportado
-- Linguagem-alvo: **Java 17** (antes Java 7)
+- Linguagem-alvo: **Java 21** (o original era Java 7; o passo intermediário deste fork foi Java 17)
 - Dependências no Maven Central; natives do SO baixadas pelo Gradle
 
 **Apresentação**
@@ -49,7 +49,7 @@ Detalhe das versões: [CHANGELOG.md](CHANGELOG.md).
 
 ## Requisitos
 
-- JDK **17** ou superior
+- JDK **21** ou superior
 - Gradle Wrapper no repositório (`./gradlew`); não é preciso instalar Gradle à parte
 
 ## Como rodar
@@ -63,7 +63,7 @@ Na raiz do projeto:
 O diretório de trabalho é a raiz: sprites, fontes e áudio em `res/`, catálogo de cartas em `cards/`.
 
 ```bash
-./gradlew build   # compila (bytecode Java 17)
+./gradlew build   # compila (bytecode Java 21)
 ./gradlew clean
 ```
 
