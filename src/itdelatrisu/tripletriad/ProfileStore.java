@@ -26,6 +26,7 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,6 +69,56 @@ public class ProfileStore {
 
 				if (key.equals("NAME")) {
 					profile.setName(value);
+					continue;
+				}
+				if (key.equals("COLLECTION")) {
+					int[] ids = parseCardIds(value);
+					for (int i = 0; i < ids.length; i++) {
+						if (ids[i] > 0)
+							profile.addCard(ids[i]);
+					}
+					continue;
+				}
+				if (key.equals("CHAMPIONSHIP_WINS")) {
+					try {
+						profile.setChampionshipWins(Integer.parseInt(value));
+					} catch (NumberFormatException e) {
+						profile.setChampionshipWins(0);
+					}
+					continue;
+				}
+				if (key.equals("RUN_ROUND")) {
+					try {
+						profile.setRunRound(Integer.parseInt(value));
+					} catch (NumberFormatException e) {
+						profile.setRunRound(0);
+					}
+					continue;
+				}
+				if (key.equals("RUN_WINS")) {
+					try {
+						profile.setRunWins(Integer.parseInt(value));
+					} catch (NumberFormatException e) {
+						profile.setRunWins(0);
+					}
+					continue;
+				}
+				if (key.equals("RUN_HAND")) {
+					profile.setRunHand(parseCardIds(value));
+					continue;
+				}
+				if (key.equals("RUN_OPPONENT")) {
+					profile.setRunOpponent(parseCardIds(value));
+					continue;
+				}
+				if (key.equals("RUN_BAG")) {
+					int[] ids = parseCardIds(value);
+					ArrayList<Integer> bag = new ArrayList<Integer>();
+					for (int i = 0; i < ids.length; i++) {
+						if (ids[i] > 0)
+							bag.add(Integer.valueOf(ids[i]));
+					}
+					profile.setRunBag(bag);
 					continue;
 				}
 
@@ -122,6 +173,22 @@ public class ProfileStore {
 			writer.newLine();
 			writer.write(String.format("NAME = %s", profile.getName()));
 			writer.newLine();
+			writer.write(String.format("COLLECTION = %s", formatCollection(profile)));
+			writer.newLine();
+			writer.write(String.format("CHAMPIONSHIP_WINS = %d", profile.getChampionshipWins()));
+			writer.newLine();
+			if (profile.hasChampionshipSave()) {
+				writer.write(String.format("RUN_ROUND = %d", profile.getRunRound()));
+				writer.newLine();
+				writer.write(String.format("RUN_WINS = %d", profile.getRunWins()));
+				writer.newLine();
+				writer.write(String.format("RUN_HAND = %s", formatCardIds(profile.getRunHand())));
+				writer.newLine();
+				writer.write(String.format("RUN_OPPONENT = %s", formatCardIds(profile.getRunOpponent())));
+				writer.newLine();
+				writer.write(String.format("RUN_BAG = %s", formatIdList(profile.getRunBag())));
+				writer.newLine();
+			}
 			writer.newLine();
 
 			for (int i = 0; i < profile.getDecks().size(); i++) {
@@ -166,6 +233,25 @@ public class ProfileStore {
 			}
 		}
 		return ids;
+	}
+
+	/**
+	 * Formats the championship collection as a comma-separated list.
+	 */
+	private static String formatCollection(Profile profile) {
+		return formatIdList(profile.getCollection());
+	}
+
+	/**
+	 * Formats a list of card IDs as a comma-separated list.
+	 */
+	private static String formatIdList(ArrayList<Integer> ids) {
+		if (ids == null || ids.isEmpty())
+			return "";
+		int[] array = new int[ids.size()];
+		for (int i = 0; i < array.length; i++)
+			array[i] = ids.get(i).intValue();
+		return formatCardIds(array);
 	}
 
 	/**

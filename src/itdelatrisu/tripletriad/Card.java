@@ -188,6 +188,22 @@ public class Card {
 	public int getLevel() { return level; }
 
 	/**
+	 * Returns whether any side is rank A (10).
+	 * @return true if the card has an A
+	 */
+	public boolean hasRankA() {
+		return rankTop == 10 || rankLeft == 10 || rankRight == 10 || rankBottom == 10;
+	}
+
+	/**
+	 * Returns the sum of the four ranks.
+	 * @return the sum
+	 */
+	public int rankSum() {
+		return rankTop + rankLeft + rankRight + rankBottom;
+	}
+
+	/**
 	 * Returns the card image.
 	 * @return the image
 	 */

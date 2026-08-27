@@ -30,12 +30,36 @@ public class Profile {
 	/** Saved decks. */
 	private final ArrayList<SavedDeck> decks;
 
+	/** Championship collection (card IDs, duplicates allowed). */
+	private final ArrayList<Integer> collection;
+
+	/** Completed championship runs. */
+	private int championshipWins;
+
+	/** Saved run round (0 = none; save starts at 2). */
+	private int runRound;
+
+	/** Saved run wins. */
+	private int runWins;
+
+	/** Saved 5-card hand for the current run match. */
+	private int[] runHand;
+
+	/** Saved opponent hand for the current run match. */
+	private int[] runOpponent;
+
+	/** Saved card bag for the current championship run. */
+	private final ArrayList<Integer> runBag;
+
 	/**
 	 * Creates an empty profile.
 	 */
 	public Profile() {
 		this.name = "";
 		this.decks = new ArrayList<SavedDeck>();
+		this.collection = new ArrayList<Integer>();
+		this.runBag = new ArrayList<Integer>();
+		this.championshipWins = 0;
 	}
 
 	/**
@@ -88,5 +112,179 @@ public class Profile {
 	 */
 	public void removeDeck(SavedDeck deck) {
 		decks.remove(deck);
+	}
+
+	/**
+	 * Returns the championship collection (card IDs).
+	 * @return the list
+	 */
+	public ArrayList<Integer> getCollection() { return collection; }
+
+	/**
+	 * Adds a card to the championship collection.
+	 * @param cardId the catalog ID
+	 */
+	public void addCard(int cardId) {
+		if (cardId > 0)
+			collection.add(Integer.valueOf(cardId));
+	}
+
+	/**
+	 * Empties the championship collection.
+	 */
+	public void clearCollection() {
+		collection.clear();
+	}
+
+	/**
+	 * Removes the first instance of a card ID from the collection.
+	 * @param cardId the catalog ID
+	 * @return true if a card was removed
+	 */
+	public boolean removeCard(int cardId) {
+		for (int i = 0; i < collection.size(); i++) {
+			if (collection.get(i).intValue() == cardId) {
+				collection.remove(i);
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Returns how many championships this profile has won.
+	 * @return the count
+	 */
+	public int getChampionshipWins() { return championshipWins; }
+
+	/**
+	 * Sets championship wins (used when loading).
+	 * @param wins the count
+	 */
+	public void setChampionshipWins(int wins) {
+		this.championshipWins = (wins < 0) ? 0 : wins;
+	}
+
+	/**
+	 * Records one completed championship.
+	 */
+	public void addChampionshipWin() {
+		championshipWins++;
+	}
+
+	/**
+	 * Returns whether a championship run can be continued (from match 2).
+	 * @return true if a save exists
+	 */
+	public boolean hasChampionshipSave() {
+		return runRound >= 2;
+	}
+
+	/**
+	 * Returns the saved run round.
+	 * @return the round, or 0
+	 */
+	public int getRunRound() { return runRound; }
+
+	/**
+	 * Sets the saved run round.
+	 * @param round the round
+	 */
+	public void setRunRound(int round) {
+		this.runRound = (round < 0) ? 0 : round;
+	}
+
+	/**
+	 * Returns the saved run wins.
+	 * @return the wins
+	 */
+	public int getRunWins() { return runWins; }
+
+	/**
+	 * Sets the saved run wins.
+	 * @param wins the wins
+	 */
+	public void setRunWins(int wins) {
+		this.runWins = (wins < 0) ? 0 : wins;
+	}
+
+	/**
+	 * Returns the saved run hand.
+	 * @return the IDs, or null
+	 */
+	public int[] getRunHand() {
+		return (runHand != null) ? runHand.clone() : null;
+	}
+
+	/**
+	 * Sets the saved run hand.
+	 * @param ids the IDs
+	 */
+	public void setRunHand(int[] ids) {
+		this.runHand = (ids != null) ? ids.clone() : null;
+	}
+
+	/**
+	 * Returns the saved opponent hand.
+	 * @return the IDs, or null
+	 */
+	public int[] getRunOpponent() {
+		return (runOpponent != null) ? runOpponent.clone() : null;
+	}
+
+	/**
+	 * Sets the saved opponent hand.
+	 * @param ids the IDs
+	 */
+	public void setRunOpponent(int[] ids) {
+		this.runOpponent = (ids != null) ? ids.clone() : null;
+	}
+
+	/**
+	 * Returns the saved championship run bag.
+	 * @return the list
+	 */
+	public ArrayList<Integer> getRunBag() { return runBag; }
+
+	/**
+	 * Replaces the saved championship run bag.
+	 * @param cards the IDs
+	 */
+	public void setRunBag(ArrayList<Integer> cards) {
+		runBag.clear();
+		if (cards == null)
+			return;
+		for (int i = 0; i < cards.size(); i++) {
+			int id = cards.get(i).intValue();
+			if (id > 0)
+				runBag.add(Integer.valueOf(id));
+		}
+	}
+
+	/**
+	 * Stores a championship run if it is at match 2 or later.
+	 * @param run the run
+	 */
+	public void storeChampionshipRun(ChampionshipRun run) {
+		if (run == null || run.getRound() < 2) {
+			clearChampionshipSave();
+			return;
+		}
+		this.runRound = run.getRound();
+		this.runWins = run.getWins();
+		this.runHand = run.getPlayerHandIds();
+		this.runOpponent = run.getOpponentHandIds();
+		setRunBag(run.getBag());
+	}
+
+	/**
+	 * Clears an in-progress championship save.
+	 */
+	public void clearChampionshipSave() {
+		this.runRound = 0;
+		this.runWins = 0;
+		this.runHand = null;
+		this.runOpponent = null;
+		runBag.clear();
 	}
 }

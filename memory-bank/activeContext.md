@@ -2,7 +2,7 @@
 
 Branch de trabalho típica: `feat/libgdx-java17`.
 
-Último marco: **Configurações** (música, som do cursor, idioma pt-BR/en/es), regras na seleção de deck e tela Como Jogar.
+Último marco: confirmação ao sair da partida (Esc) e aviso de progresso salvo no pick do Campeonato.
 
 ## Ao continuar
 
@@ -10,7 +10,7 @@ Branch de trabalho típica: `feat/libgdx-java17`.
 - Novas telas: implementar `ui.Screen` e um valor em `GameScreen`
 - Textos de UI: adicionar em `I18n` (PT/EN/ES), não hardcode
 - Assets novos: soltar em `res/` ou `cards/` e carregar pelo nome do arquivo
-- Campeonato / Versus: só quando o produto pedir; o menu já reserva as entradas
+- Versus: só quando o produto pedir; o menu já reserva a entrada
 
 ## Dívida conhecida
 

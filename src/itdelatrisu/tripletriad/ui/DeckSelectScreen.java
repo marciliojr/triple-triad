@@ -100,12 +100,24 @@ public class DeckSelectScreen extends Screen {
 		for (int row = scroll; row < total && row < scroll + visible; row++) {
 			float y = listTop + (row - scroll) * line;
 			boolean on = (focus == FOCUS_DECKS && row == selected);
-			String label = (row == 0) ? I18n.newDeck() : deckLabel(row - 1);
-			small.drawString(deckX, y, label, on ? Ui.SELECTED : Ui.HINT);
+			String label;
+			Color color;
+			if (row == 0) {
+				label = I18n.menuMyDeck();
+				boolean albumOk = game.hasAlbumDeck();
+				color = !albumOk ? Ui.DISABLED : (on ? Ui.SELECTED : Ui.HINT);
+			} else if (row == 1) {
+				label = I18n.newDeck();
+				color = on ? Ui.SELECTED : Ui.HINT;
+			} else {
+				label = deckLabel(row - 2);
+				color = on ? Ui.SELECTED : Ui.HINT;
+			}
+			small.drawString(deckX, y, label, color);
 			if (on)
 				drawCursor(deckX, y, small);
-			if (row > 0) {
-				SavedDeck deck = game.getProfile().getDecks().get(row - 1);
+			if (row > 1) {
+				SavedDeck deck = game.getProfile().getDecks().get(row - 2);
 				drawMiniCards(deck, y + small.getLineHeight() * 0.95f, deckX);
 			}
 		}
@@ -181,26 +193,28 @@ public class DeckSelectScreen extends Screen {
 		case Input.KEY_ENTER:
 			if (focus == FOCUS_RULES)
 				toggleSelectedRule();
-			else if (selected == 0) {
+			else if (selected == 0)
+				playAlbum();
+			else if (selected == 1) {
 				AudioController.Effect.SELECT.play();
 				game.showDeckBuilder(null);
 			} else {
-				playDeck(selected - 1);
+				playDeck(selected - 2);
 			}
 			break;
 		case Input.KEY_E:
-			if (focus != FOCUS_DECKS || selected == 0) {
+			if (focus != FOCUS_DECKS || selected < 2) {
 				AudioController.Effect.INVALID.play();
 			} else {
 				AudioController.Effect.SELECT.play();
-				game.showDeckBuilder(game.getProfile().getDecks().get(selected - 1));
+				game.showDeckBuilder(game.getProfile().getDecks().get(selected - 2));
 			}
 			break;
 		case Input.KEY_DELETE:
-			if (focus != FOCUS_DECKS || selected == 0)
+			if (focus != FOCUS_DECKS || selected < 2)
 				AudioController.Effect.INVALID.play();
 			else
-				deleteDeck(selected - 1);
+				deleteDeck(selected - 2);
 			break;
 		default:
 			break;
@@ -229,11 +243,13 @@ public class DeckSelectScreen extends Screen {
 			AudioController.playCursor();
 			return;
 		}
-		if (selected == 0) {
+		if (selected == 0)
+			playAlbum();
+		else if (selected == 1) {
 			AudioController.Effect.SELECT.play();
 			game.showDeckBuilder(null);
 		} else {
-			playDeck(selected - 1);
+			playDeck(selected - 2);
 		}
 	}
 
@@ -277,7 +293,16 @@ public class DeckSelectScreen extends Screen {
 	private int rowCount() {
 		Profile profile = game.getProfile();
 		int decks = (profile != null) ? profile.getDecks().size() : 0;
-		return 1 + decks;
+		return 2 + decks;
+	}
+
+	private void playAlbum() {
+		if (!game.hasAlbumDeck()) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		AudioController.Effect.SELECT.play();
+		game.showMyDeckPick();
 	}
 
 	private String deckLabel(int index) {

@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Random;
 
 import itdelatrisu.tripletriad.gfx.Log;
 import itdelatrisu.tripletriad.gfx.ResourceLoader;
@@ -197,10 +198,70 @@ public class Deck {
 			return;
 		}
 		ArrayList<Card> shuffled = new ArrayList<Card>(deck);
-		Collections.shuffle(shuffled);
+		Collections.shuffle(shuffled, new Random());
 		for (int i = 0; i < cards.length; i++) {
 			cards[i] = new Card(shuffled.get(i));
 			cards[i].setOwner(owner);
 		}
+	}
+
+	/**
+	 * Builds a 5-card starter pack with unique IDs and at least one rank A.
+	 * @return five card IDs, or an empty array if the catalog is too small
+	 */
+	public int[] createStarterPack() {
+		if (deck.size() < SavedDeck.SIZE)
+			return new int[0];
+		ArrayList<Card> shuffled = new ArrayList<Card>(deck);
+		Collections.shuffle(shuffled, new Random());
+		int[] ids = new int[SavedDeck.SIZE];
+		boolean hasA = false;
+		for (int i = 0; i < SavedDeck.SIZE; i++) {
+			ids[i] = shuffled.get(i).getID();
+			if (shuffled.get(i).hasRankA())
+				hasA = true;
+		}
+		if (!hasA) {
+			Card withA = null;
+			for (int i = 0; i < deck.size(); i++) {
+				if (deck.get(i).hasRankA()) {
+					withA = deck.get(i);
+					break;
+				}
+			}
+			if (withA != null)
+				ids[new Random().nextInt(SavedDeck.SIZE)] = withA.getID();
+		}
+		return ids;
+	}
+
+	/**
+	 * Picks five card IDs from a collection bag without repeating the same index.
+	 * Duplicate catalog IDs in the bag may still appear together.
+	 * @param bag collection card IDs
+	 * @return five IDs, or an empty array if the bag is too small
+	 */
+	public int[] pickRandomFromBag(ArrayList<Integer> bag) {
+		if (bag == null || bag.size() < SavedDeck.SIZE)
+			return new int[0];
+		ArrayList<Integer> shuffled = new ArrayList<Integer>(bag);
+		Collections.shuffle(shuffled, new Random());
+		int[] ids = new int[SavedDeck.SIZE];
+		for (int i = 0; i < SavedDeck.SIZE; i++)
+			ids[i] = shuffled.get(i).intValue();
+		return ids;
+	}
+
+	/**
+	 * Returns five unique random catalog IDs for an opponent hand.
+	 * @return the IDs
+	 */
+	public int[] createRandomHandIds() {
+		Card[] cards = new Card[SavedDeck.SIZE];
+		buildRandomHand(cards, TripleTriad.OPPONENT);
+		int[] ids = new int[SavedDeck.SIZE];
+		for (int i = 0; i < ids.length; i++)
+			ids[i] = (cards[i] != null) ? cards[i].getID() : 0;
+		return ids;
 	}
 }

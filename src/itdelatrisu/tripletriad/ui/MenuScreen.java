@@ -32,14 +32,14 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Main menu: Quick Game, how to play, settings, Championship (locked), Versus (locked).
+ * Main menu: Quick Game, Championship, My Deck, Versus (locked), how to play, settings.
  */
 public class MenuScreen extends Screen {
 	/** Number of menu entries. */
-	private static final int ITEM_COUNT = 5;
+	private static final int ITEM_COUNT = 6;
 
 	/** Whether each entry is playable. */
-	private static final boolean[] ENABLED = { true, true, true, false, false };
+	private static final boolean[] ENABLED = { true, true, true, false, true, true };
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -72,8 +72,8 @@ public class MenuScreen extends Screen {
 		if (game.getProfile() != null && game.getProfile().isValid())
 			Ui.drawCentered(small, game.getProfile().getName(), height * 0.19f, Ui.HINT);
 
-		float startY = height * 0.32f;
-		float line = font.getLineHeight() * 1.28f;
+		float startY = height * 0.28f;
+		float line = font.getLineHeight() * 1.18f;
 		for (int i = 0; i < ITEM_COUNT; i++) {
 			float y = startY + i * line;
 			boolean on = (i == selected);
@@ -142,18 +142,23 @@ public class MenuScreen extends Screen {
 		if (index == 0)
 			game.showDeckSelect();
 		else if (index == 1)
-			game.showHowToPlay();
+			game.showChampionship();
 		else if (index == 2)
+			game.showMyDeck();
+		else if (index == 4)
+			game.showHowToPlay();
+		else if (index == 5)
 			game.showSettings();
 	}
 
 	private String label(int index) {
 		switch (index) {
 			case 0: return I18n.menuQuick();
-			case 1: return I18n.menuHowTo();
-			case 2: return I18n.menuSettings();
-			case 3: return I18n.menuChampionship();
-			case 4: return I18n.menuVersus();
+			case 1: return I18n.menuChampionship();
+			case 2: return I18n.menuMyDeck();
+			case 3: return I18n.menuVersus();
+			case 4: return I18n.menuHowTo();
+			case 5: return I18n.menuSettings();
 			default: return "";
 		}
 	}
@@ -163,8 +168,8 @@ public class MenuScreen extends Screen {
 	 */
 	private int hitIndex(int y) {
 		UnicodeFont font = Options.getFont();
-		float startY = Options.getHeight() * 0.32f;
-		float line = font.getLineHeight() * 1.28f;
+		float startY = Options.getHeight() * 0.28f;
+		float line = font.getLineHeight() * 1.18f;
 		for (int i = 0; i < ITEM_COUNT; i++) {
 			float top = startY + i * line;
 			if (y >= top && y < top + font.getLineHeight())

@@ -12,11 +12,14 @@
 - [x] Painel de regras na seleção de deck
 - [x] Tela Como Jogar
 - [x] Configurações: música, som do cursor, idioma (pt-BR, en, es)
+- [x] Meu Deck (álbum permanente; preview; Del/X remove)
+- [x] Campeonato (8 rounds, lobby Novo/Continuar/Apagar progresso, bag da run, save no pick)
+- [x] Esc na partida pede confirmação (Não / Sim) para evitar toque acidental
+- [x] Aviso “progresso salvo” após Salvar no pick do Campeonato
 
 ## Não feito (de propósito)
 
-- [ ] Campeonato
 - [ ] Versus
-- [ ] Trade rules / coleção
+- [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões
 - [ ] Fat JAR / instalador
 - [ ] Testes automatizados do motor de captura

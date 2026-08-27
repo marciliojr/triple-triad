@@ -28,5 +28,7 @@ public enum GameScreen {
 	DECK_BUILDER,
 	HOW_TO_PLAY,
 	SETTINGS,
+	MY_DECK,
+	CHAMPIONSHIP,
 	MATCH
 }

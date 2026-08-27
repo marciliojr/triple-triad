@@ -45,6 +45,116 @@ public final class I18n {
 		return pick("Versus", "Versus", "Versus");
 	}
 
+	public static String menuMyDeck() {
+		return pick("Meu Deck", "My Deck", "Mi mazo");
+	}
+
+	public static String championshipHint() {
+		return pick("Novo jogo usa Meu Deck. Se estiver vazio, a 1\u00aa partida cria o pack.",
+			"New game uses My Deck. If it is empty, match 1 creates the pack.",
+			"Nuevo juego usa Mi mazo. Si est\u00e1 vac\u00edo, la 1\u00aa partida crea el sobre.");
+	}
+
+	public static String championshipCards(int n) {
+		return pick(n + " cartas", n + " cards", n + " cartas");
+	}
+
+	public static String championshipCups(int n) {
+		return pick(n + " campeonatos vencidos", n + " championships won", n + " campeonatos ganados");
+	}
+
+	public static String championshipNew() {
+		return pick("Novo", "New", "Nuevo");
+	}
+
+	public static String championshipNewGame() {
+		return pick("Novo jogo", "New game", "Nuevo juego");
+	}
+
+	public static String championshipContinue() {
+		return pick("Continuar", "Continue", "Continuar");
+	}
+
+	public static String championshipSave() {
+		return pick("Salvar", "Save", "Guardar");
+	}
+
+	public static String championshipSaved() {
+		return pick("Progresso do campeonato salvo.",
+			"Championship progress saved.",
+			"Progreso del campeonato guardado.");
+	}
+
+	public static String championshipClearProgress() {
+		return pick("Apagar progresso", "Clear progress", "Borrar progreso");
+	}
+
+	public static String championshipStart() {
+		return pick("Iniciar", "Start", "Empezar");
+	}
+
+	public static String hintChampionshipLobby() {
+		return pick("Cima/baixo escolhe    Enter confirma    Esc voltar",
+			"Up/down selects    Enter confirms    Esc back",
+			"Arriba/abajo elige    Enter confirma    Esc volver");
+	}
+
+	public static String championshipPackTitle() {
+		return pick("Seu pacote inicial", "Your starter pack", "Tu sobre inicial");
+	}
+
+	public static String championshipPackHint() {
+		return pick("Cinco cartas aleat\u00f3rias. Enter inicia a luta.",
+			"Five random cards. Enter starts the match.",
+			"Cinco cartas aleatorias. Enter inicia el combate.");
+	}
+
+	public static String championshipPickTitle() {
+		return pick("Escolha 5 cartas", "Choose 5 cards", "Elige 5 cartas");
+	}
+
+	public static String championshipRound(int round) {
+		return pick("Partida " + round, "Match " + round, "Partida " + round);
+	}
+
+	public static String championshipRoundOf(int round) {
+		return pick("Partida " + round + " / 8", "Match " + round + " / 8", "Partida " + round + " / 8");
+	}
+
+	public static String hintChampionshipPick() {
+		return pick("S salva    Z adiciona/remove    Enter jogar    Esc lobby",
+			"S save    Z add/remove    Enter play    Esc lobby",
+			"S guarda    Z a\u00f1ade/quita    Enter jugar    Esc lobby");
+	}
+
+	public static String championshipTradeWin() {
+		return pick("Voc\u00ea venceu. Escolha uma carta do advers\u00e1rio.",
+			"You won. Choose one of the opponent's cards.",
+			"Ganaste. Elige una carta del rival.");
+	}
+
+	public static String championshipTradeLose() {
+		return pick("A IA levou uma carta.",
+			"The AI took a card.",
+			"La IA se llev\u00f3 una carta.");
+	}
+
+	public static String championshipWon() {
+		return pick("Campeonato vencido", "Championship won", "Campeonato ganado");
+	}
+
+	public static String championshipLost() {
+		return pick("Campeonato encerrado", "Championship over", "Campeonato terminado");
+	}
+
+	public static String hintChampionshipConfirm() {
+		return pick("Enter continua    Esc menu", "Enter continues    Esc menu", "Enter sigue    Esc men\u00fa");
+	}
+
+	public static String hintChampionshipEnd() {
+		return pick("Esc volta ao menu", "Esc returns to the menu", "Esc vuelve al men\u00fa");
+	}
+
 	public static String comingSoon() {
 		return pick("  (Em breve)", "  (Coming soon)", "  (Pr\u00f3ximamente)");
 	}
@@ -57,6 +167,24 @@ public final class I18n {
 		return pick("Cima/baixo escolhe    Enter altera    Esc voltar",
 			"Up/down selects    Enter changes    Esc back",
 			"Arriba/abajo elige    Enter cambia    Esc volver");
+	}
+
+	public static String confirmLeaveMatch() {
+		return pick("Sair da partida?", "Leave the match?", "\u00bfSalir de la partida?");
+	}
+
+	public static String confirmLeaveYes() {
+		return pick("Sim", "Yes", "S\u00ed");
+	}
+
+	public static String confirmLeaveNo() {
+		return pick("N\u00e3o", "No", "No");
+	}
+
+	public static String hintLeaveConfirm() {
+		return pick("Cima/baixo escolhe    Enter confirma    Esc cancela",
+			"Up/down selects    Enter confirms    Esc cancels",
+			"Arriba/abajo elige    Enter confirma    Esc cancela");
 	}
 
 	public static String profilePrompt() {
@@ -83,6 +211,28 @@ public final class I18n {
 
 	public static String newDeck() {
 		return pick("+  Novo deck", "+  New deck", "+  Mazo nuevo");
+	}
+
+	public static String myDeckEmpty() {
+		return pick("Ganhe cartas no Campeonato para encher Meu Deck.",
+			"Win cards in Championship to fill My Deck.",
+			"Gana cartas en el Campeonato para llenar Mi mazo.");
+	}
+
+	public static String hintMyDeck() {
+		return pick("Z amplia    Del remove    Esc voltar",
+			"Z enlarges    Del removes    Esc back",
+			"Z amplia    Del quita    Esc volver");
+	}
+
+	public static String hintMyDeckPreview() {
+		return pick("Esc fecha    Del remove", "Esc closes    Del removes", "Esc cierra    Del quita");
+	}
+
+	public static String hintMyDeckPick() {
+		return pick("Z adiciona/remove    Enter jogar    Esc voltar",
+			"Z add/remove    Enter play    Esc back",
+			"Z a\u00f1ade/quita    Enter jugar    Esc volver");
 	}
 
 	public static String rulesTitle() {
@@ -232,7 +382,7 @@ public final class I18n {
 		"Morte s\u00fabita: empate inicia uma nova rodada com as cartas que cada um controlava.",
 		"",
 		"#Neste cliente",
-		"Jogue contra a IA no Jogo R\u00e1pido. Random, troca de cartas (One, Diff, Direct, All) e regras por regi\u00e3o ainda n\u00e3o entram nesta vers\u00e3o.",
+		"Jogue contra a IA no Jogo R\u00e1pido e no Campeonato. Random, troca cl\u00e1ssica (One, Diff, Direct, All) e regras por regi\u00e3o ainda n\u00e3o entram nesta vers\u00e3o.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -261,7 +411,7 @@ public final class I18n {
 		"Sudden Death: a draw starts a new round with the cards each player controlled.",
 		"",
 		"#In this client",
-		"Play against the AI in Quick Game. Random, card trading (One, Diff, Direct, All) and regional rules are not in this version.",
+		"Play against the AI in Quick Game and Championship. Random, classic card trading (One, Diff, Direct, All) and regional rules are not in this version.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -290,7 +440,7 @@ public final class I18n {
 		"Muerte s\u00fabita: el empate inicia una nueva ronda con las cartas que cada uno controlaba.",
 		"",
 		"#En este cliente",
-		"Juega contra la IA en Partida r\u00e1pida. Random, intercambio de cartas (One, Diff, Direct, All) y reglas por regi\u00f3n a\u00fan no entran en esta versi\u00f3n.",
+		"Juega contra la IA en Partida r\u00e1pida y en el Campeonato. Random, intercambio cl\u00e1sico (One, Diff, Direct, All) y reglas por regi\u00f3n a\u00fan no entran en esta versi\u00f3n.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

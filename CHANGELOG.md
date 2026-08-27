@@ -6,6 +6,32 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ## [Unreleased]
 
+- Esc na partida abre confirmação (Não / Sim; default Não) para evitar saída acidental
+- Aviso na tela ao salvar o progresso do Campeonato no pick
+- **Meu Deck**: álbum permanente (duplicatas ok; preview no tamanho da partida; Del remove)
+- Campeonato: **Novo jogo** (pack se o deck estiver vazio, senão pick do álbum), **Continuar**, **Apagar progresso** (não zera o deck)
+- Save da run: `RUN_ROUND` / `RUN_BAG` / `RUN_HAND` / `RUN_OPPONENT` (Salvar no pick)
+- Jogo Rápido pode montar 5 cartas a partir de Meu Deck
+- Empate no Campeonato refaz a luta com as 5 originais de cada lado (sem misturar donos)
+- Menu: Jogo Rápido, Campeonato, Meu Deck, Versus, Como Jogar, Configurações
+
+## [0.5.0] - 2026-08-26
+
+Modo Campeonato: gauntlet de 8 vitórias, coleção persistente e troca de cartas a partir da 2ª luta.
+
+### Added
+
+- Item de menu **Campeonato** (8 rounds contra a IA)
+- Coleção no perfil (`COLLECTION`, `CHAMPIONSHIP_WINS`), com duplicatas
+- Pacote inicial de 5 cartas com pelo menos um lado A
+- Troca de cartas da 2ª luta em diante (jogador escolhe; IA pega a de maior soma de ranks)
+- Lobby com as mesmas regras do Jogo Rápido
+
+### Changed
+
+- Esc no campeonato aborta a run sem aplicar o roubo da partida atual
+- F5 (rematch) só funciona no Jogo Rápido
+
 ## [0.4.0] - 2026-08-26
 
 Tela de Configurações, idioma da interface e regras na seleção de deck.

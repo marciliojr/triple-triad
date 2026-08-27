@@ -5,7 +5,7 @@ Implementação desktop do Triple Triad, o jogo de cartas de *Final Fantasy VIII
 Este repositório é um **fork** do projeto original de Jeffrey Han:
 **[itdelatrisu/triple-triad](https://github.com/itdelatrisu/triple-triad)**.
 
-O original entregava a partida contra a IA, com todas as regras clássicas. Daqui para frente o cliente está em Java 21 + libGDX, com perfil, decks, Jogo Rápido, Como Jogar e Configurações — sem reescrever o motor de captura.
+O original entregava a partida contra a IA, com todas as regras clássicas. Daqui para frente o cliente está em Java 21 + libGDX, com perfil, decks, Jogo Rápido, Campeonato, Como Jogar e Configurações — sem reescrever o motor de captura.
 
 Regras e tutorial: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad).
 
@@ -38,14 +38,15 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1, partida qu
 
 **Meta-jogo (não existia no original)**
 - Perfil obrigatório na primeira execução (`.triple-triad-profile`)
-- Menu principal: Jogo Rápido, Como Jogar, Configurações (Campeonato e Versus ainda como “Em breve”)
-- Construtor e seletor de decks de 5 cartas (criar, editar, apagar, jogar)
-- Regras da partida ligadas/desligadas na tela de Jogo Rápido
+- Menu principal: Jogo Rápido, Campeonato, Meu Deck, Versus (Em breve), Como Jogar, Configurações
+- Construtor e seletor de decks de 5 cartas (criar, editar, apagar, jogar); Jogo Rápido também pode usar Meu Deck
+- Regras da partida ligadas/desligadas na tela de Jogo Rápido e no lobby do Campeonato
+- Meu Deck: álbum permanente (cartas ganhas, duplicatas ok; Del remove; clique amplia)
 - Interface em português (Brasil), inglês e espanhol
 
 **Partida**
 - Same / Plus / Combo / Elemental / Sudden Death e as IAs **permanecem os do original**
-- Esc volta ao menu em vez de fechar o jogo; F5 refaz a partida com o mesmo deck
+- Esc na partida pede confirmação antes de voltar ao menu (evita toque acidental); F5 refaz a partida só no Jogo Rápido
 
 Detalhe das versões: [CHANGELOG.md](CHANGELOG.md).
 
@@ -72,13 +73,16 @@ O diretório de trabalho é a raiz: sprites, fontes e áudio em `res/`, catálog
 ## Fluxo do jogo
 
 1. **Perfil** — nome na primeira execução
-2. **Menu** — Jogo Rápido, Como Jogar, Configurações
+2. **Menu** — Jogo Rápido, Campeonato, Meu Deck, Versus (Em breve), Como Jogar, Configurações
 3. **Decks** — montar, editar, apagar ou escolher um deck de 5 cartas; ligar/desligar regras
-4. **Partida** — contra a IA
+4. **Campeonato** — 8 rounds contra a IA; Meu Deck é o álbum; save da run no pick
+5. **Partida** — contra a IA; Esc pede confirmação para sair
 
-Vídeo, volume, FPS, fonte, regras, música, som do cursor e idioma: `.triple-triad.cfg` (criado na primeira execução). Erros: `.triple-triad.log`.
+Vídeo, volume, FPS, fonte, regras, música, som do cursor e idioma: `.triple-triad.cfg` (criado na primeira execução). Perfil, decks do Jogo Rápido e coleção do Campeonato: `.triple-triad-profile`. Erros: `.triple-triad.log`.
 
 Em **Configurações** dá para ligar/desligar a música de fundo e o som do cursor, e escolher o idioma (pt-BR, inglês, espanhol).
+
+No **Campeonato**, o lobby tem **Novo jogo**, **Continuar** e **Apagar progresso**. Se Meu Deck estiver vazio, a 1ª partida cria o pack e grava no álbum; se já houver 5+ cartas, Novo jogo abre o pick. Continuar retoma a partida salva. **Apagar progresso** limpa só a run (`RUN_*`), não o deck. Vitória adiciona a carta ao álbum e à bag da run; derrota tira só da run. **Salvar** no pick grava a partida e mostra que o progresso foi salvo. Em **Meu Deck** dá para ampliar e **Del** remove uma cópia.
 
 ## Controles
 
@@ -91,9 +95,9 @@ Além do mouse:
 | Cancelar | X ou Backspace |
 | Rematch (mesmo deck) | F5 |
 | Lance automático (IA do jogador) | F1 |
-| Voltar / sair | Esc |
+| Voltar / sair | Esc (na partida, pede confirmação) |
 
-No construtor de deck: **Z** adiciona/remove carta, **S** salva, **Enter** joga. Na lista: **E** edita, **Del** apaga. Em Configurações: **Enter** liga/desliga; setas esquerda/direita mudam o idioma.
+No construtor de deck: **Z** adiciona/remove carta, **S** salva, **Enter** joga. Na lista: **Meu Deck** (5 do álbum), **Novo deck**, **E** edita, **Del** apaga. Em Configurações: **Enter** liga/desliga; setas esquerda/direita mudam o idioma. Em Meu Deck: **Z**/clique amplia, **Del**/**X** remove. No Campeonato: **Novo jogo**, **Continuar** ou **Apagar progresso**; da 2ª em diante **S** / **Salvar** grava a run e confirma na tela. Na partida: **Esc** abre Não/Sim (default Não).
 
 ## Licença
 
