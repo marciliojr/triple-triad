@@ -6,7 +6,7 @@
 - Gradle Wrapper 9.1.0 (o daemon sobe em JVM 17–25; o jogo exige 21)
 - `./gradlew run` com `workingDir` na raiz
 - Dependências no Maven Central: libGDX 1.14.2, backend `lwjgl3`, `natives-desktop`, FreeType
-- Versão do projeto em `gradle.properties` (`version=0.7.0`)
+- Versão do projeto em `gradle.properties` (`version=1.0.0`)
 - Entry point: `itdelatrisu.tripletriad.TripleTriad`
 - `./gradlew distZip` empacota `res/` e `cards/` junto com o jar
 

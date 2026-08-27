@@ -105,7 +105,7 @@ public class UnicodeFont {
 		if (font == null || text == null)
 			return 0;
 		layout.setText(font, text);
-		return (int) layout.width;
+		return (int) Math.ceil(layout.width);
 	}
 
 	/**

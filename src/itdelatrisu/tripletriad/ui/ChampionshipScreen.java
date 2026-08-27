@@ -31,6 +31,7 @@ import itdelatrisu.tripletriad.SavedDeck;
 import itdelatrisu.tripletriad.TripleTriad;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import itdelatrisu.tripletriad.gfx.Color;
 import itdelatrisu.tripletriad.gfx.GameContainer;
@@ -407,7 +408,6 @@ public class ChampionshipScreen extends Screen {
 	private void renderPick(GameContainer container, Graphics g) {
 		UnicodeFont font = Options.getFont();
 		UnicodeFont small = Options.getSmallFont();
-		int width = container.getWidth();
 		int height = container.getHeight();
 		ChampionshipRun run = game.getChampionshipRun();
 		int round = (run != null) ? run.getRound() : 1;
@@ -415,31 +415,16 @@ public class ChampionshipScreen extends Screen {
 		Ui.drawCentered(small, I18n.championshipRoundOf(round) + "    " + I18n.cardCount(selected.size()),
 			height * 0.09f, Ui.HINT);
 
-		float slotSize = Options.getCardLength() * 0.32f;
-		float slotGap = slotSize * 0.12f;
-		float slotsW = 5 * slotSize + 4 * slotGap;
-		float slotsX = (width - slotsW) / 2f;
-		float slotsY = height * 0.14f;
 		Deck catalog = game.getDeck();
 		ArrayList<Integer> bag = collection();
-		for (int i = 0; i < 5; i++) {
-			float x = slotsX + i * (slotSize + slotGap);
-			g.setColor(Ui.DISABLED);
-			g.drawRect(x, slotsY, slotSize, slotSize);
-			if (i < selected.size()) {
-				int id = bag.get(selected.get(i).intValue()).intValue();
-				Card card = catalog.getCardById(id);
-				if (card != null)
-					card.drawSized(x, slotsY, slotSize, true, false);
-			}
-		}
+		Ui.drawHandSlots(g, catalog, Ui.idsFromBag(bag, selected));
 
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		int gridX = (width - cols * (gridSize + gap) + gap) / 2;
-		int gridY = (int) (slotsY + slotSize + height * 0.04f);
-		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.18f)) / (gridSize + gap));
+		int gridX = Ui.pickGridX(cols, gridSize, gap);
+		int gridY = (int) Ui.handGridY();
+		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.12f)) / (gridSize + gap));
 		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
 		clampScroll(rows, visibleRows, cols);
 
@@ -462,17 +447,19 @@ public class ChampionshipScreen extends Screen {
 				}
 			}
 		}
+		int cursorId = (cursor >= 0 && cursor < bag.size()) ? bag.get(cursor).intValue() : 0;
+		Ui.drawCursorCardPanel(g, catalog, cursorId);
 		boolean canSave = game.canChampionshipSave();
 		String saveLabel = I18n.championshipSave();
-		float saveX = (width - small.getWidth(saveLabel)) / 2f;
-		float saveY = height * 0.86f;
-		small.drawString(saveX, saveY, saveLabel, canSave ? Ui.TITLE : Ui.DISABLED);
-		if (System.currentTimeMillis() < saveNoticeUntil)
-			Ui.drawCentered(small, I18n.championshipSaved(), height * 0.80f, Ui.TITLE);
+		Ui.drawPanelLabel(g, saveLabel, Ui.panelActionY(), canSave ? Ui.TITLE : Ui.DISABLED);
 		if (previewOpen && cursor >= 0 && cursor < bag.size())
 			Ui.drawCardPreview(g, catalog, bag.get(cursor).intValue());
+		float hintY = height * 0.88f;
 		Ui.drawCentered(small, previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipPick(),
-			height * 0.93f, Ui.HINT);
+			hintY, Ui.HINT);
+		if (System.currentTimeMillis() < saveNoticeUntil)
+			Ui.drawCentered(small, I18n.championshipSaved(),
+				height * 0.93f, Ui.TITLE);
 	}
 
 	private void renderTradeWin(GameContainer container, Graphics g) {
@@ -697,6 +684,9 @@ public class ChampionshipScreen extends Screen {
 		case Input.KEY_S:
 			tryPickSave();
 			break;
+		case Input.KEY_R:
+			fillRandom();
+			break;
 		case Input.KEY_ENTER:
 			confirmPickHand();
 			break;
@@ -779,8 +769,29 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private void mousePick(int x, int y) {
+		if (Ui.hitRandomLabel(x, y)) {
+			fillRandom();
+			return;
+		}
 		if (hitSaveLabel(x, y)) {
 			tryPickSave();
+			return;
+		}
+		if (Ui.hitCursorCard(x, y)) {
+			if (cursor >= 0 && cursor < collection().size()) {
+				previewOpen = true;
+				AudioController.Effect.SELECT.play();
+			} else {
+				AudioController.Effect.INVALID.play();
+			}
+			return;
+		}
+		int slot = Ui.hitHandSlot(x, y);
+		if (slot >= 0) {
+			if (slot < selected.size()) {
+				selected.remove(slot);
+				AudioController.Effect.BACK.play();
+			}
 			return;
 		}
 		int index = hitGrid(x, y);
@@ -792,6 +803,22 @@ public class ChampionshipScreen extends Screen {
 			return;
 		}
 		togglePick();
+	}
+
+	private void fillRandom() {
+		ArrayList<Integer> bag = collection();
+		if (bag.size() < SavedDeck.SIZE) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		ArrayList<Integer> idx = new ArrayList<Integer>();
+		for (int i = 0; i < bag.size(); i++)
+			idx.add(Integer.valueOf(i));
+		Collections.shuffle(idx);
+		selected.clear();
+		for (int i = 0; i < SavedDeck.SIZE; i++)
+			selected.add(idx.get(i));
+		AudioController.Effect.SELECT.play();
 	}
 
 	private void confirmPickHand() {
@@ -889,12 +916,7 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private boolean hitSaveLabel(int x, int y) {
-		UnicodeFont small = Options.getSmallFont();
-		String label = I18n.championshipSave();
-		float lx = (Options.getWidth() - small.getWidth(label)) / 2f;
-		float ly = Options.getHeight() * 0.86f;
-		return x >= lx && x <= lx + small.getWidth(label)
-			&& y >= ly && y <= ly + small.getLineHeight();
+		return Ui.hitPanelLabel(I18n.championshipSave(), Ui.panelActionY(), x, y);
 	}
 
 	private boolean hasSave() {
@@ -980,7 +1002,7 @@ public class ChampionshipScreen extends Screen {
 	private int columns() {
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		return Math.max(5, (Options.getWidth() - 80) / (gridSize + gap));
+		return Ui.pickGridColumns(gridSize, gap);
 	}
 
 	private int cellSize() {
@@ -1005,9 +1027,8 @@ public class ChampionshipScreen extends Screen {
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		int gridX = (Options.getWidth() - cols * (gridSize + gap) + gap) / 2;
-		float slotSize = Options.getCardLength() * 0.32f;
-		int gridY = (int) (Options.getHeight() * 0.14f + slotSize + Options.getHeight() * 0.04f);
+		int gridX = Ui.pickGridX(cols, gridSize, gap);
+		int gridY = (int) Ui.handGridY();
 		if (x < gridX || y < gridY)
 			return -1;
 		int col = (x - gridX) / (gridSize + gap);

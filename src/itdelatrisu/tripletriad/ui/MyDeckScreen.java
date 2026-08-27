@@ -28,6 +28,7 @@ import itdelatrisu.tripletriad.SavedDeck;
 import itdelatrisu.tripletriad.TripleTriad;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import itdelatrisu.tripletriad.gfx.Color;
 import itdelatrisu.tripletriad.gfx.GameContainer;
@@ -60,6 +61,15 @@ public class MyDeckScreen extends Screen {
 	/** Selected album indices (pick mode, max 5). */
 	private final ArrayList<Integer> selected = new ArrayList<Integer>();
 
+	/** True while the album-delete confirmation is open. */
+	private boolean deleteConfirm;
+
+	/** 0 = No, 1 = Yes. */
+	private int deleteChoice;
+
+	/** Album index pending deletion. */
+	private int deleteIndex = -1;
+
 	/**
 	 * Constructor.
 	 * @param game the game
@@ -82,6 +92,7 @@ public class MyDeckScreen extends Screen {
 		scrollRow = 0;
 		previewIndex = -1;
 		selected.clear();
+		clearDeleteConfirm();
 	}
 
 	/**
@@ -93,6 +104,7 @@ public class MyDeckScreen extends Screen {
 		scrollRow = 0;
 		previewIndex = -1;
 		selected.clear();
+		clearDeleteConfirm();
 	}
 
 	@Override
@@ -100,7 +112,6 @@ public class MyDeckScreen extends Screen {
 		Ui.drawBackdrop(g);
 		UnicodeFont font = Options.getFont();
 		UnicodeFont small = Options.getSmallFont();
-		int width = container.getWidth();
 		int height = container.getHeight();
 		ArrayList<Integer> bag = album();
 
@@ -112,24 +123,41 @@ public class MyDeckScreen extends Screen {
 		else
 			Ui.drawCentered(small, I18n.championshipCards(bag.size()), height * 0.10f, Ui.HINT);
 
-		if (!bag.isEmpty())
-			drawGrid(g, bag, width, height);
+		if (mode == MODE_PICK) {
+			Ui.drawHandSlots(g, game.getDeck(), Ui.idsFromBag(bag, selected));
+			if (!bag.isEmpty())
+				drawPickGrid(g, bag, height);
+			int cursorId = (cursor >= 0 && cursor < bag.size()) ? bag.get(cursor).intValue() : 0;
+			Ui.drawCursorCardPanel(g, game.getDeck(), cursorId, true);
+		} else if (!bag.isEmpty()) {
+			drawGrid(g, bag, height);
+			int cursorId = (cursor >= 0 && cursor < bag.size()) ? bag.get(cursor).intValue() : 0;
+			Ui.drawCursorCardPanel(g, game.getDeck(), cursorId, false);
+		}
 
 		if (previewIndex >= 0 && previewIndex < bag.size())
 			Ui.drawCardPreview(g, game.getDeck(), bag.get(previewIndex).intValue());
 
-		String hint;
-		if (previewIndex >= 0)
-			hint = (mode == MODE_GALLERY) ? I18n.hintMyDeckPreview() : I18n.hintCardPreview();
-		else if (mode == MODE_PICK)
-			hint = I18n.hintMyDeckPick();
-		else
-			hint = I18n.hintMyDeck();
-		Ui.drawCentered(small, hint, height * 0.93f, Ui.HINT);
+		if (deleteConfirm)
+			Ui.drawYesNoConfirm(g, deleteTitle(), deleteChoice);
+		else {
+			String hint;
+			if (previewIndex >= 0)
+				hint = (mode == MODE_GALLERY) ? I18n.hintMyDeckPreview() : I18n.hintCardPreview();
+			else if (mode == MODE_PICK)
+				hint = I18n.hintMyDeckPick();
+			else
+				hint = I18n.hintMyDeck();
+			Ui.drawCentered(small, hint, height * 0.93f, Ui.HINT);
+		}
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
+		if (deleteConfirm) {
+			handleDeleteConfirmKey(key);
+			return;
+		}
 		ArrayList<Integer> bag = album();
 		if (previewIndex >= 0) {
 			if (key == Input.KEY_LEFT) {
@@ -149,7 +177,7 @@ public class MyDeckScreen extends Screen {
 				AudioController.Effect.BACK.play();
 			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
 				if (mode == MODE_GALLERY)
-					removeCursorCard();
+					beginDeleteConfirm();
 				else
 					removeFromPick();
 			} else if (key == Input.KEY_Z && mode == MODE_PICK) {
@@ -208,11 +236,15 @@ public class MyDeckScreen extends Screen {
 		case Input.KEY_C:
 			openPreview();
 			break;
+		case Input.KEY_R:
+			if (mode == MODE_PICK)
+				fillRandom();
+			break;
 		case Input.KEY_DELETE:
 		case Input.KEY_X:
 		case Input.KEY_BACK:
 			if (mode == MODE_GALLERY)
-				removeCursorCard();
+				beginDeleteConfirm();
 			else
 				removeFromPick();
 			break;
@@ -225,9 +257,31 @@ public class MyDeckScreen extends Screen {
 	public void mousePressed(int button, int x, int y) {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
+		if (deleteConfirm) {
+			handleDeleteConfirmClick(y);
+			return;
+		}
 		if (previewIndex >= 0) {
 			previewIndex = -1;
 			AudioController.Effect.BACK.play();
+			return;
+		}
+		if (mode == MODE_PICK) {
+			if (Ui.hitRandomLabel(x, y)) {
+				fillRandom();
+				return;
+			}
+			int slot = Ui.hitHandSlot(x, y);
+			if (slot >= 0) {
+				if (slot < selected.size()) {
+					selected.remove(slot);
+					AudioController.Effect.BACK.play();
+				}
+				return;
+			}
+		}
+		if (Ui.hitCursorCard(x, y)) {
+			openPreview();
 			return;
 		}
 		int index = hitGrid(x, y);
@@ -246,7 +300,7 @@ public class MyDeckScreen extends Screen {
 
 	@Override
 	public void mouseWheelMoved(int change) {
-		if (previewIndex >= 0)
+		if (deleteConfirm || previewIndex >= 0)
 			return;
 		ArrayList<Integer> bag = album();
 		int cols = columns();
@@ -280,7 +334,7 @@ public class MyDeckScreen extends Screen {
 		AudioController.Effect.BACK.play();
 	}
 
-	private void removeCursorCard() {
+	private void beginDeleteConfirm() {
 		if (mode != MODE_GALLERY)
 			return;
 		ArrayList<Integer> bag = album();
@@ -289,13 +343,86 @@ public class MyDeckScreen extends Screen {
 			AudioController.Effect.INVALID.play();
 			return;
 		}
-		int cardId = bag.get(index).intValue();
+		deleteIndex = index;
+		deleteChoice = 0;
+		deleteConfirm = true;
+		AudioController.Effect.SELECT.play();
+	}
+
+	private void handleDeleteConfirmKey(int key) {
+		switch (key) {
+		case Input.KEY_UP:
+		case Input.KEY_DOWN:
+			deleteChoice = 1 - deleteChoice;
+			AudioController.playCursor();
+			break;
+		case Input.KEY_ESCAPE:
+		case Input.KEY_X:
+		case Input.KEY_BACK:
+			clearDeleteConfirm();
+			AudioController.Effect.BACK.play();
+			break;
+		case Input.KEY_Z:
+		case Input.KEY_ENTER:
+			if (deleteChoice == 1)
+				commitDelete();
+			else {
+				clearDeleteConfirm();
+				AudioController.Effect.BACK.play();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	private void handleDeleteConfirmClick(int y) {
+		int hit = Ui.hitYesNoConfirm(y);
+		if (hit < 0)
+			return;
+		if (hit != deleteChoice) {
+			deleteChoice = hit;
+			AudioController.playCursor();
+			return;
+		}
+		if (deleteChoice == 1)
+			commitDelete();
+		else {
+			clearDeleteConfirm();
+			AudioController.Effect.BACK.play();
+		}
+	}
+
+	private void commitDelete() {
+		ArrayList<Integer> bag = album();
+		if (deleteIndex < 0 || deleteIndex >= bag.size()) {
+			clearDeleteConfirm();
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		int cardId = bag.get(deleteIndex).intValue();
 		game.removeAlbumCard(cardId);
 		previewIndex = -1;
+		clearDeleteConfirm();
 		AudioController.Effect.BACK.play();
 		bag = album();
 		if (cursor >= bag.size())
 			cursor = Math.max(0, bag.size() - 1);
+	}
+
+	private void clearDeleteConfirm() {
+		deleteConfirm = false;
+		deleteChoice = 0;
+		deleteIndex = -1;
+	}
+
+	private String deleteTitle() {
+		ArrayList<Integer> bag = album();
+		if (deleteIndex < 0 || deleteIndex >= bag.size())
+			return I18n.confirmRemoveAlbum("");
+		Card card = game.getDeck().getCardById(bag.get(deleteIndex).intValue());
+		String name = (card != null) ? card.getName() : "";
+		return I18n.confirmRemoveAlbum(name);
 	}
 
 	private void togglePick() {
@@ -315,6 +442,24 @@ public class MyDeckScreen extends Screen {
 		}
 	}
 
+	private void fillRandom() {
+		if (mode != MODE_PICK)
+			return;
+		ArrayList<Integer> bag = album();
+		if (bag.size() < SavedDeck.SIZE) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		ArrayList<Integer> idx = new ArrayList<Integer>();
+		for (int i = 0; i < bag.size(); i++)
+			idx.add(Integer.valueOf(i));
+		Collections.shuffle(idx);
+		selected.clear();
+		for (int i = 0; i < SavedDeck.SIZE; i++)
+			selected.add(idx.get(i));
+		AudioController.Effect.SELECT.play();
+	}
+
 	private void confirmPick() {
 		if (selected.size() != SavedDeck.SIZE) {
 			AudioController.Effect.INVALID.play();
@@ -328,35 +473,46 @@ public class MyDeckScreen extends Screen {
 		game.startQuickMatch(ids);
 	}
 
-	private void drawGrid(Graphics g, ArrayList<Integer> bag, int width, int height) {
+	private void drawGrid(Graphics g, ArrayList<Integer> bag, int height) {
 		Deck catalog = game.getDeck();
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		float slotSize = Options.getCardLength() * 0.32f;
-		int gridY = (int) (height * ((mode == MODE_PICK) ? 0.18f : 0.16f));
-		if (mode == MODE_PICK) {
-			float slotGap = slotSize * 0.12f;
-			float slotsW = 5 * slotSize + 4 * slotGap;
-			float slotsX = (width - slotsW) / 2f;
-			float slotsY = height * 0.14f;
-			for (int i = 0; i < 5; i++) {
-				float x = slotsX + i * (slotSize + slotGap);
-				g.setColor(Ui.DISABLED);
-				g.drawRect(x, slotsY, slotSize, slotSize);
-				if (i < selected.size()) {
-					int id = bag.get(selected.get(i).intValue()).intValue();
-					Card card = catalog.getCardById(id);
-					if (card != null)
-						card.drawSized(x, slotsY, slotSize, true, false);
-				}
-			}
-			gridY = (int) (slotsY + slotSize + height * 0.03f);
-		}
+		int gridY = (int) (height * 0.16f);
 		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.12f)) / (gridSize + gap));
 		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
 		clampScroll(rows, visibleRows, cols);
-		int gridX = (width - cols * (gridSize + gap) + gap) / 2;
+		int gridX = Ui.pickGridX(cols, gridSize, gap);
+		for (int row = scrollRow; row < rows && row < scrollRow + visibleRows; row++) {
+			for (int col = 0; col < cols; col++) {
+				int index = row * cols + col;
+				if (index >= bag.size())
+					break;
+				Card card = catalog.getCardById(bag.get(index).intValue());
+				float x = gridX + col * (gridSize + gap);
+				float y = gridY + (row - scrollRow) * (gridSize + gap);
+				if (card != null)
+					card.drawSized(x, y, gridSize, true, false);
+				if (index == cursor) {
+					g.setColor(Ui.TITLE);
+					g.setLineWidth(2f);
+					g.drawRect(x - 2, y - 2, gridSize + 4, gridSize + 4);
+					g.setLineWidth(1f);
+				}
+			}
+		}
+	}
+
+	private void drawPickGrid(Graphics g, ArrayList<Integer> bag, int height) {
+		Deck catalog = game.getDeck();
+		int cols = columns();
+		int gridSize = cellSize();
+		int gap = Math.max(4, gridSize / 12);
+		int gridY = (int) Ui.handGridY();
+		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.12f)) / (gridSize + gap));
+		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
+		clampScroll(rows, visibleRows, cols);
+		int gridX = Ui.pickGridX(cols, gridSize, gap);
 		for (int row = scrollRow; row < rows && row < scrollRow + visibleRows; row++) {
 			for (int col = 0; col < cols; col++) {
 				int index = row * cols + col;
@@ -367,7 +523,7 @@ public class MyDeckScreen extends Screen {
 				float y = gridY + (row - scrollRow) * (gridSize + gap);
 				boolean inHand = selected.contains(Integer.valueOf(index));
 				if (card != null)
-					card.drawSized(x, y, gridSize, inHand || mode == MODE_GALLERY, mode == MODE_PICK && !inHand);
+					card.drawSized(x, y, gridSize, inHand, !inHand);
 				if (index == cursor) {
 					g.setColor(Ui.TITLE);
 					g.setLineWidth(2f);
@@ -388,7 +544,7 @@ public class MyDeckScreen extends Screen {
 	private int columns() {
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		return Math.max(5, (Options.getWidth() - 80) / (gridSize + gap));
+		return Ui.pickGridColumns(gridSize, gap);
 	}
 
 	private int cellSize() {
@@ -414,15 +570,16 @@ public class MyDeckScreen extends Screen {
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
 		int height = Options.getHeight();
-		int width = Options.getWidth();
-		float slotSize = Options.getCardLength() * 0.32f;
-		int gridY = (int) (height * 0.16f);
+		int gridY;
+		int gridX;
 		if (mode == MODE_PICK) {
-			float slotsY = height * 0.14f;
-			gridY = (int) (slotsY + slotSize + height * 0.03f);
+			gridY = (int) Ui.handGridY();
+			gridX = Ui.pickGridX(cols, gridSize, gap);
+		} else {
+			gridY = (int) (height * 0.16f);
+			gridX = Ui.pickGridX(cols, gridSize, gap);
 		}
 		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.12f)) / (gridSize + gap));
-		int gridX = (width - cols * (gridSize + gap) + gap) / 2;
 		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
 		clampScroll(rows, visibleRows, cols);
 		for (int row = scrollRow; row < rows && row < scrollRow + visibleRows; row++) {

@@ -30,4 +30,4 @@ Campeonato: `ChampionshipRun` (round, mãos, bag da run, IA por round). Álbum e
 
 ## Input
 
-Constantes `gfx.Input` = códigos libGDX. Mapa da UI: **Z** seleciona, **X**/Del remove, **C** amplia (`Ui.drawCardPreview`), **Esc** volta. Nos menus Z e Enter confirmam. Na partida, Esc abre overlay de confirmação (Não / Sim; default Não); **X** cancela a casa do tabuleiro. F5 rematch só no Jogo Rápido.
+Constantes `gfx.Input` = códigos libGDX. Mapa da UI: **Z** seleciona, **X**/Del remove, **C** amplia (`Ui.drawCardPreview`), **R** preenche 5 cartas aleatórias no construtor e nos picks (Jogo Rápido / Campeonato), **Esc** volta. Nos menus Z e Enter confirmam. Na galeria Meu Deck, o painel direito mostra a carta média do cursor (como no pick); C continua overlay; X/Del pede confirmação (Não / Sim; default Não) antes de apagar uma cópia do álbum; no construtor e nos picks X só tira da mão de 5. Na partida, Esc abre overlay de confirmação (Não / Sim; default Não); **X** cancela a casa do tabuleiro. F5 rematch só no Jogo Rápido.
