@@ -30,6 +30,7 @@ import itdelatrisu.tripletriad.ui.HowToPlayScreen;
 import itdelatrisu.tripletriad.ui.MenuScreen;
 import itdelatrisu.tripletriad.ui.MyDeckScreen;
 import itdelatrisu.tripletriad.ui.ProfileScreen;
+import itdelatrisu.tripletriad.ui.ProfilesScreen;
 import itdelatrisu.tripletriad.ui.Screen;
 import itdelatrisu.tripletriad.ui.SettingsScreen;
 import itdelatrisu.tripletriad.ui.Ui;
@@ -132,8 +133,13 @@ public class TripleTriad extends BasicGame {
 	/** Player profile. */
 	private Profile profile;
 
+	/** Active profile file id. */
+	private int profileId;
+
 	/** Menu screens. */
-	private Screen profileScreen, menuScreen, deckSelectScreen, howToPlayScreen, settingsScreen;
+	private ProfileScreen profileScreen;
+	private Screen menuScreen, deckSelectScreen, howToPlayScreen, settingsScreen;
+	private ProfilesScreen profilesScreen;
 	private DeckBuilderScreen deckBuilderScreen;
 	private ChampionshipScreen championshipScreen;
 	private MyDeckScreen myDeckScreen;
@@ -207,6 +213,7 @@ public class TripleTriad extends BasicGame {
 		this.deck = new Deck();
 
 		this.profileScreen = new ProfileScreen(this);
+		this.profilesScreen = new ProfilesScreen(this);
 		this.menuScreen = new MenuScreen(this);
 		this.deckSelectScreen = new DeckSelectScreen(this);
 		this.deckBuilderScreen = new DeckBuilderScreen(this);
@@ -215,7 +222,7 @@ public class TripleTriad extends BasicGame {
 		this.championshipScreen = new ChampionshipScreen(this);
 		this.myDeckScreen = new MyDeckScreen(this);
 
-		this.profile = ProfileStore.load();
+		loadActiveProfile();
 		if (profile != null && profile.isValid())
 			showMenu();
 		else
@@ -511,7 +518,8 @@ public class TripleTriad extends BasicGame {
 	public void keyPressed(int key, char c) {
 		if (currentScreen != GameScreen.MATCH) {
 			if (key == Input.KEY_ESCAPE &&
-				(currentScreen == GameScreen.MENU || currentScreen == GameScreen.PROFILE)) {
+				(currentScreen == GameScreen.MENU
+					|| (currentScreen == GameScreen.PROFILE && profileScreen.quitsOnEscape()))) {
 				Options.saveOptions();
 				container.exit();
 				return;
@@ -926,6 +934,7 @@ public class TripleTriad extends BasicGame {
 	private Screen getActiveScreen() {
 		switch (currentScreen) {
 			case PROFILE: return profileScreen;
+			case PROFILES: return profilesScreen;
 			case DECK_SELECT: return deckSelectScreen;
 			case DECK_BUILDER: return deckBuilderScreen;
 			case HOW_TO_PLAY: return howToPlayScreen;
@@ -950,29 +959,182 @@ public class TripleTriad extends BasicGame {
 	public Profile getProfile() { return profile; }
 
 	/**
+	 * Returns the active profile id.
+	 * @return the id, or 0
+	 */
+	public int getProfileId() { return profileId; }
+
+	/**
 	 * Persists the current profile to disk.
 	 */
 	public void saveProfile() {
-		ProfileStore.save(profile);
+		ProfileStore.save(profileId, profile);
 	}
 
 	/**
-	 * Creates a new profile and opens the menu.
+	 * Creates the first profile and opens the menu.
 	 * @param name the player name
+	 * @return true if created
 	 */
-	public void createProfile(String name) {
+	public boolean createProfile(String name) {
+		if (!canUseProfileName(name, 0))
+			return false;
+		int id = ProfileStore.nextId();
 		profile = new Profile();
 		profile.setName(name);
-		ProfileStore.save(profile);
+		profileId = id;
+		Options.setActiveProfileId(id);
+		Options.saveOptions();
+		ProfileStore.save(id, profile);
 		showMenu();
+		return true;
 	}
 
 	/**
-	 * Shows the profile creation screen.
+	 * Creates an extra profile, switches to it, and opens the menu.
+	 * @param name the player name
+	 * @return true if created
+	 */
+	public boolean createAdditionalProfile(String name) {
+		if (!canUseProfileName(name, 0))
+			return false;
+		saveProfile();
+		int id = ProfileStore.nextId();
+		profile = new Profile();
+		profile.setName(name);
+		profileId = id;
+		clearMatchState();
+		Options.setActiveProfileId(id);
+		Options.saveOptions();
+		ProfileStore.save(id, profile);
+		showMenu();
+		return true;
+	}
+
+	/**
+	 * Renames the active profile.
+	 * @param name the new name
+	 * @return true if renamed
+	 */
+	public boolean renameProfile(String name) {
+		if (profile == null || !canUseProfileName(name, profileId))
+			return false;
+		profile.setName(name);
+		saveProfile();
+		showSettings();
+		return true;
+	}
+
+	/**
+	 * Switches to another profile and opens the menu.
+	 * @param id the profile id
+	 * @return true if switched
+	 */
+	public boolean switchProfile(int id) {
+		if (id <= 0 || id == profileId)
+			return id == profileId;
+		saveProfile();
+		Profile next = ProfileStore.load(id);
+		if (next == null || !next.isValid())
+			return false;
+		profile = next;
+		profileId = id;
+		clearMatchState();
+		Options.setActiveProfileId(id);
+		Options.saveOptions();
+		showMenu();
+		return true;
+	}
+
+	/**
+	 * True if this profile can be deleted.
+	 * @param id the profile id
+	 * @return true if allowed
+	 */
+	public boolean canDeleteProfile(int id) {
+		return id > 0 && id != profileId && ProfileStore.list().size() > 1;
+	}
+
+	/**
+	 * Deletes a profile that is not the active one.
+	 * @param id the profile id
+	 * @return true if deleted
+	 */
+	public boolean deleteProfile(int id) {
+		if (!canDeleteProfile(id))
+			return false;
+		return ProfileStore.delete(id);
+	}
+
+	private void loadActiveProfile() {
+		ProfileStore.migrateIfNeeded();
+		int id = Options.getActiveProfileId();
+		Profile loaded = ProfileStore.load(id);
+		if (loaded != null) {
+			profile = loaded;
+			profileId = id;
+			return;
+		}
+		ArrayList<ProfileStore.Entry> entries = ProfileStore.list();
+		if (entries.isEmpty()) {
+			profile = null;
+			profileId = 0;
+			return;
+		}
+		profileId = entries.get(0).getId();
+		profile = ProfileStore.load(profileId);
+		if (profile != null) {
+			Options.setActiveProfileId(profileId);
+			Options.saveOptions();
+		} else {
+			profileId = 0;
+		}
+	}
+
+	private boolean canUseProfileName(String name, int exceptId) {
+		if (name == null || name.trim().isEmpty())
+			return false;
+		return !ProfileStore.nameTaken(name, exceptId);
+	}
+
+	private void clearMatchState() {
+		championship = null;
+		championshipOpponentAI = null;
+		currentOpponentDeckIds = null;
+		currentPlayerDeckIds = null;
+	}
+
+	/**
+	 * Shows the first-run profile creation screen.
 	 */
 	public void showProfile() {
 		currentScreen = GameScreen.PROFILE;
-		profileScreen.enter();
+		profileScreen.enterFirst();
+	}
+
+	/**
+	 * Shows the rename-profile editor.
+	 */
+	public void showRenameProfile() {
+		String current = (profile != null) ? profile.getName() : "";
+		profileScreen.enterRename(current);
+		currentScreen = GameScreen.PROFILE;
+	}
+
+	/**
+	 * Shows the create-profile editor.
+	 */
+	public void showCreateProfile() {
+		profileScreen.enterCreate();
+		currentScreen = GameScreen.PROFILE;
+	}
+
+	/**
+	 * Shows the profile list.
+	 */
+	public void showProfiles() {
+		currentScreen = GameScreen.PROFILES;
+		profilesScreen.enter();
 	}
 
 	/**
@@ -1083,6 +1245,7 @@ public class TripleTriad extends BasicGame {
 				championship.addToBag(pack[i]);
 			}
 			championship.setPlayerHandIds(pack);
+			saveProfile();
 			currentScreen = GameScreen.CHAMPIONSHIP;
 			championshipScreen.showPack(pack);
 			return;
@@ -1208,6 +1371,7 @@ public class TripleTriad extends BasicGame {
 			championshipScreen.showWon();
 			return;
 		}
+		saveProfile();
 		championship.rollOpponent(deck);
 		currentScreen = GameScreen.CHAMPIONSHIP;
 		championshipScreen.showPick();

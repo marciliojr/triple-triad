@@ -23,6 +23,8 @@ import itdelatrisu.tripletriad.GameImage;
 import itdelatrisu.tripletriad.I18n;
 import itdelatrisu.tripletriad.Lang;
 import itdelatrisu.tripletriad.Options;
+import itdelatrisu.tripletriad.Profile;
+import itdelatrisu.tripletriad.ProfileStore;
 import itdelatrisu.tripletriad.TripleTriad;
 
 import itdelatrisu.tripletriad.gfx.Color;
@@ -33,7 +35,7 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Toggle music, cursor sound and UI language.
+ * Toggle music, cursor sound, language, and player profiles.
  */
 public class SettingsScreen extends Screen {
 	/** Music toggle row. */
@@ -45,8 +47,14 @@ public class SettingsScreen extends Screen {
 	/** Language row. */
 	private static final int ROW_LANG = 2;
 
+	/** Player name row. */
+	private static final int ROW_NAME = 3;
+
+	/** Profiles list row. */
+	private static final int ROW_PROFILES = 4;
+
 	/** Number of rows. */
-	private static final int ROW_COUNT = 3;
+	private static final int ROW_COUNT = 5;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -78,9 +86,9 @@ public class SettingsScreen extends Screen {
 		Ui.drawCentered(font, I18n.settingsTitle(), height * 0.08f, Ui.TITLE);
 
 		float panelW = width * 0.62f;
-		float panelH = height * 0.48f;
+		float panelH = height * 0.64f;
 		float panelX = (width - panelW) / 2f;
-		float panelY = height * 0.22f;
+		float panelY = height * 0.18f;
 		g.setColor(Ui.TITLE);
 		g.setLineWidth(2f);
 		g.drawRect(panelX, panelY, panelW, panelH);
@@ -107,7 +115,7 @@ public class SettingsScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, I18n.hintEscBack(), height * 0.88f, Ui.HINT);
+		Ui.drawCentered(small, I18n.hintEscBack(), height * 0.90f, Ui.HINT);
 	}
 
 	@Override
@@ -169,6 +177,12 @@ public class SettingsScreen extends Screen {
 			AudioController.playCursor();
 		} else if (selected == ROW_LANG) {
 			cycleLanguage(true);
+		} else if (selected == ROW_NAME) {
+			AudioController.Effect.SELECT.play();
+			game.showRenameProfile();
+		} else if (selected == ROW_PROFILES) {
+			AudioController.Effect.SELECT.play();
+			game.showProfiles();
 		}
 	}
 
@@ -184,7 +198,11 @@ public class SettingsScreen extends Screen {
 			return I18n.settingsMusic();
 		if (row == ROW_CURSOR)
 			return I18n.settingsCursor();
-		return I18n.settingsLanguage();
+		if (row == ROW_LANG)
+			return I18n.settingsLanguage();
+		if (row == ROW_NAME)
+			return I18n.settingsPlayerName();
+		return I18n.settingsProfiles();
 	}
 
 	private String rowValue(int row) {
@@ -192,7 +210,13 @@ public class SettingsScreen extends Screen {
 			return Options.isMusicEnabled() ? I18n.on() : I18n.off();
 		if (row == ROW_CURSOR)
 			return Options.isCursorSoundEnabled() ? I18n.on() : I18n.off();
-		return I18n.languageName(Options.getLang());
+		if (row == ROW_LANG)
+			return I18n.languageName(Options.getLang());
+		if (row == ROW_NAME) {
+			Profile profile = game.getProfile();
+			return (profile != null && profile.isValid()) ? profile.getName() : "";
+		}
+		return I18n.profilesCount(ProfileStore.list().size());
 	}
 
 	private Color rowValueColor(int row) {
@@ -208,7 +232,7 @@ public class SettingsScreen extends Screen {
 		int height = Options.getHeight();
 		float panelW = width * 0.62f;
 		float panelX = (width - panelW) / 2f;
-		float panelY = height * 0.22f;
+		float panelY = height * 0.18f;
 		if (x < panelX || x > panelX + panelW)
 			return -1;
 		UnicodeFont small = Options.getSmallFont();

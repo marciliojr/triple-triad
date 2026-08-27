@@ -51,7 +51,7 @@ public class DeckSelectScreen extends Screen {
 	/** Game instance. */
 	private final TripleTriad game;
 
-	/** Selected deck row (0 = new deck). */
+	/** Selected deck row (0 = my deck, 1 = random, 2 = new deck). */
 	private int selected;
 
 	/** First visible row when the list is long. */
@@ -107,17 +107,20 @@ public class DeckSelectScreen extends Screen {
 				boolean albumOk = game.hasAlbumDeck();
 				color = !albumOk ? Ui.DISABLED : (on ? Ui.SELECTED : Ui.HINT);
 			} else if (row == 1) {
+				label = I18n.randomDeck();
+				color = on ? Ui.SELECTED : Ui.HINT;
+			} else if (row == 2) {
 				label = I18n.newDeck();
 				color = on ? Ui.SELECTED : Ui.HINT;
 			} else {
-				label = deckLabel(row - 2);
+				label = deckLabel(row - 3);
 				color = on ? Ui.SELECTED : Ui.HINT;
 			}
 			small.drawString(deckX, y, label, color);
 			if (on)
 				drawCursor(deckX, y, small);
-			if (row > 1) {
-				SavedDeck deck = game.getProfile().getDecks().get(row - 2);
+			if (row > 2) {
+				SavedDeck deck = game.getProfile().getDecks().get(row - 3);
 				drawMiniCards(deck, y + small.getLineHeight() * 0.95f, deckX);
 			}
 		}
@@ -195,26 +198,28 @@ public class DeckSelectScreen extends Screen {
 				toggleSelectedRule();
 			else if (selected == 0)
 				playAlbum();
-			else if (selected == 1) {
+			else if (selected == 1)
+				playRandom();
+			else if (selected == 2) {
 				AudioController.Effect.SELECT.play();
 				game.showDeckBuilder(null);
 			} else {
-				playDeck(selected - 2);
+				playDeck(selected - 3);
 			}
 			break;
 		case Input.KEY_E:
-			if (focus != FOCUS_DECKS || selected < 2) {
+			if (focus != FOCUS_DECKS || selected < 3) {
 				AudioController.Effect.INVALID.play();
 			} else {
 				AudioController.Effect.SELECT.play();
-				game.showDeckBuilder(game.getProfile().getDecks().get(selected - 2));
+				game.showDeckBuilder(game.getProfile().getDecks().get(selected - 3));
 			}
 			break;
 		case Input.KEY_DELETE:
-			if (focus != FOCUS_DECKS || selected < 2)
+			if (focus != FOCUS_DECKS || selected < 3)
 				AudioController.Effect.INVALID.play();
 			else
-				deleteDeck(selected - 2);
+				deleteDeck(selected - 3);
 			break;
 		default:
 			break;
@@ -245,11 +250,13 @@ public class DeckSelectScreen extends Screen {
 		}
 		if (selected == 0)
 			playAlbum();
-		else if (selected == 1) {
+		else if (selected == 1)
+			playRandom();
+		else if (selected == 2) {
 			AudioController.Effect.SELECT.play();
 			game.showDeckBuilder(null);
 		} else {
-			playDeck(selected - 2);
+			playDeck(selected - 3);
 		}
 	}
 
@@ -293,7 +300,7 @@ public class DeckSelectScreen extends Screen {
 	private int rowCount() {
 		Profile profile = game.getProfile();
 		int decks = (profile != null) ? profile.getDecks().size() : 0;
-		return 2 + decks;
+		return 3 + decks;
 	}
 
 	private void playAlbum() {
@@ -303,6 +310,16 @@ public class DeckSelectScreen extends Screen {
 		}
 		AudioController.Effect.SELECT.play();
 		game.showMyDeckPick();
+	}
+
+	private void playRandom() {
+		int[] ids = game.getDeck().createRandomHandIds();
+		if (ids == null || ids.length != SavedDeck.SIZE) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		AudioController.Effect.SELECT.play();
+		game.startQuickMatch(ids);
 	}
 
 	private String deckLabel(int index) {

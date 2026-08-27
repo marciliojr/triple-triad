@@ -27,27 +27,241 @@ import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 
 import itdelatrisu.tripletriad.gfx.Log;
 
 /**
- * Loads and saves the local player profile.
+ * Loads and saves local player profiles (one file per player).
  */
 public class ProfileStore {
-	/** Profile data file. */
-	private static final File PROFILE_FILE = new File(".triple-triad-profile");
+	/** Directory for per-player profile files. */
+	private static final File PROFILE_DIR = new File(".triple-triad-profiles");
+
+	/** Legacy single-profile file (migrated on first load). */
+	private static final File LEGACY_FILE = new File(".triple-triad-profile");
+
+	/**
+	 * A profile listing entry.
+	 */
+	public static final class Entry {
+		/** Profile id. */
+		private final int id;
+
+		/** Display name. */
+		private final String name;
+
+		/**
+		 * Constructor.
+		 * @param id the profile id
+		 * @param name the display name
+		 */
+		public Entry(int id, String name) {
+			this.id = id;
+			this.name = (name != null) ? name : "";
+		}
+
+		/** @return the profile id */
+		public int getId() { return id; }
+
+		/** @return the display name */
+		public String getName() { return name; }
+	}
 
 	// This class should not be instantiated.
 	private ProfileStore() {}
 
 	/**
-	 * Loads the profile from disk.
-	 * @return the profile, or null if none is stored
+	 * Copies the legacy single-file profile into the profiles directory if needed.
 	 */
-	public static Profile load() {
-		if (!PROFILE_FILE.isFile())
+	public static void migrateIfNeeded() {
+		ensureDir();
+		if (countProfileFiles() > 0)
+			return;
+		if (!LEGACY_FILE.isFile())
+			return;
+		copyFile(LEGACY_FILE, fileFor(1));
+		if (Options.getActiveProfileId() <= 0) {
+			Options.setActiveProfileId(1);
+			Options.saveOptions();
+		}
+	}
+
+	/**
+	 * Lists saved profiles, sorted by id.
+	 * @return the entries
+	 */
+	public static ArrayList<Entry> list() {
+		migrateIfNeeded();
+		ArrayList<Entry> entries = new ArrayList<Entry>();
+		File[] files = PROFILE_DIR.listFiles();
+		if (files == null)
+			return entries;
+		for (int i = 0; i < files.length; i++) {
+			int id = parseProfileId(files[i].getName());
+			if (id <= 0)
+				continue;
+			String name = readName(files[i]);
+			if (name == null || name.isEmpty())
+				continue;
+			entries.add(new Entry(id, name));
+		}
+		Collections.sort(entries, new Comparator<Entry>() {
+			@Override
+			public int compare(Entry a, Entry b) {
+				return Integer.compare(a.getId(), b.getId());
+			}
+		});
+		return entries;
+	}
+
+	/**
+	 * Loads a profile by id.
+	 * @param id the profile id
+	 * @return the profile, or null
+	 */
+	public static Profile load(int id) {
+		if (id <= 0)
+			return null;
+		return loadFromFile(fileFor(id));
+	}
+
+	/**
+	 * Writes a profile by id.
+	 * @param id the profile id
+	 * @param profile the profile
+	 */
+	public static void save(int id, Profile profile) {
+		if (id <= 0 || profile == null || !profile.isValid())
+			return;
+		ensureDir();
+		saveToFile(fileFor(id), profile);
+	}
+
+	/**
+	 * Deletes a profile file.
+	 * @param id the profile id
+	 * @return true if the file was removed
+	 */
+	public static boolean delete(int id) {
+		if (id <= 0)
+			return false;
+		File file = fileFor(id);
+		return file.isFile() && file.delete();
+	}
+
+	/**
+	 * Returns the next unused profile id.
+	 * @return the id
+	 */
+	public static int nextId() {
+		migrateIfNeeded();
+		int max = 0;
+		File[] files = PROFILE_DIR.listFiles();
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				int id = parseProfileId(files[i].getName());
+				if (id > max)
+					max = id;
+			}
+		}
+		return max + 1;
+	}
+
+	/**
+	 * True if another profile already uses this name.
+	 * @param name the name to check
+	 * @param exceptId profile id to ignore (rename of self)
+	 * @return true if taken
+	 */
+	public static boolean nameTaken(String name, int exceptId) {
+		if (name == null)
+			return false;
+		String trimmed = name.trim();
+		if (trimmed.isEmpty())
+			return false;
+		ArrayList<Entry> entries = list();
+		for (int i = 0; i < entries.size(); i++) {
+			Entry entry = entries.get(i);
+			if (entry.getId() != exceptId && entry.getName().equalsIgnoreCase(trimmed))
+				return true;
+		}
+		return false;
+	}
+
+	private static File fileFor(int id) {
+		return new File(PROFILE_DIR, id + ".profile");
+	}
+
+	private static void ensureDir() {
+		if (!PROFILE_DIR.isDirectory())
+			PROFILE_DIR.mkdirs();
+	}
+
+	private static int countProfileFiles() {
+		File[] files = PROFILE_DIR.listFiles();
+		if (files == null)
+			return 0;
+		int count = 0;
+		for (int i = 0; i < files.length; i++) {
+			if (parseProfileId(files[i].getName()) > 0)
+				count++;
+		}
+		return count;
+	}
+
+	private static int parseProfileId(String filename) {
+		if (filename == null || !filename.endsWith(".profile"))
+			return 0;
+		String stem = filename.substring(0, filename.length() - ".profile".length());
+		try {
+			int id = Integer.parseInt(stem);
+			return (id > 0) ? id : 0;
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
+
+	private static String readName(File file) {
+		if (file == null || !file.isFile())
+			return null;
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(
+				new FileInputStream(file), "utf-8"))) {
+			String line;
+			while ((line = in.readLine()) != null) {
+				line = line.trim();
+				if (line.isEmpty() || line.startsWith("#"))
+					continue;
+				int index = line.indexOf('=');
+				if (index == -1)
+					continue;
+				String key = line.substring(0, index).trim();
+				if (key.equals("NAME"))
+					return line.substring(index + 1).trim();
+			}
+		} catch (IOException e) {
+			Log.error(String.format("Failed to read profile name '%s'.", file.getAbsolutePath()), e);
+		}
+		return null;
+	}
+
+	private static void copyFile(File from, File to) {
+		try (FileInputStream in = new FileInputStream(from);
+				FileOutputStream out = new FileOutputStream(to)) {
+			byte[] buf = new byte[4096];
+			int n;
+			while ((n = in.read(buf)) != -1)
+				out.write(buf, 0, n);
+		} catch (IOException e) {
+			Log.error(String.format("Failed to migrate profile '%s'.", from.getAbsolutePath()), e);
+		}
+	}
+
+	private static Profile loadFromFile(File file) {
+		if (file == null || !file.isFile())
 			return null;
 
 		Profile profile = new Profile();
@@ -55,7 +269,7 @@ public class ProfileStore {
 		Map<Integer, int[]> cards = new HashMap<Integer, int[]>();
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
-				new FileInputStream(PROFILE_FILE), "utf-8"))) {
+				new FileInputStream(file), "utf-8"))) {
 			String line;
 			while ((line = in.readLine()) != null) {
 				line = line.trim();
@@ -123,28 +337,28 @@ public class ProfileStore {
 				}
 
 				if (key.startsWith("DECK.") && key.endsWith(".NAME")) {
-					Integer id = parseDeckIndex(key);
-					if (id != null)
-						names.put(id, value);
+					Integer deckId = parseDeckIndex(key);
+					if (deckId != null)
+						names.put(deckId, value);
 				} else if (key.startsWith("DECK.") && key.endsWith(".CARDS")) {
-					Integer id = parseDeckIndex(key);
-					if (id != null)
-						cards.put(id, parseCardIds(value));
+					Integer deckId = parseDeckIndex(key);
+					if (deckId != null)
+						cards.put(deckId, parseCardIds(value));
 				}
 			}
 		} catch (IOException e) {
-			Log.error(String.format("Failed to read profile '%s'.", PROFILE_FILE.getAbsolutePath()), e);
+			Log.error(String.format("Failed to read profile '%s'.", file.getAbsolutePath()), e);
 			return null;
 		}
 
 		int max = 0;
-		for (Integer id : names.keySet()) {
-			if (id > max)
-				max = id;
+		for (Integer deckId : names.keySet()) {
+			if (deckId > max)
+				max = deckId;
 		}
-		for (Integer id : cards.keySet()) {
-			if (id > max)
-				max = id;
+		for (Integer deckId : cards.keySet()) {
+			if (deckId > max)
+				max = deckId;
 		}
 		for (int i = 1; i <= max; i++) {
 			String name = names.get(Integer.valueOf(i));
@@ -159,16 +373,9 @@ public class ProfileStore {
 		return profile.isValid() ? profile : null;
 	}
 
-	/**
-	 * Writes the profile to disk.
-	 * @param profile the profile
-	 */
-	public static void save(Profile profile) {
-		if (profile == null || !profile.isValid())
-			return;
-
+	private static void saveToFile(File file, Profile profile) {
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(PROFILE_FILE), "utf-8"))) {
+				new FileOutputStream(file), "utf-8"))) {
 			writer.write("# Triple Triad profile");
 			writer.newLine();
 			writer.write(String.format("NAME = %s", profile.getName()));
@@ -199,7 +406,7 @@ public class ProfileStore {
 				writer.newLine();
 			}
 		} catch (IOException e) {
-			Log.error(String.format("Failed to write profile '%s'.", PROFILE_FILE.getAbsolutePath()), e);
+			Log.error(String.format("Failed to write profile '%s'.", file.getAbsolutePath()), e);
 		}
 	}
 

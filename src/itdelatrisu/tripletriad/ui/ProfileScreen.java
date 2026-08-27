@@ -9,7 +9,7 @@
  *
  * Triple Triad is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -29,9 +29,18 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Mandatory profile creation (player name).
+ * Create or rename a player profile.
  */
 public class ProfileScreen extends Screen {
+	/** First-run mandatory create (Esc quits the game). */
+	public static final int MODE_FIRST = 0;
+
+	/** Rename the active profile. */
+	public static final int MODE_RENAME = 1;
+
+	/** Create an additional profile. */
+	public static final int MODE_CREATE = 2;
+
 	/** Maximum name length. */
 	private static final int MAX_NAME = 16;
 
@@ -40,6 +49,9 @@ public class ProfileScreen extends Screen {
 
 	/** Name being typed. */
 	private final StringBuilder name = new StringBuilder();
+
+	/** Current mode. */
+	private int mode = MODE_FIRST;
 
 	/**
 	 * Constructor.
@@ -51,7 +63,42 @@ public class ProfileScreen extends Screen {
 
 	@Override
 	public void enter() {
+		enterFirst();
+	}
+
+	/**
+	 * First-run create. Esc quits the game.
+	 */
+	public void enterFirst() {
+		mode = MODE_FIRST;
 		name.setLength(0);
+	}
+
+	/**
+	 * Rename the active profile. Esc returns to settings.
+	 * @param current the current name
+	 */
+	public void enterRename(String current) {
+		mode = MODE_RENAME;
+		name.setLength(0);
+		if (current != null)
+			name.append(current);
+	}
+
+	/**
+	 * Create an extra profile. Esc returns to the profile list.
+	 */
+	public void enterCreate() {
+		mode = MODE_CREATE;
+		name.setLength(0);
+	}
+
+	/**
+	 * True if Esc should exit the application.
+	 * @return true on first-run create
+	 */
+	public boolean quitsOnEscape() {
+		return mode == MODE_FIRST;
 	}
 
 	@Override
@@ -62,25 +109,46 @@ public class ProfileScreen extends Screen {
 		int height = container.getHeight();
 
 		Ui.drawCentered(font, "TRIPLE TRIAD", height * 0.18f, Ui.TITLE);
-		Ui.drawCentered(small, I18n.profilePrompt(), height * 0.32f, Ui.HINT);
+		Ui.drawCentered(small, prompt(), height * 0.32f, Ui.HINT);
 		Ui.drawCentered(small, I18n.profileName(), height * 0.46f, Ui.HINT);
 
 		String shown = name.length() == 0 ? "_" : name.toString() + "_";
 		Ui.drawCentered(font, shown, height * 0.52f, Ui.SELECTED);
 
-		Ui.drawCentered(small, I18n.hintProfile(), height * 0.82f, Ui.HINT);
+		Ui.drawCentered(small, mode == MODE_FIRST ? I18n.hintProfile() : I18n.hintProfileEdit(),
+			height * 0.82f, Ui.HINT);
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
+		if (key == Input.KEY_ESCAPE) {
+			if (mode == MODE_FIRST)
+				return;
+			AudioController.Effect.BACK.play();
+			if (mode == MODE_RENAME)
+				game.showSettings();
+			else
+				game.showProfiles();
+			return;
+		}
 		if (key == Input.KEY_ENTER || key == Input.KEY_Z) {
 			String trimmed = name.toString().trim();
 			if (trimmed.isEmpty()) {
 				AudioController.Effect.INVALID.play();
 				return;
 			}
+			boolean ok;
+			if (mode == MODE_RENAME)
+				ok = game.renameProfile(trimmed);
+			else if (mode == MODE_CREATE)
+				ok = game.createAdditionalProfile(trimmed);
+			else
+				ok = game.createProfile(trimmed);
+			if (!ok) {
+				AudioController.Effect.INVALID.play();
+				return;
+			}
 			AudioController.Effect.SELECT.play();
-			game.createProfile(trimmed);
 			return;
 		}
 		if (key == Input.KEY_BACK && name.length() > 0) {
@@ -91,5 +159,13 @@ public class ProfileScreen extends Screen {
 		if (Ui.isNameChar(c) && name.length() < MAX_NAME) {
 			name.append(c);
 		}
+	}
+
+	private String prompt() {
+		if (mode == MODE_RENAME)
+			return I18n.profileRenamePrompt();
+		if (mode == MODE_CREATE)
+			return I18n.profileCreatePrompt();
+		return I18n.profilePrompt();
 	}
 }

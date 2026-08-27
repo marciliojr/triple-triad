@@ -191,12 +191,56 @@ public final class I18n {
 		return pick("Crie um perfil para jogar", "Create a profile to play", "Crea un perfil para jugar");
 	}
 
+	public static String profileRenamePrompt() {
+		return pick("Edite o nome do jogador", "Edit the player name", "Edita el nombre del jugador");
+	}
+
+	public static String profileCreatePrompt() {
+		return pick("Nome do novo perfil", "New profile name", "Nombre del nuevo perfil");
+	}
+
 	public static String profileName() {
 		return pick("Nome", "Name", "Nombre");
 	}
 
 	public static String hintProfile() {
 		return pick("Enter confirma    Esc sai", "Enter confirms    Esc quits", "Enter confirma    Esc sale");
+	}
+
+	public static String hintProfileEdit() {
+		return pick("Enter confirma    Esc voltar", "Enter confirms    Esc back", "Enter confirma    Esc volver");
+	}
+
+	public static String settingsPlayerName() {
+		return pick("Nome do jogador", "Player name", "Nombre del jugador");
+	}
+
+	public static String settingsProfiles() {
+		return pick("Perfis", "Profiles", "Perfiles");
+	}
+
+	public static String profilesTitle() {
+		return pick("Perfis", "Profiles", "Perfiles");
+	}
+
+	public static String newProfile() {
+		return pick("+  Novo perfil", "+  New profile", "+  Perfil nuevo");
+	}
+
+	public static String profileActive() {
+		return pick("ativo", "active", "activo");
+	}
+
+	public static String hintProfiles() {
+		return pick("Enter troca    Del apaga    Esc voltar",
+			"Enter switches    Del deletes    Esc back",
+			"Enter cambia    Del borra    Esc volver");
+	}
+
+	public static String profilesCount(int n) {
+		return pick(n + " perfil" + (n == 1 ? "" : "s"),
+			n + " profile" + (n == 1 ? "" : "s"),
+			n + " perfil" + (n == 1 ? "" : "es"));
 	}
 
 	public static String deckSelectTitle() {
@@ -207,6 +251,10 @@ public final class I18n {
 		return pick("Escolha um deck e as regras da partida",
 			"Choose a deck and the match rules",
 			"Elige un mazo y las reglas de la partida");
+	}
+
+	public static String randomDeck() {
+		return pick("Deck aleat\u00f3rio", "Random deck", "Mazo aleatorio");
 	}
 
 	public static String newDeck() {
