@@ -37,11 +37,12 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1, partida qu
 - Arte e som continuam em `res/` e `cards/` (nada redesenhado)
 
 **Meta-jogo (não existia no original)**
-- Perfil obrigatório na primeira execução (`.triple-triad-profile`)
-- Menu principal: Jogo Rápido, Campeonato, Meu Deck, Versus (Em breve), Como Jogar, Configurações
-- Construtor e seletor de decks de 5 cartas (criar, editar, apagar, jogar); Jogo Rápido também pode usar Meu Deck
+- Perfil obrigatório na primeira execução (`.triple-triad-profiles/`)
+- Menu principal: Jogo Rápido, Campeonato, Meu Deck, Como Jogar, Configurações
+- Construtor e seletor de decks de 5 cartas (criar, editar, apagar, jogar); Jogo Rápido também pode usar Meu Deck ou deck aleatório
 - Regras da partida ligadas/desligadas na tela de Jogo Rápido e no lobby do Campeonato
-- Meu Deck: álbum permanente (cartas ganhas, duplicatas ok; Del remove; clique amplia)
+- Meu Deck: álbum permanente (cartas ganhas, duplicatas ok; **C** amplia; **X**/Del remove)
+- Vários perfis e dificuldade da IA (Fácil/Normal/Difícil) em Configurações
 - Interface em português (Brasil), inglês e espanhol
 
 **Partida**
@@ -74,16 +75,16 @@ O diretório de trabalho é a raiz: sprites, fontes e áudio em `res/`, catálog
 ## Fluxo do jogo
 
 1. **Perfil** — nome na primeira execução
-2. **Menu** — Jogo Rápido, Campeonato, Meu Deck, Versus (Em breve), Como Jogar, Configurações
+2. **Menu** — Jogo Rápido, Campeonato, Meu Deck, Como Jogar, Configurações
 3. **Decks** — montar, editar, apagar ou escolher um deck de 5 cartas; ligar/desligar regras
 4. **Campeonato** — 8 rounds contra a IA; Meu Deck é o álbum; save da run no pick
 5. **Partida** — contra a IA; Esc pede confirmação para sair
 
-Vídeo, volume, FPS, fonte, regras, música, som do cursor e idioma: `.triple-triad.cfg` (criado na primeira execução). Perfil, decks do Jogo Rápido e coleção do Campeonato: `.triple-triad-profile`. Erros: `.triple-triad.log`.
+Vídeo, volume, FPS, fonte, regras, música, som do cursor, idioma, perfil ativo e tipo da IA: `.triple-triad.cfg` (criado na primeira execução). Perfis, decks do Jogo Rápido e coleção do Campeonato: `.triple-triad-profiles/`. Erros: `.triple-triad.log`.
 
-Em **Configurações** dá para ligar/desligar a música de fundo e o som do cursor, e escolher o idioma (pt-BR, inglês, espanhol).
+Em **Configurações** dá para ligar/desligar a música de fundo e o som do cursor, escolher o idioma (pt-BR, inglês, espanhol) e a dificuldade da IA (Fácil/Normal/Difícil).
 
-No **Campeonato**, o lobby tem **Novo jogo**, **Continuar** e **Apagar progresso**. Se Meu Deck estiver vazio, a 1ª partida cria o pack e grava no álbum; se já houver 5+ cartas, Novo jogo abre o pick. Continuar retoma a partida salva. **Apagar progresso** limpa só a run (`RUN_*`), não o deck. Vitória adiciona a carta ao álbum e à bag da run; derrota tira só da run. **Salvar** no pick grava a partida e mostra que o progresso foi salvo. Em **Meu Deck** dá para ampliar e **Del** remove uma cópia.
+No **Campeonato**, o lobby tem **Novo jogo**, **Continuar** e **Apagar progresso**. Se Meu Deck estiver vazio, a 1ª partida cria o pack e grava no álbum; se já houver 5+ cartas, Novo jogo abre o pick. Continuar retoma a partida salva. **Apagar progresso** limpa só a run (`RUN_*`), não o deck. Vitória adiciona a carta ao álbum e à bag da run; derrota tira só da run. **Salvar** no pick grava a partida e mostra que o progresso foi salvo. Em **Meu Deck** **C** amplia e **X**/Del remove uma cópia.
 
 ## Controles
 
@@ -92,13 +93,15 @@ Além do mouse:
 | Ação | Teclas |
 | --- | --- |
 | Movimento | setas |
-| Selecionar / confirmar | Z ou Enter |
-| Cancelar | X ou Backspace |
+| Selecionar / confirmar | Z (Enter confirma a tela quando for distinto, ex.: jogar com 5 cartas) |
+| Ampliar carta | C (telas de deck; Esc/C/clique fecha o preview) |
+| Remover | X ou Del (álbum, mão de 5, deck salvo) |
+| Cancelar casa (só na partida) | X ou Backspace |
 | Rematch (mesmo deck) | F5 |
 | Lance automático (IA do jogador) | F1 |
 | Voltar / sair | Esc (na partida, pede confirmação) |
 
-No construtor de deck: **Z** adiciona/remove carta, **S** salva, **Enter** joga. Na lista: **Meu Deck** (5 do álbum), **Novo deck**, **E** edita, **Del** apaga. Em Configurações: **Enter** liga/desliga; setas esquerda/direita mudam o idioma. Em Meu Deck: **Z**/clique amplia, **Del**/**X** remove. No Campeonato: **Novo jogo**, **Continuar** ou **Apagar progresso**; da 2ª em diante **S** / **Salvar** grava a run e confirma na tela. Na partida: **Esc** abre Não/Sim (default Não).
+No construtor e no pick: **Z** seleciona, **X** tira da mão, **C** amplia, **S** salva (se houver), **Enter** joga. Na lista de decks: **Z**/Enter joga, **C** amplia as minis, **E** edita, **X**/Del apaga. Em Configurações: **Enter** ou esquerda/direita altera; **Z** também confirma. No Campeonato: **Novo jogo**, **Continuar** ou **Apagar progresso**; da 2ª em diante **S** / **Salvar** grava a run. Na partida: **Esc** abre Não/Sim (default Não); **X** cancela a casa escolhida.
 
 ## Licença
 

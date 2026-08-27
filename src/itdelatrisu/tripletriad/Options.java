@@ -63,6 +63,9 @@ public class Options {
 	/** UI language. */
 	private static Lang lang = Lang.PT_BR;
 
+	/** Active player profile id (0 = none). */
+	private static int activeProfileId;
+
 	/** Target frame rate. */
 	private static int fps = 60;
 
@@ -127,6 +130,15 @@ public class Options {
 	public static AIType getOpponentAI() { return opponentAI; }
 
 	/**
+	 * Sets the opponent AI type.
+	 * @param value the AIType
+	 */
+	public static void setOpponentAI(AIType value) {
+		if (value != null)
+			opponentAI = value;
+	}
+
+	/**
 	 * Returns whether background music is enabled.
 	 * @return true if enabled
 	 */
@@ -167,6 +179,20 @@ public class Options {
 	public static void setLang(Lang value) {
 		if (value != null)
 			lang = value;
+	}
+
+	/**
+	 * Returns the active profile id.
+	 * @return the id, or 0
+	 */
+	public static int getActiveProfileId() { return activeProfileId; }
+
+	/**
+	 * Sets the active profile id.
+	 * @param id the id
+	 */
+	public static void setActiveProfileId(int id) {
+		activeProfileId = (id > 0) ? id : 0;
 	}
 
 	/**
@@ -300,6 +326,15 @@ public class Options {
 						lang = Lang.PT_BR;
 					}
 					break;
+				case "ACTIVE_PROFILE":
+					try {
+						int profileId = Integer.parseInt(value);
+						if (profileId > 0)
+							activeProfileId = profileId;
+					} catch (NumberFormatException e) {
+						activeProfileId = 0;
+					}
+					break;
 				default:
 					try {
 						Rule rule = Rule.valueOf(name);
@@ -354,6 +389,8 @@ public class Options {
 			writer.write(String.format("CURSOR_SOUND = %b", cursorSoundEnabled));
 			writer.newLine();
 			writer.write(String.format("LANGUAGE = %s", lang.toString()));
+			writer.newLine();
+			writer.write(String.format("ACTIVE_PROFILE = %d", activeProfileId));
 			writer.newLine();
 			writer.newLine();
 

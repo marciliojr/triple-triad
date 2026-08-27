@@ -23,6 +23,8 @@ import itdelatrisu.tripletriad.GameImage;
 import itdelatrisu.tripletriad.I18n;
 import itdelatrisu.tripletriad.Lang;
 import itdelatrisu.tripletriad.Options;
+import itdelatrisu.tripletriad.Profile;
+import itdelatrisu.tripletriad.ProfileStore;
 import itdelatrisu.tripletriad.TripleTriad;
 
 import itdelatrisu.tripletriad.gfx.Color;
@@ -33,7 +35,7 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Toggle music, cursor sound and UI language.
+ * Toggle music, cursor sound, language, AI difficulty, and player profiles.
  */
 public class SettingsScreen extends Screen {
 	/** Music toggle row. */
@@ -45,8 +47,26 @@ public class SettingsScreen extends Screen {
 	/** Language row. */
 	private static final int ROW_LANG = 2;
 
+	/** Opponent AI difficulty row. */
+	private static final int ROW_AI = 3;
+
+	/** Player name row. */
+	private static final int ROW_NAME = 4;
+
+	/** Profiles list row. */
+	private static final int ROW_PROFILES = 5;
+
 	/** Number of rows. */
-	private static final int ROW_COUNT = 3;
+	private static final int ROW_COUNT = 6;
+
+	/** Easy difficulty index. */
+	private static final int DIFF_EASY = 0;
+
+	/** Normal difficulty index. */
+	private static final int DIFF_NORMAL = 1;
+
+	/** Hard difficulty index. */
+	private static final int DIFF_HARD = 2;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -78,15 +98,15 @@ public class SettingsScreen extends Screen {
 		Ui.drawCentered(font, I18n.settingsTitle(), height * 0.08f, Ui.TITLE);
 
 		float panelW = width * 0.62f;
-		float panelH = height * 0.48f;
+		float panelH = height * 0.70f;
 		float panelX = (width - panelW) / 2f;
-		float panelY = height * 0.22f;
+		float panelY = height * 0.18f;
 		g.setColor(Ui.TITLE);
 		g.setLineWidth(2f);
 		g.drawRect(panelX, panelY, panelW, panelH);
 		g.setLineWidth(1f);
 
-		float ruleLine = small.getLineHeight() * 2.1f;
+		float ruleLine = small.getLineHeight() * 1.85f;
 		float ruleStart = panelY + small.getLineHeight() * 1.6f;
 		for (int i = 0; i < ROW_COUNT; i++) {
 			float y = ruleStart + i * ruleLine;
@@ -107,7 +127,7 @@ public class SettingsScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, I18n.hintEscBack(), height * 0.88f, Ui.HINT);
+		Ui.drawCentered(small, I18n.hintEscBack(), height * 0.92f, Ui.HINT);
 	}
 
 	@Override
@@ -128,10 +148,14 @@ public class SettingsScreen extends Screen {
 		case Input.KEY_LEFT:
 			if (selected == ROW_LANG)
 				cycleLanguage(false);
+			else if (selected == ROW_AI)
+				cycleDifficulty(false);
 			break;
 		case Input.KEY_RIGHT:
 			if (selected == ROW_LANG)
 				cycleLanguage(true);
+			else if (selected == ROW_AI)
+				cycleDifficulty(true);
 			break;
 		case Input.KEY_Z:
 		case Input.KEY_ENTER:
@@ -169,6 +193,14 @@ public class SettingsScreen extends Screen {
 			AudioController.playCursor();
 		} else if (selected == ROW_LANG) {
 			cycleLanguage(true);
+		} else if (selected == ROW_AI) {
+			cycleDifficulty(true);
+		} else if (selected == ROW_NAME) {
+			AudioController.Effect.SELECT.play();
+			game.showRenameProfile();
+		} else if (selected == ROW_PROFILES) {
+			AudioController.Effect.SELECT.play();
+			game.showProfiles();
 		}
 	}
 
@@ -179,12 +211,55 @@ public class SettingsScreen extends Screen {
 		AudioController.Effect.SELECT.play();
 	}
 
+	private void cycleDifficulty(boolean forward) {
+		int i = difficultyIndex();
+		i = forward ? (i + 1) % 3 : (i + 2) % 3;
+		Options.AIType type;
+		if (i == DIFF_EASY)
+			type = Options.AIType.RANDOM;
+		else if (i == DIFF_NORMAL)
+			type = Options.AIType.BALANCED;
+		else
+			type = Options.AIType.OFFENSIVE;
+		Options.setOpponentAI(type);
+		Options.saveOptions();
+		AudioController.Effect.SELECT.play();
+	}
+
+	private int difficultyIndex() {
+		switch (Options.getOpponentAI()) {
+		case RANDOM:
+			return DIFF_EASY;
+		case OFFENSIVE:
+			return DIFF_HARD;
+		default:
+			return DIFF_NORMAL;
+		}
+	}
+
+	private String difficultyLabel() {
+		switch (difficultyIndex()) {
+		case DIFF_EASY:
+			return I18n.difficultyEasy();
+		case DIFF_HARD:
+			return I18n.difficultyHard();
+		default:
+			return I18n.difficultyNormal();
+		}
+	}
+
 	private String rowName(int row) {
 		if (row == ROW_MUSIC)
 			return I18n.settingsMusic();
 		if (row == ROW_CURSOR)
 			return I18n.settingsCursor();
-		return I18n.settingsLanguage();
+		if (row == ROW_LANG)
+			return I18n.settingsLanguage();
+		if (row == ROW_AI)
+			return I18n.settingsDifficulty();
+		if (row == ROW_NAME)
+			return I18n.settingsPlayerName();
+		return I18n.settingsProfiles();
 	}
 
 	private String rowValue(int row) {
@@ -192,7 +267,15 @@ public class SettingsScreen extends Screen {
 			return Options.isMusicEnabled() ? I18n.on() : I18n.off();
 		if (row == ROW_CURSOR)
 			return Options.isCursorSoundEnabled() ? I18n.on() : I18n.off();
-		return I18n.languageName(Options.getLang());
+		if (row == ROW_LANG)
+			return I18n.languageName(Options.getLang());
+		if (row == ROW_AI)
+			return difficultyLabel();
+		if (row == ROW_NAME) {
+			Profile profile = game.getProfile();
+			return (profile != null && profile.isValid()) ? profile.getName() : "";
+		}
+		return I18n.profilesCount(ProfileStore.list().size());
 	}
 
 	private Color rowValueColor(int row) {
@@ -208,11 +291,11 @@ public class SettingsScreen extends Screen {
 		int height = Options.getHeight();
 		float panelW = width * 0.62f;
 		float panelX = (width - panelW) / 2f;
-		float panelY = height * 0.22f;
+		float panelY = height * 0.18f;
 		if (x < panelX || x > panelX + panelW)
 			return -1;
 		UnicodeFont small = Options.getSmallFont();
-		float ruleLine = small.getLineHeight() * 2.1f;
+		float ruleLine = small.getLineHeight() * 1.85f;
 		float ruleStart = panelY + small.getLineHeight() * 1.6f;
 		for (int i = 0; i < ROW_COUNT; i++) {
 			float top = ruleStart + i * ruleLine;

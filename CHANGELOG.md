@@ -6,6 +6,29 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-08-27
+
+Preview com C, teclas padronizadas, dificuldade da IA, vários perfis e Versus fora do menu.
+
+### Added
+
+- Preview em tamanho cheio com **C** em todas as telas de cartas (Meu Deck, pick do Jogo Rápido, construtor, decks salvos, pack/pick/troca do Campeonato)
+- Dificuldade da IA nas Configurações (Fácil / Normal / Difícil)
+- Vários perfis (criar, trocar, renomear, apagar) em `.triple-triad-profiles/`
+- Jogo Rápido: opção **Deck aleatório**
+
+### Changed
+
+- Teclas padronizadas: **Z** seleciona, **X**/Del remove, **C** amplia, **Esc** volta (na partida, **X** continua cancelando a casa)
+- Versus saiu do menu principal (permanece fora de escopo)
+- Como Jogar atualizado (Jogo Rápido, Campeonato, Meu Deck e perfis)
+- IA menos repetitiva: sorteia entre as melhores jogadas; round 8 do Campeonato usa OFFENSIVE
+- Persistência: `ACTIVE_PROFILE` no cfg; um arquivo por perfil
+
+### Fixed
+
+- Chiado no deal com a regra Aberta (teto de 50 ms e `CARD.playReplacing`)
+
 ## [0.6.0] - 2026-08-26
 
 Meu Deck, persistência da run do Campeonato, confirmação ao sair da partida, libGDX 1.14.2 e esteira de CI/Release.

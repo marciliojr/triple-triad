@@ -23,6 +23,7 @@ package itdelatrisu.tripletriad;
  */
 public enum GameScreen {
 	PROFILE,
+	PROFILES,
 	MENU,
 	DECK_SELECT,
 	DECK_BUILDER,

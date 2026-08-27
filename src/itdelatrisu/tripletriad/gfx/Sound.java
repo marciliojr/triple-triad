@@ -47,4 +47,14 @@ public class Sound {
 		if (sound != null)
 			sound.play(Gfx.getSoundVolume());
 	}
+
+	/**
+	 * Stops overlapping instances, then plays once.
+	 */
+	public void playReplacing() {
+		if (sound == null)
+			return;
+		sound.stop();
+		sound.play(Gfx.getSoundVolume());
+	}
 }

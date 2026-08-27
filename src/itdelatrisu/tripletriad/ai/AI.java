@@ -22,6 +22,7 @@ import itdelatrisu.tripletriad.Card;
 import itdelatrisu.tripletriad.Element;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Generic game AI.
@@ -41,6 +42,9 @@ public abstract class AI {
 
 	/** Board position of the next card to be played.*/
 	protected int nextPosition;
+
+	/** Tie-break among equally ranked moves. */
+	private final Random rng = new Random();
 
 	/**
 	 * Constructor.
@@ -183,28 +187,55 @@ public abstract class AI {
 		int handSize = hand.size();
 		int boardRankDiff = getBoardRankDiff();
 		int minTotalRankDiff = Integer.MAX_VALUE;
-		int nextLevel = -1;
-
-		// use lowest level card possible, except if starting second and on last turn
-		boolean useLowestLevel = ((spaces.size() % 2 > 0) || handSize != 2);
+		ArrayList<Move> best = new ArrayList<Move>();
 
 		for (int space : spaces) {
 			int sideRankDiff = sideRankDiff(space);
 			for (int index = 0; index < handSize; index++) {
 				Card c = hand.get(index);
 				int totalRankDiff = boardRankDiff + getRankDiff(c, space) - sideRankDiff;
-				if (totalRankDiff < minTotalRankDiff ||
-					(totalRankDiff == minTotalRankDiff && (
-						(useLowestLevel && c.getLevel() < nextLevel) ||
-						(!useLowestLevel && c.getLevel() > nextLevel)
-					)
-				)) {
+				if (totalRankDiff < minTotalRankDiff) {
 					minTotalRankDiff = totalRankDiff;
-					nextLevel = c.getLevel();
-					nextIndex = index;
-					nextPosition = space;
+					best.clear();
+					best.add(new Move(index, space));
+				} else if (totalRankDiff == minTotalRankDiff) {
+					best.add(new Move(index, space));
 				}
 			}
+		}
+		pickRandomMove(best);
+	}
+
+	/**
+	 * Picks one of the equally ranked moves at random.
+	 * @param best the candidate moves
+	 */
+	protected void pickRandomMove(ArrayList<Move> best) {
+		if (best == null || best.isEmpty())
+			return;
+		Move m = best.get(rng.nextInt(best.size()));
+		nextIndex = m.index;
+		nextPosition = m.position;
+	}
+
+	/**
+	 * A card index and board position.
+	 */
+	protected static final class Move {
+		/** Hand index. */
+		final int index;
+
+		/** Board position. */
+		final int position;
+
+		/**
+		 * Constructor.
+		 * @param index the hand index
+		 * @param position the board position
+		 */
+		Move(int index, int position) {
+			this.index = index;
+			this.position = position;
 		}
 	}
 }

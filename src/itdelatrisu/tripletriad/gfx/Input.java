@@ -35,6 +35,7 @@ public class Input {
 	public static final int KEY_RIGHT = Keys.RIGHT;
 	public static final int KEY_Z = Keys.Z;
 	public static final int KEY_X = Keys.X;
+	public static final int KEY_C = Keys.C;
 	public static final int KEY_E = Keys.E;
 	public static final int KEY_S = Keys.S;
 	public static final int KEY_F1 = Keys.F1;

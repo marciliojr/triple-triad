@@ -51,7 +51,7 @@ public class DeckSelectScreen extends Screen {
 	/** Game instance. */
 	private final TripleTriad game;
 
-	/** Selected deck row (0 = new deck). */
+	/** Selected deck row (0 = my deck, 1 = random, 2 = new deck). */
 	private int selected;
 
 	/** First visible row when the list is long. */
@@ -62,6 +62,15 @@ public class DeckSelectScreen extends Screen {
 
 	/** Selected rule index. */
 	private int ruleIndex;
+
+	/** Mini-card slot on the selected saved deck [0, 4]. */
+	private int miniCursor;
+
+	/** Full-size card preview over a saved deck. */
+	private boolean previewOpen;
+
+	/** Row of the last mini-card hit-test, or -1. */
+	private int hitMiniRow;
 
 	/**
 	 * Constructor.
@@ -77,6 +86,8 @@ public class DeckSelectScreen extends Screen {
 		scroll = 0;
 		focus = FOCUS_DECKS;
 		ruleIndex = 0;
+		miniCursor = 0;
+		previewOpen = false;
 	}
 
 	@Override
@@ -107,18 +118,21 @@ public class DeckSelectScreen extends Screen {
 				boolean albumOk = game.hasAlbumDeck();
 				color = !albumOk ? Ui.DISABLED : (on ? Ui.SELECTED : Ui.HINT);
 			} else if (row == 1) {
+				label = I18n.randomDeck();
+				color = on ? Ui.SELECTED : Ui.HINT;
+			} else if (row == 2) {
 				label = I18n.newDeck();
 				color = on ? Ui.SELECTED : Ui.HINT;
 			} else {
-				label = deckLabel(row - 2);
+				label = deckLabel(row - 3);
 				color = on ? Ui.SELECTED : Ui.HINT;
 			}
 			small.drawString(deckX, y, label, color);
 			if (on)
 				drawCursor(deckX, y, small);
-			if (row > 1) {
-				SavedDeck deck = game.getProfile().getDecks().get(row - 2);
-				drawMiniCards(deck, y + small.getLineHeight() * 0.95f, deckX);
+			if (row > 2) {
+				SavedDeck deck = game.getProfile().getDecks().get(row - 3);
+				drawMiniCards(g, deck, y + small.getLineHeight() * 0.95f, deckX, on);
 			}
 		}
 
@@ -148,14 +162,43 @@ public class DeckSelectScreen extends Screen {
 				drawCursor(panelX + 36, y, small);
 		}
 
-		String hint = (focus == FOCUS_RULES)
-			? I18n.hintDeckRules()
-			: I18n.hintDeckList();
+		if (previewOpen && selected > 2) {
+			SavedDeck deck = game.getProfile().getDecks().get(selected - 3);
+			int[] ids = deck.getCardIds();
+			if (miniCursor >= 0 && miniCursor < ids.length)
+				Ui.drawCardPreview(g, game.getDeck(), ids[miniCursor]);
+		}
+
+		String hint;
+		if (previewOpen)
+			hint = I18n.hintDeckPreview();
+		else if (focus == FOCUS_RULES)
+			hint = I18n.hintDeckRules();
+		else
+			hint = I18n.hintDeckList();
 		Ui.drawCentered(small, hint, height * 0.92f, Ui.HINT);
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
+		if (previewOpen) {
+			if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
+				previewOpen = false;
+				AudioController.Effect.BACK.play();
+			} else if (key == Input.KEY_LEFT) {
+				miniCursor = (miniCursor + SavedDeck.SIZE - 1) % SavedDeck.SIZE;
+				AudioController.playCursor();
+			} else if (key == Input.KEY_RIGHT) {
+				miniCursor = (miniCursor + 1) % SavedDeck.SIZE;
+				AudioController.playCursor();
+			} else if (key == Input.KEY_DELETE || key == Input.KEY_X) {
+				previewOpen = false;
+				if (selected > 2)
+					deleteDeck(selected - 3);
+			}
+			return;
+		}
+
 		int total = rowCount();
 		int ruleCount = Rule.values().length;
 		switch (key) {
@@ -195,26 +238,37 @@ public class DeckSelectScreen extends Screen {
 				toggleSelectedRule();
 			else if (selected == 0)
 				playAlbum();
-			else if (selected == 1) {
+			else if (selected == 1)
+				playRandom();
+			else if (selected == 2) {
 				AudioController.Effect.SELECT.play();
 				game.showDeckBuilder(null);
 			} else {
-				playDeck(selected - 2);
+				playDeck(selected - 3);
 			}
 			break;
 		case Input.KEY_E:
-			if (focus != FOCUS_DECKS || selected < 2) {
+			if (focus != FOCUS_DECKS || selected < 3) {
 				AudioController.Effect.INVALID.play();
 			} else {
 				AudioController.Effect.SELECT.play();
-				game.showDeckBuilder(game.getProfile().getDecks().get(selected - 2));
+				game.showDeckBuilder(game.getProfile().getDecks().get(selected - 3));
 			}
 			break;
 		case Input.KEY_DELETE:
-			if (focus != FOCUS_DECKS || selected < 2)
+		case Input.KEY_X:
+			if (focus != FOCUS_DECKS || selected < 3)
 				AudioController.Effect.INVALID.play();
 			else
-				deleteDeck(selected - 2);
+				deleteDeck(selected - 3);
+			break;
+		case Input.KEY_C:
+			if (focus == FOCUS_DECKS && selected > 2) {
+				previewOpen = true;
+				AudioController.Effect.SELECT.play();
+			} else {
+				AudioController.Effect.INVALID.play();
+			}
 			break;
 		default:
 			break;
@@ -225,6 +279,22 @@ public class DeckSelectScreen extends Screen {
 	public void mousePressed(int button, int x, int y) {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
+
+		if (previewOpen) {
+			previewOpen = false;
+			AudioController.Effect.BACK.play();
+			return;
+		}
+
+		int miniSlot = hitMiniSlot(x, y);
+		if (miniSlot >= 0 && hitMiniRow >= 3) {
+			focus = FOCUS_DECKS;
+			selected = hitMiniRow;
+			miniCursor = miniSlot;
+			previewOpen = true;
+			AudioController.Effect.SELECT.play();
+			return;
+		}
 
 		int ruleHit = hitRule(x, y);
 		if (ruleHit >= 0) {
@@ -245,16 +315,20 @@ public class DeckSelectScreen extends Screen {
 		}
 		if (selected == 0)
 			playAlbum();
-		else if (selected == 1) {
+		else if (selected == 1)
+			playRandom();
+		else if (selected == 2) {
 			AudioController.Effect.SELECT.play();
 			game.showDeckBuilder(null);
 		} else {
-			playDeck(selected - 2);
+			playDeck(selected - 3);
 		}
 	}
 
 	@Override
 	public void mouseWheelMoved(int change) {
+		if (previewOpen)
+			return;
 		if (focus == FOCUS_RULES) {
 			int n = Rule.values().length;
 			if (change < 0)
@@ -293,7 +367,7 @@ public class DeckSelectScreen extends Screen {
 	private int rowCount() {
 		Profile profile = game.getProfile();
 		int decks = (profile != null) ? profile.getDecks().size() : 0;
-		return 2 + decks;
+		return 3 + decks;
 	}
 
 	private void playAlbum() {
@@ -303,6 +377,16 @@ public class DeckSelectScreen extends Screen {
 		}
 		AudioController.Effect.SELECT.play();
 		game.showMyDeckPick();
+	}
+
+	private void playRandom() {
+		int[] ids = game.getDeck().createRandomHandIds();
+		if (ids == null || ids.length != SavedDeck.SIZE) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		AudioController.Effect.SELECT.play();
+		game.startQuickMatch(ids);
 	}
 
 	private String deckLabel(int index) {
@@ -389,15 +473,54 @@ public class DeckSelectScreen extends Screen {
 			scroll = 0;
 	}
 
-	private void drawMiniCards(SavedDeck deck, float y, float originX) {
+	private void drawMiniCards(Graphics g, SavedDeck deck, float y, float originX, boolean selectedRow) {
 		Deck catalog = game.getDeck();
 		int[] ids = deck.getCardIds();
 		float size = Options.getCardLength() * 0.16f;
 		float gap = size * 0.10f;
 		for (int i = 0; i < ids.length; i++) {
+			float x = originX + i * (size + gap);
+			if (selectedRow && i == miniCursor) {
+				g.setColor(Ui.SELECTED);
+				g.setLineWidth(2f);
+				g.drawRect(x - 2, y - 2, size + 4, size + 4);
+				g.setLineWidth(1f);
+			}
 			Card card = catalog.getCardById(ids[i]);
 			if (card != null)
-				card.drawSized(originX + i * (size + gap), y, size, true, false);
+				card.drawSized(x, y, size, true, false);
 		}
+	}
+
+	private int hitMiniSlot(int x, int y) {
+		hitMiniRow = -1;
+		if (x >= rulesLeft())
+			return -1;
+		UnicodeFont small = Options.getSmallFont();
+		float startY = listTop();
+		float line = deckLineHeight();
+		int visible = visibleDeckRows();
+		int total = rowCount();
+		float size = Options.getCardLength() * 0.16f;
+		float gap = size * 0.10f;
+		float originX = deckLeft();
+		for (int row = scroll; row < total && row < scroll + visible; row++) {
+			if (row < 3)
+				continue;
+			float rowY = startY + (row - scroll) * line;
+			float cardsY = rowY + small.getLineHeight() * 0.95f;
+			if (y < cardsY || y >= cardsY + size)
+				continue;
+			SavedDeck deck = game.getProfile().getDecks().get(row - 3);
+			int[] ids = deck.getCardIds();
+			for (int i = 0; i < ids.length; i++) {
+				float cx = originX + i * (size + gap);
+				if (x >= cx && x < cx + size) {
+					hitMiniRow = row;
+					return i;
+				}
+			}
+		}
+		return -1;
 	}
 }

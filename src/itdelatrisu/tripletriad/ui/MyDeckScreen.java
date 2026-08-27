@@ -116,28 +116,49 @@ public class MyDeckScreen extends Screen {
 			drawGrid(g, bag, width, height);
 
 		if (previewIndex >= 0 && previewIndex < bag.size())
-			drawPreview(g, bag.get(previewIndex).intValue(), width, height);
+			Ui.drawCardPreview(g, game.getDeck(), bag.get(previewIndex).intValue());
 
-		String hint = (previewIndex >= 0)
-			? I18n.hintMyDeckPreview()
-			: (mode == MODE_PICK ? I18n.hintMyDeckPick() : I18n.hintMyDeck());
+		String hint;
+		if (previewIndex >= 0)
+			hint = (mode == MODE_GALLERY) ? I18n.hintMyDeckPreview() : I18n.hintCardPreview();
+		else if (mode == MODE_PICK)
+			hint = I18n.hintMyDeckPick();
+		else
+			hint = I18n.hintMyDeck();
 		Ui.drawCentered(small, hint, height * 0.93f, Ui.HINT);
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
+		ArrayList<Integer> bag = album();
 		if (previewIndex >= 0) {
-			if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
-				removeCursorCard();
-				return;
-			}
-			if (key == Input.KEY_ESCAPE || key == Input.KEY_Z || key == Input.KEY_ENTER) {
+			if (key == Input.KEY_LEFT) {
+				if (previewIndex > 0) {
+					previewIndex--;
+					cursor = previewIndex;
+					AudioController.playCursor();
+				}
+			} else if (key == Input.KEY_RIGHT) {
+				if (previewIndex < bag.size() - 1) {
+					previewIndex++;
+					cursor = previewIndex;
+					AudioController.playCursor();
+				}
+			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
 				previewIndex = -1;
 				AudioController.Effect.BACK.play();
+			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+				if (mode == MODE_GALLERY)
+					removeCursorCard();
+				else
+					removeFromPick();
+			} else if (key == Input.KEY_Z && mode == MODE_PICK) {
+				togglePick();
+			} else if (key == Input.KEY_ENTER && mode == MODE_PICK) {
+				confirmPick();
 			}
 			return;
 		}
-		ArrayList<Integer> bag = album();
 		int cols = columns();
 		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
 		int row = (cols > 0) ? cursor / cols : 0;
@@ -179,20 +200,21 @@ public class MyDeckScreen extends Screen {
 		case Input.KEY_Z:
 			if (mode == MODE_PICK)
 				togglePick();
-			else
-				openPreview();
 			break;
 		case Input.KEY_ENTER:
 			if (mode == MODE_PICK)
 				confirmPick();
-			else
-				openPreview();
+			break;
+		case Input.KEY_C:
+			openPreview();
 			break;
 		case Input.KEY_DELETE:
 		case Input.KEY_X:
 		case Input.KEY_BACK:
 			if (mode == MODE_GALLERY)
 				removeCursorCard();
+			else
+				removeFromPick();
 			break;
 		default:
 			break;
@@ -244,6 +266,20 @@ public class MyDeckScreen extends Screen {
 		AudioController.Effect.SELECT.play();
 	}
 
+	private void removeFromPick() {
+		if (mode != MODE_PICK)
+			return;
+		int index = (previewIndex >= 0) ? previewIndex : cursor;
+		Integer key = Integer.valueOf(index);
+		int pos = selected.indexOf(key);
+		if (pos < 0) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		selected.remove(pos);
+		AudioController.Effect.BACK.play();
+	}
+
 	private void removeCursorCard() {
 		if (mode != MODE_GALLERY)
 			return;
@@ -290,18 +326,6 @@ public class MyDeckScreen extends Screen {
 			ids[i] = bag.get(selected.get(i).intValue()).intValue();
 		AudioController.Effect.SELECT.play();
 		game.startQuickMatch(ids);
-	}
-
-	private void drawPreview(Graphics g, int cardId, int width, int height) {
-		g.setColor(new Color(0f, 0f, 0f, 0.72f));
-		g.fillRect(0, 0, width, height);
-		Card source = game.getDeck().getCardById(cardId);
-		if (source == null)
-			return;
-		Card card = new Card(source);
-		card.setOwner(TripleTriad.PLAYER);
-		float size = Options.getCardLength();
-		card.draw((width - size) / 2f, (height - size) / 2f);
 	}
 
 	private void drawGrid(Graphics g, ArrayList<Integer> bag, int width, int height) {

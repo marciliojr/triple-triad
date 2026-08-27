@@ -181,9 +181,7 @@ public class ChampionshipRun {
 			return Options.AIType.RANDOM;
 		if (round <= 5)
 			return Options.AIType.BALANCED;
-		if (round <= 7)
-			return Options.AIType.OFFENSIVE;
-		return Options.AIType.DEFENSIVE;
+		return Options.AIType.OFFENSIVE;
 	}
 
 	/**

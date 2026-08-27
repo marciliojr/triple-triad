@@ -32,14 +32,11 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Main menu: Quick Game, Championship, My Deck, Versus (locked), how to play, settings.
+ * Main menu: Quick Game, Championship, My Deck, how to play, settings.
  */
 public class MenuScreen extends Screen {
 	/** Number of menu entries. */
-	private static final int ITEM_COUNT = 6;
-
-	/** Whether each entry is playable. */
-	private static final boolean[] ENABLED = { true, true, true, false, true, true };
+	private static final int ITEM_COUNT = 5;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -77,10 +74,8 @@ public class MenuScreen extends Screen {
 		for (int i = 0; i < ITEM_COUNT; i++) {
 			float y = startY + i * line;
 			boolean on = (i == selected);
-			Color color = !ENABLED[i] ? Ui.DISABLED : (on ? Ui.SELECTED : Ui.HINT);
+			Color color = on ? Ui.SELECTED : Ui.HINT;
 			String label = label(i);
-			if (!ENABLED[i])
-				label = label + I18n.comingSoon();
 			Ui.drawCentered(font, label, y, color);
 			if (on) {
 				Image cursor = GameImage.CURSOR.getImage();
@@ -134,10 +129,6 @@ public class MenuScreen extends Screen {
 	 * Activates a menu entry.
 	 */
 	private void activate(int index) {
-		if (!ENABLED[index]) {
-			AudioController.Effect.INVALID.play();
-			return;
-		}
 		AudioController.Effect.SELECT.play();
 		if (index == 0)
 			game.showDeckSelect();
@@ -145,9 +136,9 @@ public class MenuScreen extends Screen {
 			game.showChampionship();
 		else if (index == 2)
 			game.showMyDeck();
-		else if (index == 4)
+		else if (index == 3)
 			game.showHowToPlay();
-		else if (index == 5)
+		else if (index == 4)
 			game.showSettings();
 	}
 
@@ -156,9 +147,8 @@ public class MenuScreen extends Screen {
 			case 0: return I18n.menuQuick();
 			case 1: return I18n.menuChampionship();
 			case 2: return I18n.menuMyDeck();
-			case 3: return I18n.menuVersus();
-			case 4: return I18n.menuHowTo();
-			case 5: return I18n.menuSettings();
+			case 3: return I18n.menuHowTo();
+			case 4: return I18n.menuSettings();
 			default: return "";
 		}
 	}

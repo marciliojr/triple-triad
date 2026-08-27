@@ -95,6 +95,12 @@ public class ChampionshipScreen extends Screen {
 	/** Until when to show the championship-saved notice (epoch ms). */
 	private long saveNoticeUntil;
 
+	/** Full-size card preview. */
+	private boolean previewOpen;
+
+	/** Pack row cursor [0, shownIds.length). */
+	private int packCursor;
+
 	/**
 	 * Constructor.
 	 * @param game the game
@@ -116,6 +122,8 @@ public class ChampionshipScreen extends Screen {
 		stolenId = 0;
 		shownIds = new int[0];
 		saveNoticeUntil = 0L;
+		previewOpen = false;
+		packCursor = 0;
 	}
 
 	/**
@@ -125,6 +133,8 @@ public class ChampionshipScreen extends Screen {
 	public void showPack(int[] ids) {
 		mode = MODE_PACK;
 		shownIds = (ids != null) ? ids.clone() : new int[0];
+		previewOpen = false;
+		packCursor = 0;
 	}
 
 	/**
@@ -144,6 +154,7 @@ public class ChampionshipScreen extends Screen {
 		cursor = 0;
 		scrollRow = 0;
 		saveNoticeUntil = 0L;
+		previewOpen = false;
 		preselectHand(preselect);
 	}
 
@@ -155,6 +166,7 @@ public class ChampionshipScreen extends Screen {
 		mode = MODE_TRADE_WIN;
 		shownIds = (ids != null) ? ids.clone() : new int[0];
 		tradeIndex = 0;
+		previewOpen = false;
 	}
 
 	/**
@@ -164,6 +176,7 @@ public class ChampionshipScreen extends Screen {
 	public void showTradeLose(int cardId) {
 		mode = MODE_TRADE_LOSE;
 		stolenId = cardId;
+		previewOpen = false;
 	}
 
 	/**
@@ -216,13 +229,7 @@ public class ChampionshipScreen extends Screen {
 			keyLobby(key);
 			break;
 		case MODE_PACK:
-			if (key == Input.KEY_ENTER || key == Input.KEY_Z) {
-				AudioController.Effect.SELECT.play();
-				game.championshipPackConfirmed();
-			} else if (key == Input.KEY_ESCAPE) {
-				AudioController.Effect.BACK.play();
-				game.championshipPackConfirmed();
-			}
+			keyPack(key);
 			break;
 		case MODE_PICK:
 			keyPick(key);
@@ -231,7 +238,17 @@ public class ChampionshipScreen extends Screen {
 			keyTradeWin(key);
 			break;
 		case MODE_TRADE_LOSE:
-			if (key == Input.KEY_ENTER || key == Input.KEY_Z || key == Input.KEY_ESCAPE) {
+			if (previewOpen) {
+				if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
+					previewOpen = false;
+					AudioController.Effect.BACK.play();
+				}
+				return;
+			}
+			if (key == Input.KEY_C) {
+				previewOpen = true;
+				AudioController.Effect.SELECT.play();
+			} else if (key == Input.KEY_ENTER || key == Input.KEY_Z || key == Input.KEY_ESCAPE) {
 				AudioController.Effect.SELECT.play();
 				game.championshipStealAck();
 			}
@@ -252,6 +269,11 @@ public class ChampionshipScreen extends Screen {
 	public void mousePressed(int button, int x, int y) {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
+		if (previewOpen) {
+			previewOpen = false;
+			AudioController.Effect.BACK.play();
+			return;
+		}
 		if (mode == MODE_LOBBY) {
 			mouseLobby(x, y);
 			return;
@@ -286,6 +308,8 @@ public class ChampionshipScreen extends Screen {
 
 	@Override
 	public void mouseWheelMoved(int change) {
+		if (previewOpen)
+			return;
 		if (mode == MODE_PICK) {
 			ArrayList<Integer> bag = collection();
 			int cols = columns();
@@ -374,7 +398,10 @@ public class ChampionshipScreen extends Screen {
 		Ui.drawCentered(font, I18n.championshipPackTitle(), height * 0.08f, Ui.TITLE);
 		Ui.drawCentered(small, I18n.championshipPackHint(), height * 0.16f, Ui.HINT);
 		drawShownRow(g, height * 0.36f);
-		Ui.drawCentered(small, I18n.hintChampionshipConfirm(), height * 0.88f, Ui.HINT);
+		if (previewOpen && packCursor >= 0 && packCursor < shownIds.length)
+			Ui.drawCardPreview(g, game.getDeck(), shownIds[packCursor]);
+		Ui.drawCentered(small, previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(),
+			height * 0.88f, Ui.HINT);
 	}
 
 	private void renderPick(GameContainer container, Graphics g) {
@@ -442,7 +469,10 @@ public class ChampionshipScreen extends Screen {
 		small.drawString(saveX, saveY, saveLabel, canSave ? Ui.TITLE : Ui.DISABLED);
 		if (System.currentTimeMillis() < saveNoticeUntil)
 			Ui.drawCentered(small, I18n.championshipSaved(), height * 0.80f, Ui.TITLE);
-		Ui.drawCentered(small, I18n.hintChampionshipPick(), height * 0.93f, Ui.HINT);
+		if (previewOpen && cursor >= 0 && cursor < bag.size())
+			Ui.drawCardPreview(g, catalog, bag.get(cursor).intValue());
+		Ui.drawCentered(small, previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipPick(),
+			height * 0.93f, Ui.HINT);
 	}
 
 	private void renderTradeWin(GameContainer container, Graphics g) {
@@ -450,7 +480,11 @@ public class ChampionshipScreen extends Screen {
 		Ui.drawCentered(Options.getFont(), I18n.menuChampionship(), height * 0.08f, Ui.TITLE);
 		Ui.drawCentered(Options.getSmallFont(), I18n.championshipTradeWin(), height * 0.16f, Ui.HINT);
 		drawShownRow(g, height * 0.36f);
-		Ui.drawCentered(Options.getSmallFont(), I18n.hintChampionshipConfirm(), height * 0.88f, Ui.HINT);
+		if (previewOpen && tradeIndex >= 0 && tradeIndex < shownIds.length)
+			Ui.drawCardPreview(g, game.getDeck(), shownIds[tradeIndex]);
+		Ui.drawCentered(Options.getSmallFont(),
+			previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(),
+			height * 0.88f, Ui.HINT);
 	}
 
 	private void renderTradeLose(GameContainer container, Graphics g) {
@@ -462,7 +496,11 @@ public class ChampionshipScreen extends Screen {
 		float size = Options.getCardLength() * 0.55f;
 		if (card != null)
 			card.drawSized((width - size) / 2f, height * 0.32f, size, false, true);
-		Ui.drawCentered(Options.getSmallFont(), I18n.hintChampionshipConfirm(), height * 0.88f, Ui.HINT);
+		if (previewOpen)
+			Ui.drawCardPreview(g, game.getDeck(), stolenId);
+		Ui.drawCentered(Options.getSmallFont(),
+			previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(),
+			height * 0.88f, Ui.HINT);
 	}
 
 	private void renderEnd(GameContainer container, boolean won) {
@@ -485,7 +523,8 @@ public class ChampionshipScreen extends Screen {
 		for (int i = 0; i < n; i++) {
 			float x = x0 + i * (size + gap);
 			Card card = catalog.getCardById(shownIds[i]);
-			boolean on = (mode == MODE_TRADE_WIN && i == tradeIndex);
+			boolean on = (mode == MODE_TRADE_WIN && i == tradeIndex)
+				|| (mode == MODE_PACK && i == packCursor);
 			if (card != null)
 				card.drawSized(x, y, size, on, false);
 			if (on) {
@@ -494,6 +533,41 @@ public class ChampionshipScreen extends Screen {
 				g.drawRect(x - 3, y - 3, size + 6, size + 6);
 				g.setLineWidth(1f);
 			}
+		}
+	}
+
+	private void keyPack(int key) {
+		if (previewOpen) {
+			if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
+				previewOpen = false;
+				AudioController.Effect.BACK.play();
+			} else if (key == Input.KEY_LEFT && packCursor > 0) {
+				packCursor--;
+				AudioController.playCursor();
+			} else if (key == Input.KEY_RIGHT && packCursor < shownIds.length - 1) {
+				packCursor++;
+				AudioController.playCursor();
+			} else if (key == Input.KEY_ENTER || key == Input.KEY_Z) {
+				AudioController.Effect.SELECT.play();
+				game.championshipPackConfirmed();
+			}
+			return;
+		}
+		if (key == Input.KEY_LEFT && packCursor > 0) {
+			packCursor--;
+			AudioController.playCursor();
+		} else if (key == Input.KEY_RIGHT && packCursor < shownIds.length - 1) {
+			packCursor++;
+			AudioController.playCursor();
+		} else if (key == Input.KEY_C && shownIds.length > 0) {
+			previewOpen = true;
+			AudioController.Effect.SELECT.play();
+		} else if (key == Input.KEY_ENTER || key == Input.KEY_Z) {
+			AudioController.Effect.SELECT.play();
+			game.championshipPackConfirmed();
+		} else if (key == Input.KEY_ESCAPE) {
+			AudioController.Effect.BACK.play();
+			game.championshipPackConfirmed();
 		}
 	}
 
@@ -544,6 +618,31 @@ public class ChampionshipScreen extends Screen {
 
 	private void keyPick(int key) {
 		ArrayList<Integer> bag = collection();
+		if (previewOpen) {
+			if (key == Input.KEY_LEFT) {
+				if (cursor > 0) {
+					cursor--;
+					AudioController.playCursor();
+				}
+			} else if (key == Input.KEY_RIGHT) {
+				if (cursor < bag.size() - 1) {
+					cursor++;
+					AudioController.playCursor();
+				}
+			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
+				previewOpen = false;
+				AudioController.Effect.BACK.play();
+			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+				removeFromPick();
+			} else if (key == Input.KEY_Z) {
+				togglePick();
+			} else if (key == Input.KEY_ENTER) {
+				confirmPickHand();
+			} else if (key == Input.KEY_S) {
+				tryPickSave();
+			}
+			return;
+		}
 		int cols = columns();
 		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
 		int row = (cols > 0) ? cursor / cols : 0;
@@ -582,16 +681,24 @@ public class ChampionshipScreen extends Screen {
 		case Input.KEY_Z:
 			togglePick();
 			break;
+		case Input.KEY_C:
+			if (cursor >= 0 && cursor < bag.size()) {
+				previewOpen = true;
+				AudioController.Effect.SELECT.play();
+			} else {
+				AudioController.Effect.INVALID.play();
+			}
+			break;
+		case Input.KEY_DELETE:
+		case Input.KEY_X:
+		case Input.KEY_BACK:
+			removeFromPick();
+			break;
 		case Input.KEY_S:
 			tryPickSave();
 			break;
 		case Input.KEY_ENTER:
-			if (selected.size() != SavedDeck.SIZE) {
-				AudioController.Effect.INVALID.play();
-				return;
-			}
-			AudioController.Effect.SELECT.play();
-			game.championshipHandChosen(selectedIds());
+			confirmPickHand();
 			break;
 		default:
 			break;
@@ -599,6 +706,21 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private void keyTradeWin(int key) {
+		if (previewOpen) {
+			if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
+				previewOpen = false;
+				AudioController.Effect.BACK.play();
+			} else if (key == Input.KEY_LEFT && tradeIndex > 0) {
+				tradeIndex--;
+				AudioController.playCursor();
+			} else if (key == Input.KEY_RIGHT && tradeIndex < shownIds.length - 1) {
+				tradeIndex++;
+				AudioController.playCursor();
+			} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
+				takeTrade();
+			}
+			return;
+		}
 		switch (key) {
 		case Input.KEY_LEFT:
 			if (tradeIndex > 0) {
@@ -610,6 +732,12 @@ public class ChampionshipScreen extends Screen {
 			if (tradeIndex < shownIds.length - 1) {
 				tradeIndex++;
 				AudioController.playCursor();
+			}
+			break;
+		case Input.KEY_C:
+			if (shownIds.length > 0) {
+				previewOpen = true;
+				AudioController.Effect.SELECT.play();
 			}
 			break;
 		case Input.KEY_Z:
@@ -664,6 +792,26 @@ public class ChampionshipScreen extends Screen {
 			return;
 		}
 		togglePick();
+	}
+
+	private void confirmPickHand() {
+		if (selected.size() != SavedDeck.SIZE) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		AudioController.Effect.SELECT.play();
+		game.championshipHandChosen(selectedIds());
+	}
+
+	private void removeFromPick() {
+		Integer key = Integer.valueOf(cursor);
+		int pos = selected.indexOf(key);
+		if (pos < 0) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		selected.remove(pos);
+		AudioController.Effect.BACK.play();
 	}
 
 	private void takeTrade() {
