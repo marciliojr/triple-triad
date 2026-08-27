@@ -5,14 +5,16 @@
 - JDK **21+** para compilar e rodar (`source/target` 21)
 - Gradle Wrapper 9.1.0 (o daemon sobe em JVM 17–25; o jogo exige 21)
 - `./gradlew run` com `workingDir` na raiz
-- Dependências no Maven Central: libGDX 1.13.1, backend `lwjgl3`, `natives-desktop`, FreeType
+- Dependências no Maven Central: libGDX 1.14.2, backend `lwjgl3`, `natives-desktop`, FreeType
+- Versão do projeto em `gradle.properties` (`version=0.6.0`)
 - Entry point: `itdelatrisu.tripletriad.TripleTriad`
+- `./gradlew distZip` empacota `res/` e `cards/` junto com o jar
 
 ## Assets
 
 - `res/` — UI, sprites, BGM (`bgm.ogg`), SFX, fonte `OpenSans-Light.ttf`, ícones
 - `cards/` — `deck.txt` e `{id:03d}.png`
-- Resolução via `itdelatrisu.tripletriad.gfx.Assets` (cwd, não classpath)
+- Resolução via `itdelatrisu.tripletriad.gfx.Assets` (cwd primeiro; depois a pasta de instalação do zip)
 
 ## Camada gráfica
 

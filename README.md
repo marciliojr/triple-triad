@@ -32,7 +32,7 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1, partida qu
 - Dependências no Maven Central; natives do SO baixadas pelo Gradle
 
 **Apresentação**
-- Slick2D + LWJGL 2 e a pasta `native/` foram trocados por **libGDX** 1.13.1 (LWJGL 3 no backend)
+- Slick2D + LWJGL 2 e a pasta `native/` foram trocados por **libGDX** 1.14.2 (LWJGL 3 no backend)
 - Camada fina em `itdelatrisu.tripletriad.gfx` para janela, input, sprites, fonte TTF com acentos PT-BR/ES e áudio
 - Arte e som continuam em `res/` e `cards/` (nada redesenhado)
 
@@ -67,6 +67,7 @@ O diretório de trabalho é a raiz: sprites, fontes e áudio em `res/`, catálog
 
 ```bash
 ./gradlew build   # compila (bytecode Java 21)
+./gradlew distZip # zip jogável em build/distributions/ (inclui res/ e cards/)
 ./gradlew clean
 ```
 

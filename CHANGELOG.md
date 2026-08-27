@@ -6,6 +6,12 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-26
+
+Meu Deck, persistência da run do Campeonato, confirmação ao sair da partida, libGDX 1.14.2 e esteira de CI/Release.
+
+### Added
+
 - Esc na partida abre confirmação (Não / Sim; default Não) para evitar saída acidental
 - Aviso na tela ao salvar o progresso do Campeonato no pick
 - **Meu Deck**: álbum permanente (duplicatas ok; preview no tamanho da partida; Del remove)
@@ -14,6 +20,13 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Jogo Rápido pode montar 5 cartas a partir de Meu Deck
 - Empate no Campeonato refaz a luta com as 5 originais de cada lado (sem misturar donos)
 - Menu: Jogo Rápido, Campeonato, Meu Deck, Versus, Como Jogar, Configurações
+- Distribuição `./gradlew distZip` inclui `res/` e `cards/` (artefato da GitHub Release)
+- Esteira GitHub Actions: build no PR; tag SemVer e Release no merge na `master`
+
+### Changed
+
+- libGDX **1.13.1 → 1.14.2**
+- Assets também resolvem a partir da pasta de instalação do zip (`lib/../res`, `lib/../cards`)
 
 ## [0.5.0] - 2026-08-26
 

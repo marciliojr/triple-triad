@@ -22,12 +22,16 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.security.CodeSource;
 
 import com.badlogic.gdx.files.FileHandle;
 
 /**
  * Resolves game files from {@code res/} and {@code cards/} relative to the
- * working directory (project root).
+ * working directory (project root) or the installation directory of a
+ * {@code distZip} (parent of {@code lib/}).
  */
 public final class Assets {
 	// This class should not be instantiated.
@@ -39,12 +43,16 @@ public final class Assets {
 	 * @return the file (may not exist)
 	 */
 	public static File file(String name) {
-		File res = new File("res", name);
-		if (res.isFile())
-			return res;
-		File cards = new File("cards", name);
-		if (cards.isFile())
-			return cards;
+		for (File root : searchRoots()) {
+			if (root == null)
+				continue;
+			File res = new File(new File(root, "res"), name);
+			if (res.isFile())
+				return res;
+			File cards = new File(new File(root, "cards"), name);
+			if (cards.isFile())
+				return cards;
+		}
 		return new File(name);
 	}
 
@@ -65,5 +73,32 @@ public final class Assets {
 	 */
 	public static InputStream open(String name) throws FileNotFoundException {
 		return new FileInputStream(file(name));
+	}
+
+	/** cwd first, then the folder that contains {@code res/} next to {@code lib/}. */
+	private static File[] searchRoots() {
+		return new File[] { new File("."), installRoot() };
+	}
+
+	/**
+	 * Installation root when running from {@code lib/*.jar}; otherwise {@code null}.
+	 */
+	private static File installRoot() {
+		try {
+			CodeSource source = Assets.class.getProtectionDomain().getCodeSource();
+			if (source == null || source.getLocation() == null)
+				return null;
+			URI uri = source.getLocation().toURI();
+			File location = new File(uri);
+			if (location.isFile()) {
+				File libDir = location.getParentFile();
+				if (libDir != null && "lib".equals(libDir.getName()))
+					return libDir.getParentFile();
+				return libDir;
+			}
+			return null;
+		} catch (URISyntaxException | IllegalArgumentException e) {
+			return null;
+		}
 	}
 }

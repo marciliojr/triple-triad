@@ -2,7 +2,7 @@
 
 Branch de trabalho típica: `feat/libgdx-java17`.
 
-Último marco: confirmação ao sair da partida (Esc) e aviso de progresso salvo no pick do Campeonato.
+Último marco: 0.6.0 — Meu Deck, save da run, Esc com confirmação, libGDX 1.14.2 e esteira CI/Release na `master`.
 
 ## Ao continuar
 

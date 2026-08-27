@@ -16,6 +16,9 @@
 - [x] Campeonato (8 rounds, lobby Novo/Continuar/Apagar progresso, bag da run, save no pick)
 - [x] Esc na partida pede confirmação (Não / Sim) para evitar toque acidental
 - [x] Aviso “progresso salvo” após Salvar no pick do Campeonato
+- [x] libGDX 1.14.2
+- [x] `distZip` com `res/` e `cards/`
+- [x] GitHub Actions: build no PR; tag + Release no merge na `master`
 
 ## Não feito (de propósito)
 
