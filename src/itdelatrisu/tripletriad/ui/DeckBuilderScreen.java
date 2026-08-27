@@ -62,6 +62,9 @@ public class DeckBuilderScreen extends Screen {
 	/** Original deck being edited, or null if creating. */
 	private SavedDeck editing;
 
+	/** Catalog index shown full size, or -1. */
+	private int previewIndex = -1;
+
 	/**
 	 * Constructor.
 	 * @param game the game
@@ -81,6 +84,7 @@ public class DeckBuilderScreen extends Screen {
 		naming = false;
 		cursor = 0;
 		scrollRow = 0;
+		previewIndex = -1;
 		if (existing != null) {
 			name.append(existing.getName());
 			int[] ids = existing.getCardIds();
@@ -158,6 +162,9 @@ public class DeckBuilderScreen extends Screen {
 		if (cursor >= 0 && cursor < cards.size())
 			Ui.drawCentered(small, cards.get(cursor).getName(), height * 0.86f, Ui.SELECTED);
 
+		if (previewIndex >= 0 && previewIndex < cards.size())
+			Ui.drawCardPreview(g, catalog, cards.get(previewIndex).getID());
+
 		if (naming) {
 			g.setColor(new Color(0f, 0f, 0f, 0.7f));
 			g.fillRect(0, height * 0.38f, width, height * 0.24f);
@@ -165,6 +172,8 @@ public class DeckBuilderScreen extends Screen {
 			String shown = name.length() == 0 ? "_" : name.toString() + "_";
 			Ui.drawCentered(font, shown, height * 0.48f, Ui.SELECTED);
 			Ui.drawCentered(small, I18n.hintNaming(), height * 0.56f, Ui.HINT);
+		} else if (previewIndex >= 0) {
+			Ui.drawCentered(small, I18n.hintCardPreview(), height * 0.92f, Ui.HINT);
 		} else {
 			Ui.drawCentered(small, I18n.hintBuilder(),
 					height * 0.92f, Ui.HINT);
@@ -179,6 +188,32 @@ public class DeckBuilderScreen extends Screen {
 		}
 
 		ArrayList<Card> cards = game.getDeck().getCards();
+		if (previewIndex >= 0) {
+			if (key == Input.KEY_LEFT) {
+				if (previewIndex > 0) {
+					previewIndex--;
+					cursor = previewIndex;
+					AudioController.playCursor();
+				}
+			} else if (key == Input.KEY_RIGHT) {
+				if (previewIndex < cards.size() - 1) {
+					previewIndex++;
+					cursor = previewIndex;
+					AudioController.playCursor();
+				}
+			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
+				previewIndex = -1;
+				AudioController.Effect.BACK.play();
+			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+				removeFromTray();
+			} else if (key == Input.KEY_Z) {
+				toggleCursor();
+			} else if (key == Input.KEY_ENTER) {
+				playIfReady();
+			}
+			return;
+		}
+
 		int cols = columns();
 		int rows = (cards.size() + cols - 1) / cols;
 		int row = cursor / cols;
@@ -221,6 +256,14 @@ public class DeckBuilderScreen extends Screen {
 		case Input.KEY_ENTER:
 			playIfReady();
 			break;
+		case Input.KEY_C:
+			openPreview();
+			break;
+		case Input.KEY_DELETE:
+		case Input.KEY_X:
+		case Input.KEY_BACK:
+			removeFromTray();
+			break;
 		case Input.KEY_S:
 			beginSave();
 			break;
@@ -233,6 +276,11 @@ public class DeckBuilderScreen extends Screen {
 	public void mousePressed(int button, int x, int y) {
 		if (button != Input.MOUSE_LEFT_BUTTON || naming)
 			return;
+		if (previewIndex >= 0) {
+			previewIndex = -1;
+			AudioController.Effect.BACK.play();
+			return;
+		}
 
 		int slot = hitSlot(x, y);
 		if (slot >= 0) {
@@ -256,7 +304,7 @@ public class DeckBuilderScreen extends Screen {
 
 	@Override
 	public void mouseWheelMoved(int change) {
-		if (naming)
+		if (naming || previewIndex >= 0)
 			return;
 		ArrayList<Card> cards = game.getDeck().getCards();
 		int cols = columns();
@@ -294,6 +342,32 @@ public class DeckBuilderScreen extends Screen {
 		}
 		if (Ui.isNameChar(c) && name.length() < MAX_NAME)
 			name.append(c);
+	}
+
+	private void openPreview() {
+		ArrayList<Card> cards = game.getDeck().getCards();
+		if (cursor < 0 || cursor >= cards.size()) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		previewIndex = cursor;
+		AudioController.Effect.SELECT.play();
+	}
+
+	private void removeFromTray() {
+		ArrayList<Card> cards = game.getDeck().getCards();
+		int index = (previewIndex >= 0) ? previewIndex : cursor;
+		if (index < 0 || index >= cards.size()) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		int pos = indexOfId(cards.get(index).getID());
+		if (pos < 0) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		selectedIds.remove(pos);
+		AudioController.Effect.BACK.play();
 	}
 
 	private void beginSave() {

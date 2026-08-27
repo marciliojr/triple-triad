@@ -18,8 +18,11 @@
 
 package itdelatrisu.tripletriad.ui;
 
+import itdelatrisu.tripletriad.Card;
+import itdelatrisu.tripletriad.Deck;
 import itdelatrisu.tripletriad.GameImage;
 import itdelatrisu.tripletriad.Options;
+import itdelatrisu.tripletriad.TripleTriad;
 
 import itdelatrisu.tripletriad.gfx.Color;
 import itdelatrisu.tripletriad.gfx.Graphics;
@@ -76,5 +79,27 @@ public final class Ui {
 	 */
 	public static boolean isNameChar(char c) {
 		return Character.isLetterOrDigit(c) || c == ' ' || c == '-' || c == '_';
+	}
+
+	/**
+	 * Draws a full-size card preview over a dimmed screen.
+	 * @param g the graphics context
+	 * @param catalog the card catalog
+	 * @param cardId the card ID
+	 */
+	public static void drawCardPreview(Graphics g, Deck catalog, int cardId) {
+		int width = Options.getWidth();
+		int height = Options.getHeight();
+		g.setColor(new Color(0f, 0f, 0f, 0.72f));
+		g.fillRect(0, 0, width, height);
+		if (catalog == null)
+			return;
+		Card source = catalog.getCardById(cardId);
+		if (source == null)
+			return;
+		Card card = new Card(source);
+		card.setOwner(TripleTriad.PLAYER);
+		float size = Options.getCardLength();
+		card.draw((width - size) / 2f, (height - size) / 2f);
 	}
 }

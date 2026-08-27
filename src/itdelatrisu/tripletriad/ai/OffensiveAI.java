@@ -45,33 +45,30 @@ public class OffensiveAI extends AI {
 		ArrayList<Integer> spaces = emptySpaces();
 		int handSize = hand.size();
 
-		// use lowest level card possible, except if starting second and on last turn
-		boolean useLowestLevel = ((spaces.size() % 2 > 0) || handSize != 2);
-
-		// find move with max number of captured cards
 		int maxCapture = -1;
-		int nextLevel = -1;
+		int bestRankDiff = Integer.MAX_VALUE;
+		ArrayList<Move> best = new ArrayList<Move>();
 		for (int space : spaces) {
 			for (int index = 0; index < handSize; index++) {
 				Card c = hand.get(index);
 				CardResult result = new CardResult(c, space, board, elements);
 				int capturedCount = result.getCapturedCount();
+				int rankDiff = getRankDiff(c, space);
 				if (capturedCount > maxCapture ||
-					(capturedCount == maxCapture && (
-						(useLowestLevel && c.getLevel() < nextLevel) ||
-						(!useLowestLevel && c.getLevel() > nextLevel)
-					)
-				)) {
+					(capturedCount == maxCapture && rankDiff < bestRankDiff)) {
 					maxCapture = capturedCount;
-					nextLevel = c.getLevel();
-					nextIndex = index;
-					nextPosition = space;
+					bestRankDiff = rankDiff;
+					best.clear();
+					best.add(new Move(index, space));
+				} else if (capturedCount == maxCapture && rankDiff == bestRankDiff) {
+					best.add(new Move(index, space));
 				}
 			}
 		}
 
-		// no capture possible: find lowest total rank difference
 		if (maxCapture == 0)
 			useMinRankDiff(spaces);
+		else
+			pickRandomMove(best);
 	}
 }

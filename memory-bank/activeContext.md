@@ -1,8 +1,8 @@
 # Active context
 
-Branch de trabalho típica: `feat/libgdx-java17`.
+Branch de trabalho típica: `feat/perfis-e-jogo-rapido`.
 
-Último marco: 0.6.0 — Meu Deck, save da run, Esc com confirmação, libGDX 1.14.2 e esteira CI/Release na `master`.
+Último marco: **0.7.0** — preview com C, teclas Z/X/C/Esc, dificuldade da IA, vários perfis, deck aleatório, Versus fora do menu.
 
 ## Ao continuar
 
@@ -10,7 +10,7 @@ Branch de trabalho típica: `feat/libgdx-java17`.
 - Novas telas: implementar `ui.Screen` e um valor em `GameScreen`
 - Textos de UI: adicionar em `I18n` (PT/EN/ES), não hardcode
 - Assets novos: soltar em `res/` ou `cards/` e carregar pelo nome do arquivo
-- Versus: só quando o produto pedir; o menu já reserva a entrada
+- Versus: só quando o produto pedir; não está no menu
 
 ## Dívida conhecida
 

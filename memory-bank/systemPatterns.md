@@ -30,4 +30,4 @@ Campeonato: `ChampionshipRun` (round, mãos, bag da run, IA por round). Álbum e
 
 ## Input
 
-Constantes `gfx.Input` = códigos libGDX. Z/Enter confirmam; Esc no menu/perfil sai. Na partida, Esc abre overlay de confirmação (Não / Sim; default Não) em vez de sair na hora. F5 rematch só no Jogo Rápido.
+Constantes `gfx.Input` = códigos libGDX. Mapa da UI: **Z** seleciona, **X**/Del remove, **C** amplia (`Ui.drawCardPreview`), **Esc** volta. Nos menus Z e Enter confirmam. Na partida, Esc abre overlay de confirmação (Não / Sim; default Não); **X** cancela a casa do tabuleiro. F5 rematch só no Jogo Rápido.

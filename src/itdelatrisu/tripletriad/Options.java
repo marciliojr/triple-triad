@@ -130,6 +130,15 @@ public class Options {
 	public static AIType getOpponentAI() { return opponentAI; }
 
 	/**
+	 * Sets the opponent AI type.
+	 * @param value the AIType
+	 */
+	public static void setOpponentAI(AIType value) {
+		if (value != null)
+			opponentAI = value;
+	}
+
+	/**
 	 * Returns whether background music is enabled.
 	 * @return true if enabled
 	 */

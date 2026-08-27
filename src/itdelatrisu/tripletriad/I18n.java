@@ -90,9 +90,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipLobby() {
-		return pick("Cima/baixo escolhe    Enter confirma    Esc voltar",
-			"Up/down selects    Enter confirms    Esc back",
-			"Arriba/abajo elige    Enter confirma    Esc volver");
+		return pick("Cima/baixo escolhe    Z/Enter confirma    Esc voltar",
+			"Up/down selects    Z/Enter confirms    Esc back",
+			"Arriba/abajo elige    Z/Enter confirma    Esc volver");
 	}
 
 	public static String championshipPackTitle() {
@@ -100,9 +100,9 @@ public final class I18n {
 	}
 
 	public static String championshipPackHint() {
-		return pick("Cinco cartas aleat\u00f3rias. Enter inicia a luta.",
-			"Five random cards. Enter starts the match.",
-			"Cinco cartas aleatorias. Enter inicia el combate.");
+		return pick("Cinco cartas aleat\u00f3rias. C amplia. Z/Enter inicia a luta.",
+			"Five random cards. C enlarges. Z/Enter starts the match.",
+			"Cinco cartas aleatorias. C amplia. Z/Enter inicia el combate.");
 	}
 
 	public static String championshipPickTitle() {
@@ -118,9 +118,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipPick() {
-		return pick("S salva    Z adiciona/remove    Enter jogar    Esc lobby",
-			"S save    Z add/remove    Enter play    Esc lobby",
-			"S guarda    Z a\u00f1ade/quita    Enter jugar    Esc lobby");
+		return pick("Z seleciona    X tira    C amplia    S salva    Enter jogar    Esc lobby",
+			"Z selects    X removes    C enlarges    S save    Enter play    Esc lobby",
+			"Z selecciona    X quita    C amplia    S guarda    Enter jugar    Esc lobby");
 	}
 
 	public static String championshipTradeWin() {
@@ -144,7 +144,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipConfirm() {
-		return pick("Enter continua    Esc menu", "Enter continues    Esc menu", "Enter sigue    Esc men\u00fa");
+		return pick("Z/Enter continua    C amplia    Esc menu",
+			"Z/Enter continues    C enlarges    Esc menu",
+			"Z/Enter sigue    C amplia    Esc men\u00fa");
 	}
 
 	public static String hintChampionshipEnd() {
@@ -152,13 +154,13 @@ public final class I18n {
 	}
 
 	public static String hintMenu() {
-		return pick("Enter seleciona    Esc sai", "Enter selects    Esc quits", "Enter selecciona    Esc sale");
+		return pick("Z/Enter seleciona    Esc sai", "Z/Enter selects    Esc quits", "Z/Enter selecciona    Esc sale");
 	}
 
 	public static String hintEscBack() {
-		return pick("Cima/baixo escolhe    Enter altera    Esc voltar",
-			"Up/down selects    Enter changes    Esc back",
-			"Arriba/abajo elige    Enter cambia    Esc volver");
+		return pick("Cima/baixo escolhe    Z/Enter altera    Esc voltar",
+			"Up/down selects    Z/Enter changes    Esc back",
+			"Arriba/abajo elige    Z/Enter cambia    Esc volver");
 	}
 
 	public static String confirmLeaveMatch() {
@@ -224,9 +226,9 @@ public final class I18n {
 	}
 
 	public static String hintProfiles() {
-		return pick("Enter troca    Del apaga    Esc voltar",
-			"Enter switches    Del deletes    Esc back",
-			"Enter cambia    Del borra    Esc volver");
+		return pick("Z/Enter troca    Del apaga    Esc voltar",
+			"Z/Enter switches    Del deletes    Esc back",
+			"Z/Enter cambia    Del borra    Esc volver");
 	}
 
 	public static String profilesCount(int n) {
@@ -260,19 +262,27 @@ public final class I18n {
 	}
 
 	public static String hintMyDeck() {
-		return pick("Z amplia    Del remove    Esc voltar",
-			"Z enlarges    Del removes    Esc back",
-			"Z amplia    Del quita    Esc volver");
+		return pick("C amplia    X/Del remove    Esc voltar",
+			"C enlarges    X/Del removes    Esc back",
+			"C amplia    X/Del quita    Esc volver");
 	}
 
 	public static String hintMyDeckPreview() {
-		return pick("Esc fecha    Del remove", "Esc closes    Del removes", "Esc cierra    Del quita");
+		return pick("Esquerda/direita    X/Del remove    Esc/C fecha",
+			"Left/right    X/Del removes    Esc/C closes",
+			"Izquierda/derecha    X/Del quita    Esc/C cierra");
 	}
 
 	public static String hintMyDeckPick() {
-		return pick("Z adiciona/remove    Enter jogar    Esc voltar",
-			"Z add/remove    Enter play    Esc back",
-			"Z a\u00f1ade/quita    Enter jugar    Esc volver");
+		return pick("Z seleciona    X tira    C amplia    Enter jogar    Esc voltar",
+			"Z selects    X removes    C enlarges    Enter play    Esc back",
+			"Z selecciona    X quita    C amplia    Enter jugar    Esc volver");
+	}
+
+	public static String hintCardPreview() {
+		return pick("Esquerda/direita cartas    Esc/C fecha",
+			"Left/right cards    Esc/C closes",
+			"Izquierda/derecha cartas    Esc/C cierra");
 	}
 
 	public static String rulesTitle() {
@@ -288,15 +298,21 @@ public final class I18n {
 	}
 
 	public static String hintDeckRules() {
-		return pick("Cima/baixo escolhe    Enter liga/desliga    Esquerda decks    Esc voltar",
-			"Up/down selects    Enter toggles    Left decks    Esc back",
-			"Arriba/abajo elige    Enter activa/desactiva    Izquierda mazos    Esc volver");
+		return pick("Cima/baixo escolhe    Z/Enter liga/desliga    Esquerda decks    Esc voltar",
+			"Up/down selects    Z/Enter toggles    Left decks    Esc back",
+			"Arriba/abajo elige    Z/Enter activa/desactiva    Izquierda mazos    Esc volver");
 	}
 
 	public static String hintDeckList() {
-		return pick("Enter jogar    E editar    Del apagar    Direita regras    Esc voltar",
-			"Enter play    E edit    Del delete    Right rules    Esc back",
-			"Enter jugar    E editar    Del borrar    Derecha reglas    Esc volver");
+		return pick("Z/Enter jogar    C amplia    E editar    X/Del apagar    Direita regras    Esc voltar",
+			"Z/Enter play    C enlarges    E edit    X/Del delete    Right rules    Esc back",
+			"Z/Enter jugar    C amplia    E editar    X/Del borrar    Derecha reglas    Esc volver");
+	}
+
+	public static String hintDeckPreview() {
+		return pick("Esquerda/direita cartas    Esc/C fecha    X apaga deck",
+			"Left/right cards    Esc/C closes    X deletes deck",
+			"Izquierda/derecha cartas    Esc/C cierra    X borra mazo");
 	}
 
 	public static String buildDeck() {
@@ -320,9 +336,9 @@ public final class I18n {
 	}
 
 	public static String hintBuilder() {
-		return pick("Z adiciona    S salvar    Enter jogar    Esc voltar",
-			"Z add    S save    Enter play    Esc back",
-			"Z a\u00f1ade    S guardar    Enter jugar    Esc volver");
+		return pick("Z seleciona    X tira    C amplia    S salvar    Enter jogar    Esc voltar",
+			"Z selects    X removes    C enlarges    S save    Enter play    Esc back",
+			"Z selecciona    X quita    C amplia    S guardar    Enter jugar    Esc volver");
 	}
 
 	public static String hintHowTo() {
@@ -345,6 +361,22 @@ public final class I18n {
 
 	public static String settingsLanguage() {
 		return pick("Idioma", "Language", "Idioma");
+	}
+
+	public static String settingsDifficulty() {
+		return pick("Dificuldade da IA", "AI difficulty", "Dificultad de la IA");
+	}
+
+	public static String difficultyEasy() {
+		return pick("F\u00e1cil", "Easy", "F\u00e1cil");
+	}
+
+	public static String difficultyNormal() {
+		return pick("Normal", "Normal", "Normal");
+	}
+
+	public static String difficultyHard() {
+		return pick("Dif\u00edcil", "Hard", "Dif\u00edcil");
 	}
 
 	public static String languageName(Lang lang) {
@@ -422,13 +454,13 @@ public final class I18n {
 		"Morte s\u00fabita: empate inicia uma nova rodada com as cartas que cada um controlava.",
 		"",
 		"#Jogo R\u00e1pido",
-		"Partida contra a IA. Escolha Meu Deck (cinco cartas do \u00e1lbum), Deck aleat\u00f3rio, um deck novo ou um deck salvo. As regras ficam \u00e0 direita. F5 recome\u00e7a com o mesmo deck.",
+		"Partida contra a IA. Escolha Meu Deck (cinco cartas do \u00e1lbum), Deck aleat\u00f3rio, um deck novo ou um deck salvo. C amplia as cartas. As regras ficam \u00e0 direita. F5 recome\u00e7a com o mesmo deck.",
 		"",
 		"#Campeonato",
-		"Oito partidas contra a IA. Se o \u00e1lbum tiver menos de cinco cartas, a primeira partida cria um pack inicial. Ao vencer, pegue uma carta do advers\u00e1rio. O \u00e1lbum e as copas permanecem quando a run termina.",
+		"Oito partidas contra a IA. Se o \u00e1lbum tiver menos de cinco cartas, a primeira partida cria um pack inicial. Ao vencer, pegue uma carta do advers\u00e1rio. C amplia as cartas no pack, no pick e na troca. O \u00e1lbum e as copas permanecem quando a run termina.",
 		"",
 		"#Meu Deck e perfis",
-		"Meu Deck \u00e9 o \u00e1lbum da cole\u00e7\u00e3o. Em Configura\u00e7\u00f5es d\u00e1 para editar o nome, criar outros jogadores e trocar de perfil. Cada perfil guarda o pr\u00f3prio \u00e1lbum e os decks.",
+		"Meu Deck \u00e9 o \u00e1lbum da cole\u00e7\u00e3o. C amplia; X ou Del remove uma c\u00f3pia. Em Configura\u00e7\u00f5es d\u00e1 para editar o nome, criar outros jogadores, trocar de perfil e escolher a dificuldade da IA. Cada perfil guarda o pr\u00f3prio \u00e1lbum e os decks.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -457,13 +489,13 @@ public final class I18n {
 		"Sudden Death: a draw starts a new round with the cards each player controlled.",
 		"",
 		"#Quick Game",
-		"A match against the AI. Choose My Deck (five cards from the album), Random deck, a new deck, or a saved deck. Rules are on the right. F5 rematches with the same deck.",
+		"A match against the AI. Choose My Deck (five cards from the album), Random deck, a new deck, or a saved deck. C enlarges cards. Rules are on the right. F5 rematches with the same deck.",
 		"",
 		"#Championship",
-		"Eight matches against the AI. If the album has fewer than five cards, match 1 creates a starter pack. After a win, take one opponent card. The album and cups stay when the run ends.",
+		"Eight matches against the AI. If the album has fewer than five cards, match 1 creates a starter pack. After a win, take one opponent card. C enlarges cards in the pack, pick, and trade. The album and cups stay when the run ends.",
 		"",
 		"#My Deck and profiles",
-		"My Deck is the collection album. In Settings you can edit the name, create other players, and switch profiles. Each profile keeps its own album and decks.",
+		"My Deck is the collection album. C enlarges; X or Del removes one copy. In Settings you can edit the name, create other players, switch profiles, and set AI difficulty. Each profile keeps its own album and decks.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -492,13 +524,13 @@ public final class I18n {
 		"Muerte s\u00fabita: el empate inicia una nueva ronda con las cartas que cada uno controlaba.",
 		"",
 		"#Partida r\u00e1pida",
-		"Partida contra la IA. Elige Mi mazo (cinco cartas del \u00e1lbum), Mazo aleatorio, un mazo nuevo o un mazo guardado. Las reglas est\u00e1n a la derecha. F5 reinicia con el mismo mazo.",
+		"Partida contra la IA. Elige Mi mazo (cinco cartas del \u00e1lbum), Mazo aleatorio, un mazo nuevo o un mazo guardado. C amplia las cartas. Las reglas est\u00e1n a la derecha. F5 reinicia con el mismo mazo.",
 		"",
 		"#Campeonato",
-		"Ocho partidas contra la IA. Si el \u00e1lbum tiene menos de cinco cartas, la primera partida crea un sobre inicial. Al ganar, toma una carta del rival. El \u00e1lbum y las copas permanecen cuando termina la ronda.",
+		"Ocho partidas contra la IA. Si el \u00e1lbum tiene menos de cinco cartas, la primera partida crea un sobre inicial. Al ganar, toma una carta del rival. C amplia las cartas en el sobre, la elecci\u00f3n y el intercambio. El \u00e1lbum y las copas permanecen cuando termina la ronda.",
 		"",
 		"#Mi mazo y perfiles",
-		"Mi mazo es el \u00e1lbum de la colecci\u00f3n. En Ajustes puedes editar el nombre, crear otros jugadores y cambiar de perfil. Cada perfil guarda su propio \u00e1lbum y mazos.",
+		"Mi mazo es el \u00e1lbum de la colecci\u00f3n. C amplia; X o Del quita una copia. En Ajustes puedes editar el nombre, crear otros jugadores, cambiar de perfil y elegir la dificultad de la IA. Cada perfil guarda su propio \u00e1lbum y mazos.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

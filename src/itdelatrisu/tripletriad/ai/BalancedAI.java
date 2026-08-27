@@ -45,16 +45,11 @@ public class BalancedAI extends AI {
 		int handSize = hand.size();
 		ArrayList<Integer> spaces = emptySpaces();
 
-		// use lowest level card possible, except if starting second and on last turn
-		boolean useLowestLevel = ((spaces.size() % 2 > 0) || handSize != 2);
-
-		// if losing, use less placement restrictions
 		boolean isLosing = (thisScore < thatScore);
 
-		// find move with max number of captured cards
 		int maxCapture = -1;
 		int nextRankDiff = 41;
-		int nextLevel = -1;
+		ArrayList<Move> best = new ArrayList<Move>();
 		for (int space : spaces) {
 			for (int index = 0; index < handSize; index++) {
 				Card c = hand.get(index);
@@ -62,38 +57,37 @@ public class BalancedAI extends AI {
 				int capturedCount = result.getCapturedCount();
 				int rankDiff = getRankDiff(c, space);
 
-				// determine whether or not to use this result...
-				boolean isValid = false;
+				boolean better = false;
+				boolean equal = false;
 				if (maxCapture == -1)
-					isValid = true;
+					better = true;
 				else if (capturedCount > maxCapture) {
 					if (capturedCount > 2 || nextRankDiff - rankDiff > -5 || isLosing)
-						isValid = true;
+						better = true;
 				} else if (capturedCount == maxCapture) {
-					if (rankDiff < nextRankDiff ||
-						(rankDiff == nextRankDiff && (
-							(useLowestLevel && c.getLevel() < nextLevel) ||
-							(!useLowestLevel && c.getLevel() > nextLevel)
-						)
-					))
-						isValid = true;
+					if (rankDiff < nextRankDiff)
+						better = true;
+					else if (rankDiff == nextRankDiff)
+						equal = true;
 				} else if (capturedCount == maxCapture - 1 && !isLosing) {
 					if (nextRankDiff - rankDiff > 5)
-						isValid = true;
+						better = true;
 				}
 
-				if (isValid) {
+				if (better) {
 					maxCapture = capturedCount;
 					nextRankDiff = rankDiff;
-					nextLevel = c.getLevel();
-					nextIndex = index;
-					nextPosition = space;
+					best.clear();
+					best.add(new Move(index, space));
+				} else if (equal) {
+					best.add(new Move(index, space));
 				}
 			}
 		}
 
-		// no capture possible: find lowest total rank difference
 		if (maxCapture == 0 && spaces.size() != 9)
 			useMinRankDiff(spaces);
+		else
+			pickRandomMove(best);
 	}
 }
