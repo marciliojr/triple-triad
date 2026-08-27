@@ -18,8 +18,8 @@
 
 package itdelatrisu.tripletriad;
 
-import org.newdawn.slick.Image;
-import org.newdawn.slick.util.Log;
+import itdelatrisu.tripletriad.gfx.Image;
+import itdelatrisu.tripletriad.gfx.Log;
 
 /**
  * Game images.

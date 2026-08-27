@@ -18,10 +18,10 @@
 
 package itdelatrisu.tripletriad;
 
-import org.newdawn.slick.Music;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.Sound;
-import org.newdawn.slick.util.Log;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.Music;
+import itdelatrisu.tripletriad.gfx.SlickException;
+import itdelatrisu.tripletriad.gfx.Sound;
 
 /**
  * Controller for all audio.
@@ -73,6 +73,26 @@ public class AudioController {
 		public void play() { if (sound != null) sound.play(); }
 	}
 
+	/**
+	 * Plays the cursor navigation sound if it is enabled.
+	 */
+	public static void playCursor() {
+		if (Options.isCursorSoundEnabled())
+			Effect.SELECT.play();
+	}
+
+	/**
+	 * Starts or pauses the BGM according to the music option.
+	 */
+	public static void applyMusic() {
+		if (bgm == null)
+			return;
+		if (Options.isMusicEnabled())
+			bgm.loop();
+		else
+			bgm.pause();
+	}
+
 	// This class should not be instantiated.
 	private AudioController() {}
 
@@ -82,7 +102,7 @@ public class AudioController {
 	public static void init() {
 		try {
 			bgm = new Music("bgm.ogg");
-			bgm.loop();
+			applyMusic();
 			Effect.init();
 		} catch (SlickException e) {
 			Log.error("Failed to load audio.", e);

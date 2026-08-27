@@ -1,9 +1,19 @@
 /.triple-triad.log
 /.triple-triad.cfg
+/.triple-triad-profile
 
 # Eclipse
 /.settings/
 /bin/
 .metadata
+
+# Gradle
+.gradle/
+build/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
 
 Thumbs.db

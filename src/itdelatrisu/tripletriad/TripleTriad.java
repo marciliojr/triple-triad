@@ -23,6 +23,16 @@ import itdelatrisu.tripletriad.ai.BalancedAI;
 import itdelatrisu.tripletriad.ai.DefensiveAI;
 import itdelatrisu.tripletriad.ai.OffensiveAI;
 import itdelatrisu.tripletriad.ai.RandomAI;
+import itdelatrisu.tripletriad.ui.ChampionshipScreen;
+import itdelatrisu.tripletriad.ui.DeckBuilderScreen;
+import itdelatrisu.tripletriad.ui.DeckSelectScreen;
+import itdelatrisu.tripletriad.ui.HowToPlayScreen;
+import itdelatrisu.tripletriad.ui.MenuScreen;
+import itdelatrisu.tripletriad.ui.MyDeckScreen;
+import itdelatrisu.tripletriad.ui.ProfileScreen;
+import itdelatrisu.tripletriad.ui.Screen;
+import itdelatrisu.tripletriad.ui.SettingsScreen;
+import itdelatrisu.tripletriad.ui.Ui;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -32,18 +42,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.GameContainer;
-import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.util.DefaultLogSystem;
-import org.newdawn.slick.util.FileSystemLocation;
-import org.newdawn.slick.util.Log;
-import org.newdawn.slick.util.ResourceLoader;
+import itdelatrisu.tripletriad.gfx.AppGameContainer;
+import itdelatrisu.tripletriad.gfx.BasicGame;
+import itdelatrisu.tripletriad.gfx.Color;
+import itdelatrisu.tripletriad.gfx.GameContainer;
+import itdelatrisu.tripletriad.gfx.Graphics;
+import itdelatrisu.tripletriad.gfx.Image;
+import itdelatrisu.tripletriad.gfx.Input;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.SlickException;
+import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
  * Main class.
@@ -109,8 +117,38 @@ public class TripleTriad extends BasicGame {
 	/** Spinner. */
 	private Spinner spinner;
 
+	/** True while the leave-match confirmation overlay is open. */
+	private boolean leaveConfirm;
+
+	/** 0 = stay, 1 = leave. */
+	private int leaveChoice;
+
 	/** Game container. */
 	private GameContainer container;
+
+	/** Active screen. */
+	private GameScreen currentScreen;
+
+	/** Player profile. */
+	private Profile profile;
+
+	/** Menu screens. */
+	private Screen profileScreen, menuScreen, deckSelectScreen, howToPlayScreen, settingsScreen;
+	private DeckBuilderScreen deckBuilderScreen;
+	private ChampionshipScreen championshipScreen;
+	private MyDeckScreen myDeckScreen;
+
+	/** Card IDs for the player's current match deck. */
+	private int[] currentPlayerDeckIds;
+
+	/** Card IDs for the opponent's current match deck (championship). */
+	private int[] currentOpponentDeckIds;
+
+	/** Active championship run, or null. */
+	private ChampionshipRun championship;
+
+	/** Opponent AI override for the current championship round. */
+	private Options.AIType championshipOpponentAI;
 
 	public TripleTriad() {
 		super("Triple Triad");
@@ -120,7 +158,7 @@ public class TripleTriad extends BasicGame {
 		// log all errors to a file
 		Log.setVerbose(false);
 		try {
-			DefaultLogSystem.out = new PrintStream(new FileOutputStream(Options.LOG_FILE, true));
+			Log.setOut(new PrintStream(new FileOutputStream(Options.LOG_FILE, true)));
 		} catch (FileNotFoundException e) {
 			Log.error(e);
 		}
@@ -133,13 +171,6 @@ public class TripleTriad extends BasicGame {
 
 		// parse configuration file
 		Options.parseOptions();
-
-		// set path for lwjgl natives - NOT NEEDED if using JarSplice
-//		System.setProperty("org.lwjgl.librarypath", new File("native").getAbsolutePath());
-
-		// set the resource paths
-		ResourceLoader.addResourceLocation(new FileSystemLocation(new File("./res/")));
-		ResourceLoader.addResourceLocation(new FileSystemLocation(new File("./cards/")));
 
 		// start the game
 		try {
@@ -175,12 +206,30 @@ public class TripleTriad extends BasicGame {
 		// build deck
 		this.deck = new Deck();
 
-		restart(true);
+		this.profileScreen = new ProfileScreen(this);
+		this.menuScreen = new MenuScreen(this);
+		this.deckSelectScreen = new DeckSelectScreen(this);
+		this.deckBuilderScreen = new DeckBuilderScreen(this);
+		this.howToPlayScreen = new HowToPlayScreen(this);
+		this.settingsScreen = new SettingsScreen(this);
+		this.championshipScreen = new ChampionshipScreen(this);
+		this.myDeckScreen = new MyDeckScreen(this);
+
+		this.profile = ProfileStore.load();
+		if (profile != null && profile.isValid())
+			showMenu();
+		else
+			showProfile();
 	}
 
 	@Override
 	public void render(GameContainer container, Graphics g)
 			throws SlickException {
+		if (currentScreen != GameScreen.MATCH) {
+			getActiveScreen().render(container, g);
+			return;
+		}
+
 		int width = container.getWidth();
 		int height = container.getHeight();
 		int cardLength = Options.getCardLength();
@@ -205,6 +254,7 @@ public class TripleTriad extends BasicGame {
 				spinner.drawCentered(width / 2, height / 2);
 			else
 				spinner.getFrame((turn == PLAYER) ? 1 : 3).drawCentered(width / 2, height / 2);
+			drawLeaveConfirm(g, height);
 			return;
 		}
 
@@ -258,6 +308,7 @@ public class TripleTriad extends BasicGame {
 				img.setAlpha(textAlpha);
 				img.drawCentered(width / 2, height / 2);
 			}
+			drawLeaveConfirm(g, height);
 			return;
 		}
 
@@ -269,6 +320,7 @@ public class TripleTriad extends BasicGame {
 				                                GameImage.RESULT_DRAW;
 			result.getImage().setAlpha(textAlpha);
 			result.getImage().drawCentered(width / 2, height / 2);
+			drawLeaveConfirm(g, height);
 			return;
 		}
 
@@ -315,11 +367,20 @@ public class TripleTriad extends BasicGame {
 				);
 			}
 		}
+		drawLeaveConfirm(g, height);
 	}
 
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
+		if (currentScreen != GameScreen.MATCH) {
+			getActiveScreen().update(container, delta);
+			return;
+		}
+
+		if (leaveConfirm)
+			return;
+
 		// card loading
 		if (!init) {
 			// sound effect timer
@@ -411,12 +472,12 @@ public class TripleTriad extends BasicGame {
 			if (textAlpha < 1f)
 				textAlpha += (delta / 750f);
 
-			// sudden death
-			else if (Rule.SUDDEN_DEATH.isActive() && playerScore == opponentScore) {
+			// championship draw rematches original hands; Sudden Death keeps current owners
+			else if (isDrawThatRestarts()) {
 				if (timer < WAIT_TIME / 2)
 					timer += delta;
 				else
-					restart(false);
+					restart(championship != null);
 			}
 			return;
 		}
@@ -448,20 +509,50 @@ public class TripleTriad extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		// exit
-		if (key == Input.KEY_ESCAPE) {
-			Options.saveOptions();
-			container.exit();
+		if (currentScreen != GameScreen.MATCH) {
+			if (key == Input.KEY_ESCAPE &&
+				(currentScreen == GameScreen.MENU || currentScreen == GameScreen.PROFILE)) {
+				Options.saveOptions();
+				container.exit();
+				return;
+			}
+			getActiveScreen().keyPressed(key, c);
 			return;
 		}
 
-		// restart game
-		if (key == Input.KEY_F5 || (
-			isGameOver() && (playerScore != opponentScore || !Rule.SUDDEN_DEATH.isActive()) &&
+		// confirm leaving the match (Esc)
+		if (key == Input.KEY_ESCAPE) {
+			if (leaveConfirm) {
+				leaveConfirm = false;
+				AudioController.Effect.BACK.play();
+			} else {
+				leaveConfirm = true;
+				leaveChoice = 0;
+				AudioController.Effect.BACK.play();
+			}
+			return;
+		}
+
+		if (leaveConfirm) {
+			handleLeaveConfirmKey(key);
+			return;
+		}
+
+		// rematch with the same player deck (Quick Game only)
+		if (key == Input.KEY_F5) {
+			if (championship == null && currentPlayerDeckIds != null)
+				restart(true);
+			return;
+		}
+
+		// after the match
+		if (isGameOver() && !isDrawThatRestarts() &&
 			textAlpha >= 1f && result == null &&
-			(key == Input.KEY_Z || key == Input.KEY_ENTER)
-		)) {
-			restart(true);
+			(key == Input.KEY_Z || key == Input.KEY_ENTER)) {
+			if (championship != null)
+				championshipMatchFinished();
+			else
+				showMenu();
 			return;
 		}
 
@@ -473,11 +564,11 @@ public class TripleTriad extends BasicGame {
 		case Input.KEY_DOWN:
 			if (selectedPosition == -1) {
 				selectedCard = (selectedCard + 1) % playerHand.size();
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			} else {
 				if (selectedPosition < 6) {
 					selectedPosition += 3;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 			}
 			break;
@@ -485,24 +576,24 @@ public class TripleTriad extends BasicGame {
 			if (selectedPosition == -1) {
 				int size = playerHand.size();
 				selectedCard = (selectedCard + (size - 1)) % size;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			} else {
 				if (selectedPosition > 2) {
 					selectedPosition -= 3;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 			}
 			break;
 		case Input.KEY_LEFT:
 			if (selectedPosition != -1 && selectedPosition % 3 != 0) {
 				selectedPosition--;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_RIGHT:
 			if (selectedPosition != -1 && selectedPosition % 3 != 2) {
 				selectedPosition++;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			}
 			break;
 		case Input.KEY_Z:
@@ -539,10 +630,23 @@ public class TripleTriad extends BasicGame {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
 
-		// restart game
-		if (isGameOver() && (playerScore != opponentScore || !Rule.SUDDEN_DEATH.isActive()) &&
+		if (currentScreen != GameScreen.MATCH) {
+			getActiveScreen().mousePressed(button, x, y);
+			return;
+		}
+
+		if (leaveConfirm) {
+			handleLeaveConfirmClick(y);
+			return;
+		}
+
+		// after the match
+		if (isGameOver() && !isDrawThatRestarts() &&
 			textAlpha >= 1f && result == null) {
-			restart(true);
+			if (championship != null)
+				championshipMatchFinished();
+			else
+				showMenu();
 			return;
 		}
 
@@ -572,7 +676,7 @@ public class TripleTriad extends BasicGame {
 				} else {
 					selectedCard = index;
 					selectedPosition = -1;
-					AudioController.Effect.SELECT.play();
+					AudioController.playCursor();
 				}
 				return;
 			}
@@ -587,13 +691,22 @@ public class TripleTriad extends BasicGame {
 					(y - (centerY - centerOffset)) / cardLength * 3;
 			if (selectedPosition != boardPosition) {
 				selectedPosition = boardPosition;
-				AudioController.Effect.SELECT.play();
+				AudioController.playCursor();
 			} else if (playCard(playerHand, selectedCard, boardPosition))
 				AudioController.Effect.SELECT.play();
 			else
 				AudioController.Effect.INVALID.play();
 			return;
 		}
+	}
+
+	/**
+	 * Draw rematches instead of ending: Sudden Death (any mode) or always in championship.
+	 * @return true if a draw should restart the board
+	 */
+	private boolean isDrawThatRestarts() {
+		return playerScore == opponentScore &&
+			(Rule.SUDDEN_DEATH.isActive() || championship != null);
 	}
 
 	/**
@@ -604,7 +717,14 @@ public class TripleTriad extends BasicGame {
 		if (newHand) {
 			playerCards = new Card[5];
 			opponentCards = new Card[5];
-			deck.buildHands(playerCards, opponentCards);
+			if (currentPlayerDeckIds != null && currentPlayerDeckIds.length == 5)
+				deck.buildHand(currentPlayerDeckIds, playerCards, PLAYER);
+			else
+				deck.buildRandomHand(playerCards, PLAYER);
+			if (currentOpponentDeckIds != null && currentOpponentDeckIds.length == 5)
+				deck.buildHand(currentOpponentDeckIds, opponentCards, OPPONENT);
+			else
+				deck.buildRandomHand(opponentCards, OPPONENT);
 			playerHand = new ArrayList<Card>(Arrays.asList(playerCards));
 			opponentHand = new ArrayList<Card>(Arrays.asList(opponentCards));
 			spinner = Spinner.getRandomSpinner();
@@ -635,7 +755,7 @@ public class TripleTriad extends BasicGame {
 		// reset game data
 		board = new Card[9];
 		elements = (Rule.ELEMENTAL.isActive()) ? Element.getRandomBoard() : null;
-		switch (Options.getOpponentAI()) {
+		switch ((championshipOpponentAI != null) ? championshipOpponentAI : Options.getOpponentAI()) {
 			case RANDOM: opponentAI = new RandomAI(opponentHand, board, elements); break;
 			case OFFENSIVE: opponentAI = new OffensiveAI(opponentHand, board, elements); break;
 			case DEFENSIVE: opponentAI = new DefensiveAI(opponentHand, board, elements); break;
@@ -657,13 +777,95 @@ public class TripleTriad extends BasicGame {
 		loadCardCount = 0;
 		loadCardOffset = 3 + (float) container.getHeight() / Options.getCardLength();
 		textAlpha = 0f;
+		leaveConfirm = false;
+		leaveChoice = 0;
+	}
+
+	/**
+	 * Draws the leave-match confirmation overlay.
+	 */
+	private void drawLeaveConfirm(Graphics g, int height) {
+		if (!leaveConfirm)
+			return;
+		g.setColor(new Color(0f, 0f, 0f, 0.72f));
+		g.fillRect(0, 0, Options.getWidth(), height);
+		Ui.drawCentered(Options.getFont(), I18n.confirmLeaveMatch(), height * 0.38f, Ui.TITLE);
+		Ui.drawCentered(Options.getSmallFont(), I18n.confirmLeaveNo(), height * 0.50f,
+			leaveChoice == 0 ? Ui.SELECTED : Ui.HINT);
+		Ui.drawCentered(Options.getSmallFont(), I18n.confirmLeaveYes(), height * 0.58f,
+			leaveChoice == 1 ? Ui.SELECTED : Ui.HINT);
+		Ui.drawCentered(Options.getSmallFont(), I18n.hintLeaveConfirm(), height * 0.78f, Ui.HINT);
+	}
+
+	/**
+	 * Handles keys on the leave confirmation overlay.
+	 */
+	private void handleLeaveConfirmKey(int key) {
+		switch (key) {
+		case Input.KEY_UP:
+		case Input.KEY_DOWN:
+			leaveChoice = 1 - leaveChoice;
+			AudioController.playCursor();
+			break;
+		case Input.KEY_X:
+		case Input.KEY_BACK:
+			leaveConfirm = false;
+			AudioController.Effect.BACK.play();
+			break;
+		case Input.KEY_Z:
+		case Input.KEY_ENTER:
+			if (leaveChoice == 1) {
+				AudioController.Effect.SELECT.play();
+				leaveConfirm = false;
+				showMenu();
+			} else {
+				leaveConfirm = false;
+				AudioController.Effect.BACK.play();
+			}
+			break;
+		default:
+			break;
+		}
+	}
+
+	/**
+	 * Handles a click on the leave confirmation overlay.
+	 */
+	private void handleLeaveConfirmClick(int y) {
+		UnicodeFont small = Options.getSmallFont();
+		float noY = Options.getHeight() * 0.50f;
+		float yesY = Options.getHeight() * 0.58f;
+		float h = small.getLineHeight();
+		if (y >= noY && y < noY + h) {
+			if (leaveChoice != 0) {
+				leaveChoice = 0;
+				AudioController.playCursor();
+				return;
+			}
+			leaveConfirm = false;
+			AudioController.Effect.BACK.play();
+			return;
+		}
+		if (y >= yesY && y < yesY + h) {
+			if (leaveChoice != 1) {
+				leaveChoice = 1;
+				AudioController.playCursor();
+				return;
+			}
+			AudioController.Effect.SELECT.play();
+			leaveConfirm = false;
+			showMenu();
+		}
 	}
 
 	/**
 	 * Returns whether or not the game is over.
 	 * @return true if over
 	 */
-	private boolean isGameOver() { return (playerHand.isEmpty() || opponentHand.isEmpty()); }
+	private boolean isGameOver() {
+		return playerHand != null && opponentHand != null &&
+			(playerHand.isEmpty() || opponentHand.isEmpty());
+	}
 
 	/**
 	 * Plays a card, unless the board position is occupied by another card.
@@ -710,5 +912,365 @@ public class TripleTriad extends BasicGame {
 			}
 		}
 		AudioController.Effect.TURN.play();
+	}
+
+	@Override
+	public void mouseWheelMoved(int change) {
+		if (currentScreen != GameScreen.MATCH)
+			getActiveScreen().mouseWheelMoved(change);
+	}
+
+	/**
+	 * Returns the active non-match screen.
+	 */
+	private Screen getActiveScreen() {
+		switch (currentScreen) {
+			case PROFILE: return profileScreen;
+			case DECK_SELECT: return deckSelectScreen;
+			case DECK_BUILDER: return deckBuilderScreen;
+			case HOW_TO_PLAY: return howToPlayScreen;
+			case SETTINGS: return settingsScreen;
+			case MY_DECK: return myDeckScreen;
+			case CHAMPIONSHIP: return championshipScreen;
+			case MENU:
+			default: return menuScreen;
+		}
+	}
+
+	/**
+	 * Returns the loaded card catalog.
+	 * @return the deck
+	 */
+	public Deck getDeck() { return deck; }
+
+	/**
+	 * Returns the current player profile.
+	 * @return the profile, or null
+	 */
+	public Profile getProfile() { return profile; }
+
+	/**
+	 * Persists the current profile to disk.
+	 */
+	public void saveProfile() {
+		ProfileStore.save(profile);
+	}
+
+	/**
+	 * Creates a new profile and opens the menu.
+	 * @param name the player name
+	 */
+	public void createProfile(String name) {
+		profile = new Profile();
+		profile.setName(name);
+		ProfileStore.save(profile);
+		showMenu();
+	}
+
+	/**
+	 * Shows the profile creation screen.
+	 */
+	public void showProfile() {
+		currentScreen = GameScreen.PROFILE;
+		profileScreen.enter();
+	}
+
+	/**
+	 * Shows the main menu.
+	 */
+	public void showMenu() {
+		championship = null;
+		championshipOpponentAI = null;
+		currentOpponentDeckIds = null;
+		currentScreen = GameScreen.MENU;
+		menuScreen.enter();
+	}
+
+	/**
+	 * Shows the how-to-play screen.
+	 */
+	public void showHowToPlay() {
+		currentScreen = GameScreen.HOW_TO_PLAY;
+		howToPlayScreen.enter();
+	}
+
+	/**
+	 * Shows the settings screen.
+	 */
+	public void showSettings() {
+		currentScreen = GameScreen.SETTINGS;
+		settingsScreen.enter();
+	}
+
+	/**
+	 * Shows Meu Deck (album gallery).
+	 */
+	public void showMyDeck() {
+		currentScreen = GameScreen.MY_DECK;
+		myDeckScreen.enterGallery();
+	}
+
+	/**
+	 * Shows pick-5 from Meu Deck for Quick Game.
+	 */
+	public void showMyDeckPick() {
+		currentScreen = GameScreen.MY_DECK;
+		myDeckScreen.enterPick();
+	}
+
+	/**
+	 * Shows the Quick Game deck list.
+	 */
+	public void showDeckSelect() {
+		currentScreen = GameScreen.DECK_SELECT;
+		deckSelectScreen.enter();
+	}
+
+	/**
+	 * Shows the deck builder.
+	 * @param existing the deck to edit, or null to create a new one
+	 */
+	public void showDeckBuilder(SavedDeck existing) {
+		deckBuilderScreen.edit(existing);
+		currentScreen = GameScreen.DECK_BUILDER;
+		deckBuilderScreen.enter();
+	}
+
+	/**
+	 * Starts a Quick Game match against the computer.
+	 * @param cardIds the player's five card IDs
+	 */
+	public void startQuickMatch(int[] cardIds) {
+		if (cardIds == null || cardIds.length != SavedDeck.SIZE)
+			return;
+		championship = null;
+		championshipOpponentAI = null;
+		currentOpponentDeckIds = null;
+		currentPlayerDeckIds = cardIds.clone();
+		currentScreen = GameScreen.MATCH;
+		restart(true);
+	}
+
+	/**
+	 * Returns the active championship run.
+	 * @return the run, or null
+	 */
+	public ChampionshipRun getChampionshipRun() { return championship; }
+
+	/**
+	 * Opens the championship lobby.
+	 */
+	public void showChampionship() {
+		championship = null;
+		championshipOpponentAI = null;
+		currentOpponentDeckIds = null;
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		championshipScreen.enter();
+	}
+
+	/**
+	 * Starts a new championship. Empty Meu Deck gets a starter pack; otherwise pick 5 from the album.
+	 */
+	public void championshipNew() {
+		if (profile == null)
+			return;
+		profile.clearChampionshipSave();
+		championship = new ChampionshipRun();
+		if (profile.getCollection().size() < SavedDeck.SIZE) {
+			int[] pack = deck.createStarterPack();
+			for (int i = 0; i < pack.length; i++) {
+				profile.addCard(pack[i]);
+				championship.addToBag(pack[i]);
+			}
+			championship.setPlayerHandIds(pack);
+			currentScreen = GameScreen.CHAMPIONSHIP;
+			championshipScreen.showPack(pack);
+			return;
+		}
+		championship.setBag(profile.getCollection());
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		championshipScreen.showPick();
+	}
+
+	/**
+	 * True if Meu Deck has at least five cards.
+	 * @return true if the album can be used as a championship/quick deck
+	 */
+	public boolean hasAlbumDeck() {
+		return profile != null && profile.getCollection().size() >= SavedDeck.SIZE;
+	}
+
+	/**
+	 * Removes one copy of a card from Meu Deck and writes the profile.
+	 * @param cardId the catalog ID
+	 */
+	public void removeAlbumCard(int cardId) {
+		if (profile == null || cardId <= 0)
+			return;
+		if (profile.removeCard(cardId))
+			saveProfile();
+	}
+
+	/**
+	 * Resumes a saved championship from match 2+.
+	 */
+	public void championshipContinue() {
+		if (profile == null || !profile.hasChampionshipSave())
+			return;
+		championship = ChampionshipRun.fromProfile(profile);
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		championshipScreen.showPick(profile.getRunHand());
+	}
+
+	/**
+	 * Returns to the championship lobby without discarding the in-memory run.
+	 */
+	public void championshipBackToLobby() {
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		championshipScreen.enter();
+	}
+
+	/**
+	 * True if the in-memory run can be written (match 2+).
+	 * @return true if Salvar is available
+	 */
+	public boolean canChampionshipSave() {
+		return championship != null && championship.getRound() >= 2;
+	}
+
+	/**
+	 * Writes collection and run to disk when the player chooses Salvar.
+	 */
+	public void championshipSave() {
+		if (profile == null || !canChampionshipSave())
+			return;
+		profile.storeChampionshipRun(championship);
+		saveProfile();
+	}
+
+	/**
+	 * Clears the championship continue save. Keeps Meu Deck, cups and Quick Game decks.
+	 */
+	public void championshipClearProgress() {
+		if (profile == null || !profile.hasChampionshipSave())
+			return;
+		profile.clearChampionshipSave();
+		championship = null;
+		championshipOpponentAI = null;
+		currentOpponentDeckIds = null;
+		saveProfile();
+	}
+
+	/**
+	 * Continues after the match-1 pack: start the fight with those five cards.
+	 */
+	public void championshipPackConfirmed() {
+		if (championship == null || championship.getPlayerHandIds() == null)
+			return;
+		championshipHandChosen(championship.getPlayerHandIds());
+	}
+
+	/**
+	 * Begins a championship match with the chosen hand.
+	 * @param ids five collection card IDs
+	 */
+	public void championshipHandChosen(int[] ids) {
+		if (championship == null || ids == null || ids.length != SavedDeck.SIZE)
+			return;
+		championship.setPlayerHandIds(ids);
+		if (championship.getOpponentHandIds() == null)
+			championship.rollOpponent(deck);
+		startChampionshipMatch(ids, championship.getOpponentHandIds());
+	}
+
+	/**
+	 * Leaves championship UI without writing a save.
+	 */
+	public void abortChampionship() {
+		showMenu();
+	}
+
+	/**
+	 * Player took an opponent card after a win.
+	 * @param cardId the stolen card
+	 */
+	public void championshipCardTaken(int cardId) {
+		if (championship == null || profile == null)
+			return;
+		profile.addCard(cardId);
+		championship.addToBag(cardId);
+		boolean cup = championship.recordWin();
+		if (cup) {
+			profile.addChampionshipWin();
+			profile.clearChampionshipSave();
+			saveProfile();
+			currentScreen = GameScreen.CHAMPIONSHIP;
+			championshipScreen.showWon();
+			return;
+		}
+		championship.rollOpponent(deck);
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		championshipScreen.showPick();
+	}
+
+	/**
+	 * Acknowledges the AI steal after a round 2+ loss.
+	 */
+	public void championshipStealAck() {
+		if (championship == null || profile == null)
+			return;
+		if (championship.getBag().size() < SavedDeck.SIZE) {
+			endChampionshipSave();
+			currentScreen = GameScreen.CHAMPIONSHIP;
+			championshipScreen.showLost();
+			return;
+		}
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		championshipScreen.showPick();
+	}
+
+	/**
+	 * Starts a championship match.
+	 */
+	private void startChampionshipMatch(int[] playerIds, int[] opponentIds) {
+		currentPlayerDeckIds = playerIds.clone();
+		currentOpponentDeckIds = opponentIds.clone();
+		championshipOpponentAI = championship.aiForRound();
+		currentScreen = GameScreen.MATCH;
+		restart(true);
+	}
+
+	/**
+	 * Routes a finished championship match to trade / next round / end.
+	 */
+	private void championshipMatchFinished() {
+		if (championship == null || playerScore == opponentScore)
+			return;
+		boolean playerWon = playerScore > opponentScore;
+		int round = championship.getRound();
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		if (playerWon) {
+			championshipScreen.showTradeWin(championship.getOpponentHandIds());
+			return;
+		}
+		if (round == 1) {
+			endChampionshipSave();
+			championshipScreen.showLost();
+			return;
+		}
+		int stolen = championship.stealBestPlayerCard(deck);
+		championship.removeFromBag(stolen);
+		championship.setPlayerHandIds(null);
+		championshipScreen.showTradeLose(stolen);
+	}
+
+	/**
+	 * Clears an in-progress championship save.
+	 */
+	private void endChampionshipSave() {
+		if (profile == null)
+			return;
+		profile.clearChampionshipSave();
+		saveProfile();
 	}
 }

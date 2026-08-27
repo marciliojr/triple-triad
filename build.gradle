@@ -1,0 +1,54 @@
+plugins {
+	id 'application'
+}
+
+java {
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+application {
+	mainClass = 'itdelatrisu.tripletriad.TripleTriad'
+}
+
+repositories {
+	mavenCentral()
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src']
+		}
+	}
+}
+
+def libgdx = project.property('gdxVersion')
+
+dependencies {
+	implementation "com.badlogicgames.gdx:gdx:$libgdx"
+	implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:$libgdx"
+	implementation "com.badlogicgames.gdx:gdx-platform:$libgdx:natives-desktop"
+	implementation "com.badlogicgames.gdx:gdx-freetype:$libgdx"
+	implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdx:natives-desktop"
+}
+
+distributions {
+	main {
+		contents {
+			from('res') { into 'res' }
+			from('cards') { into 'cards' }
+			from('LICENSE')
+			from('README.md')
+		}
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	options.encoding = 'UTF-8'
+}
+
+tasks.named('run', JavaExec) {
+	workingDir = rootDir
+	standardInput = System.in
+}
