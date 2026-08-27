@@ -71,6 +71,9 @@ public class SettingsScreen extends Screen {
 	/** Game instance. */
 	private final TripleTriad game;
 
+	/** Panel width as a fraction of the screen. */
+	private static final float PANEL_WIDTH_FRAC = 0.74f;
+
 	/** Selected row. */
 	private int selected;
 
@@ -92,22 +95,25 @@ public class SettingsScreen extends Screen {
 		Ui.drawBackdrop(g);
 		UnicodeFont font = Options.getFont();
 		UnicodeFont small = Options.getSmallFont();
-		int width = container.getWidth();
 		int height = container.getHeight();
 
 		Ui.drawCentered(font, I18n.settingsTitle(), height * 0.08f, Ui.TITLE);
 
-		float panelW = width * 0.62f;
-		float panelH = height * 0.70f;
-		float panelX = (width - panelW) / 2f;
-		float panelY = height * 0.18f;
+		float panelW = panelW();
+		float panelH = panelH();
+		float panelX = panelX();
+		float panelY = panelY();
 		g.setColor(Ui.TITLE);
 		g.setLineWidth(2f);
 		g.drawRect(panelX, panelY, panelW, panelH);
 		g.setLineWidth(1f);
 
-		float ruleLine = small.getLineHeight() * 1.85f;
-		float ruleStart = panelY + small.getLineHeight() * 1.6f;
+		float ruleLine = ruleLine();
+		float ruleStart = ruleStart();
+		float nameX = nameX();
+		float valuePad = 24f;
+		float nameValueGap = 16f;
+		Image cursor = GameImage.CURSOR.getImage();
 		for (int i = 0; i < ROW_COUNT; i++) {
 			float y = ruleStart + i * ruleLine;
 			boolean on = (i == selected);
@@ -115,13 +121,14 @@ public class SettingsScreen extends Screen {
 			String value = rowValue(i);
 			Color nameColor = on ? Ui.SELECTED : Ui.HINT;
 			Color valueColor = on ? Ui.SELECTED : rowValueColor(i);
-			small.drawString(panelX + 48, y, name, nameColor);
-			float valueX = panelX + panelW - 24 - small.getWidth(value);
+			float valueX = panelX + panelW - valuePad - small.getWidth(value);
+			float nameMax = Math.max(24f, valueX - nameValueGap - nameX);
+			String nameFit = Ui.fit(small, name, nameMax);
+			small.drawString(nameX, y, nameFit, nameColor);
 			small.drawString(valueX, y, value, valueColor);
 			if (on) {
-				Image cursor = GameImage.CURSOR.getImage();
 				cursor.draw(
-					panelX + 48 - cursor.getWidth() * 1.15f,
+					panelX + 16,
 					y + (small.getLineHeight() - cursor.getHeight()) / 2f
 				);
 			}
@@ -287,21 +294,54 @@ public class SettingsScreen extends Screen {
 	}
 
 	private int hitRow(int x, int y) {
-		int width = Options.getWidth();
-		int height = Options.getHeight();
-		float panelW = width * 0.62f;
-		float panelX = (width - panelW) / 2f;
-		float panelY = height * 0.18f;
+		float panelX = panelX();
+		float panelW = panelW();
 		if (x < panelX || x > panelX + panelW)
 			return -1;
-		UnicodeFont small = Options.getSmallFont();
-		float ruleLine = small.getLineHeight() * 1.85f;
-		float ruleStart = panelY + small.getLineHeight() * 1.6f;
+		float ruleLine = ruleLine();
+		float ruleStart = ruleStart();
 		for (int i = 0; i < ROW_COUNT; i++) {
 			float top = ruleStart + i * ruleLine;
 			if (y >= top && y < top + ruleLine)
 				return i;
 		}
 		return -1;
+	}
+
+	private float panelW() {
+		return Options.getWidth() * PANEL_WIDTH_FRAC;
+	}
+
+	private float panelX() {
+		return (Options.getWidth() - panelW()) / 2f;
+	}
+
+	private float panelY() {
+		return Options.getHeight() * 0.18f;
+	}
+
+	private float panelH() {
+		return topPad() + ROW_COUNT * ruleLine() + bottomPad();
+	}
+
+	private float ruleLine() {
+		return Options.getSmallFont().getLineHeight() * 1.85f;
+	}
+
+	private float topPad() {
+		return Options.getSmallFont().getLineHeight() * 1.4f;
+	}
+
+	private float bottomPad() {
+		return Options.getSmallFont().getLineHeight() * 1.2f;
+	}
+
+	private float ruleStart() {
+		return panelY() + topPad();
+	}
+
+	private float nameX() {
+		Image cursor = GameImage.CURSOR.getImage();
+		return panelX() + 16 + cursor.getWidth() * 1.15f + 8;
 	}
 }

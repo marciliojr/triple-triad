@@ -118,9 +118,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipPick() {
-		return pick("Z seleciona    X tira    C amplia    S salva    Enter jogar    Esc lobby",
-			"Z selects    X removes    C enlarges    S save    Enter play    Esc lobby",
-			"Z selecciona    X quita    C amplia    S guarda    Enter jugar    Esc lobby");
+		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    S salva    Enter jogar    Esc lobby",
+			"Z selects    X removes    C enlarges    R random    S save    Enter play    Esc lobby",
+			"Z selecciona    X quita    C amplia    R aleatorio    S guarda    Enter jugar    Esc lobby");
 	}
 
 	public static String championshipTradeWin() {
@@ -267,6 +267,14 @@ public final class I18n {
 			"C amplia    X/Del quita    Esc volver");
 	}
 
+	public static String confirmRemoveAlbum(String name) {
+		if (name == null)
+			name = "";
+		return pick("Remover " + name + " do Meu Deck?",
+			"Remove " + name + " from My Deck?",
+			"\u00bfQuitar " + name + " de Mi mazo?");
+	}
+
 	public static String hintMyDeckPreview() {
 		return pick("Esquerda/direita    X/Del remove    Esc/C fecha",
 			"Left/right    X/Del removes    Esc/C closes",
@@ -274,9 +282,9 @@ public final class I18n {
 	}
 
 	public static String hintMyDeckPick() {
-		return pick("Z seleciona    X tira    C amplia    Enter jogar    Esc voltar",
-			"Z selects    X removes    C enlarges    Enter play    Esc back",
-			"Z selecciona    X quita    C amplia    Enter jugar    Esc volver");
+		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    Enter jogar    Esc voltar",
+			"Z selects    X removes    C enlarges    R random    Enter play    Esc back",
+			"Z selecciona    X quita    C amplia    R aleatorio    Enter jugar    Esc volver");
 	}
 
 	public static String hintCardPreview() {
@@ -336,9 +344,45 @@ public final class I18n {
 	}
 
 	public static String hintBuilder() {
-		return pick("Z seleciona    X tira    C amplia    S salvar    Enter jogar    Esc voltar",
-			"Z selects    X removes    C enlarges    S save    Enter play    Esc back",
-			"Z selecciona    X quita    C amplia    S guardar    Enter jugar    Esc volver");
+		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    S salvar    Enter jogar    Esc voltar",
+			"Z selects    X removes    C enlarges    R random    S save    Enter play    Esc back",
+			"Z selecciona    X quita    C amplia    R aleatorio    S guardar    Enter jugar    Esc volver");
+	}
+
+	public static String randomFill() {
+		return pick("R  aleat\u00f3rio", "R  random", "R  aleatorio");
+	}
+
+	public static String elementName(Element element) {
+		if (element == null || element == Element.NEUTRAL)
+			return "\u2014";
+		switch (element) {
+		case FIRE:
+			return pick("Fogo", "Fire", "Fuego");
+		case WATER:
+			return pick("\u00c1gua", "Water", "Agua");
+		case EARTH:
+			return pick("Terra", "Earth", "Tierra");
+		case THUNDER:
+			return pick("Trov\u00e3o", "Thunder", "Trueno");
+		case ICE:
+			return pick("Gelo", "Ice", "Hielo");
+		case WIND:
+			return pick("Vento", "Wind", "Viento");
+		case POISON:
+			return pick("Veneno", "Poison", "Veneno");
+		case HOLY:
+			return pick("Sagrado", "Holy", "Sagrado");
+		default:
+			return "\u2014";
+		}
+	}
+
+	public static String cardIdentity(Card card) {
+		if (card == null)
+			return "";
+		return String.format("%03d  %s  \u2014  %s",
+			card.getID(), card.getName(), elementName(card.getElement()));
 	}
 
 	public static String hintHowTo() {

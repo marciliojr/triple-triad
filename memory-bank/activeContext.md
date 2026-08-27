@@ -1,8 +1,8 @@
 # Active context
 
-Branch de trabalho típica: `feat/perfis-e-jogo-rapido`.
+Último marco: **1.0.0** — primeira versão jogável. Seleção híbrida (nome/elemento, painel médio, **R**), preview na galeria Meu Deck, confirmação ao apagar do álbum, painéis sem vazamento de texto, aviso de save no rodapé.
 
-Último marco: **0.7.0** — preview com C, teclas Z/X/C/Esc, dificuldade da IA, vários perfis, deck aleatório, Versus fora do menu.
+Branch de trabalho típica após o marco: `master` na 1.0.0 (`v1.0.0`).
 
 ## Ao continuar
 

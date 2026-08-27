@@ -27,6 +27,7 @@ import itdelatrisu.tripletriad.SavedDeck;
 import itdelatrisu.tripletriad.TripleTriad;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import itdelatrisu.tripletriad.gfx.Color;
 import itdelatrisu.tripletriad.gfx.GameContainer;
@@ -115,27 +116,13 @@ public class DeckBuilderScreen extends Screen {
 		Ui.drawCentered(font, editing == null ? I18n.buildDeck() : I18n.editDeck(), height * 0.03f, Ui.TITLE);
 		Ui.drawCentered(small, I18n.cardCount(selectedIds.size()), height * 0.09f, Ui.HINT);
 
-		float slotSize = Options.getCardLength() * 0.38f;
-		float slotGap = slotSize * 0.12f;
-		float slotsW = 5 * slotSize + 4 * slotGap;
-		float slotsX = (width - slotsW) / 2f;
-		float slotsY = height * 0.14f;
-		for (int i = 0; i < 5; i++) {
-			float x = slotsX + i * (slotSize + slotGap);
-			g.setColor(Ui.DISABLED);
-			g.drawRect(x, slotsY, slotSize, slotSize);
-			if (i < selectedIds.size()) {
-				Card card = catalog.getCardById(selectedIds.get(i).intValue());
-				if (card != null)
-					card.drawSized(x, slotsY, slotSize, true, false);
-			}
-		}
+		Ui.drawHandSlots(g, catalog, Ui.packHandIds(selectedIds));
 
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		int gridX = (width - cols * (gridSize + gap) + gap) / 2;
-		int gridY = (int) (slotsY + slotSize + height * 0.04f);
+		int gridX = Ui.pickGridX(cols, gridSize, gap);
+		int gridY = (int) Ui.handGridY();
 		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.12f)) / (gridSize + gap));
 		int rows = (cards.size() + cols - 1) / cols;
 		clampScroll(rows, visibleRows);
@@ -159,8 +146,8 @@ public class DeckBuilderScreen extends Screen {
 			}
 		}
 
-		if (cursor >= 0 && cursor < cards.size())
-			Ui.drawCentered(small, cards.get(cursor).getName(), height * 0.86f, Ui.SELECTED);
+		int cursorId = (cursor >= 0 && cursor < cards.size()) ? cards.get(cursor).getID() : 0;
+		Ui.drawCursorCardPanel(g, catalog, cursorId);
 
 		if (previewIndex >= 0 && previewIndex < cards.size())
 			Ui.drawCardPreview(g, catalog, cards.get(previewIndex).getID());
@@ -267,6 +254,9 @@ public class DeckBuilderScreen extends Screen {
 		case Input.KEY_S:
 			beginSave();
 			break;
+		case Input.KEY_R:
+			fillRandom();
+			break;
 		default:
 			break;
 		}
@@ -282,7 +272,16 @@ public class DeckBuilderScreen extends Screen {
 			return;
 		}
 
-		int slot = hitSlot(x, y);
+		if (Ui.hitRandomLabel(x, y)) {
+			fillRandom();
+			return;
+		}
+		if (Ui.hitCursorCard(x, y)) {
+			openPreview();
+			return;
+		}
+
+		int slot = Ui.hitHandSlot(x, y);
 		if (slot >= 0) {
 			if (slot < selectedIds.size()) {
 				selectedIds.remove(slot);
@@ -379,6 +378,20 @@ public class DeckBuilderScreen extends Screen {
 		AudioController.Effect.SELECT.play();
 	}
 
+	private void fillRandom() {
+		ArrayList<Card> cards = game.getDeck().getCards();
+		if (cards.size() < SavedDeck.SIZE) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		ArrayList<Card> copy = new ArrayList<Card>(cards);
+		Collections.shuffle(copy);
+		selectedIds.clear();
+		for (int i = 0; i < SavedDeck.SIZE; i++)
+			selectedIds.add(Integer.valueOf(copy.get(i).getID()));
+		AudioController.Effect.SELECT.play();
+	}
+
 	private void playIfReady() {
 		if (selectedIds.size() != SavedDeck.SIZE) {
 			AudioController.Effect.INVALID.play();
@@ -427,7 +440,7 @@ public class DeckBuilderScreen extends Screen {
 	private int columns() {
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		return Math.max(5, (Options.getWidth() - 80) / (gridSize + gap));
+		return Ui.pickGridColumns(gridSize, gap);
 	}
 
 	private int cellSize() {
@@ -448,30 +461,13 @@ public class DeckBuilderScreen extends Screen {
 			scrollRow = maxScroll;
 	}
 
-	private int hitSlot(int x, int y) {
-		float slotSize = Options.getCardLength() * 0.38f;
-		float slotGap = slotSize * 0.12f;
-		float slotsW = 5 * slotSize + 4 * slotGap;
-		float slotsX = (Options.getWidth() - slotsW) / 2f;
-		float slotsY = Options.getHeight() * 0.14f;
-		if (y < slotsY || y > slotsY + slotSize)
-			return -1;
-		for (int i = 0; i < 5; i++) {
-			float sx = slotsX + i * (slotSize + slotGap);
-			if (x >= sx && x < sx + slotSize)
-				return i;
-		}
-		return -1;
-	}
-
 	private int hitGrid(int x, int y) {
 		ArrayList<Card> cards = game.getDeck().getCards();
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
-		int gridX = (Options.getWidth() - cols * (gridSize + gap) + gap) / 2;
-		float slotSize = Options.getCardLength() * 0.38f;
-		int gridY = (int) (Options.getHeight() * 0.14f + slotSize + Options.getHeight() * 0.04f);
+		int gridX = Ui.pickGridX(cols, gridSize, gap);
+		int gridY = (int) Ui.handGridY();
 		if (x < gridX || y < gridY)
 			return -1;
 		int col = (x - gridX) / (gridSize + gap);

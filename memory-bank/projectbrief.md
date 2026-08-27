@@ -1,6 +1,6 @@
 # Project brief
 
-Triple Triad desktop (Final Fantasy VIII): partida local contra IA com as regras clássicas e um meta-jogo simples (perfil + decks + Meu Deck + Jogo Rápido + Campeonato).
+Triple Triad desktop (Final Fantasy VIII): partida local contra IA com as regras clássicas e um meta-jogo simples (perfil + decks + Meu Deck + Jogo Rápido + Campeonato). **1.0.0** é a primeira versão jogável.
 
 ## Objetivos
 

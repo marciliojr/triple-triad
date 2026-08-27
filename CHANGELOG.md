@@ -12,9 +12,28 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### [Unreleased]
 
+### [1.0.0] - 2026-08-27
+
+Primeira versão jogável: seleção de cartas com identidade visível, preview na galeria e confirmação ao apagar do álbum.
+
 #### Added
 
+- Painel direito com carta média (`drawSized`) e linha id / nome / elemento no construtor e nos picks (Jogo Rápido e Campeonato)
+- Nome curto e elemento sob os 5 slots da mão
+- Tecla **R** (e o rótulo no painel) preenche 5 cartas aleatórias do conjunto da tela
+- Galeria Meu Deck com o mesmo painel do cursor ao navegar; **C** continua overlay em tamanho de partida
+- Confirmação Não / Sim (default Não) antes de apagar uma cópia do álbum
+
+#### Changed
+
+- **X** no construtor e nos picks só tira da mão de 5 (não apaga o álbum)
+- Painéis de Configurações e do preview da carta passam a caber texto e cursor
+- Aviso de progresso salvo do Campeonato fica no rodapé, abaixo da barra de teclas
 - README e CHANGELOG em português (Brasil) e inglês no mesmo arquivo
+
+#### Fixed
+
+- Largura da fonte arredonda para cima (`UnicodeFont.getWidth`) para o texto não vazar dos retângulos
 
 ### [0.7.0] - 2026-08-27
 
@@ -152,9 +171,28 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 ### [Unreleased]
 
+### [1.0.0] - 2026-08-27
+
+First playable release: card selection with visible identity, gallery preview, and confirmation before deleting from the album.
+
 #### Added
 
+- Right-hand panel with a medium card (`drawSized`) and id / name / element on the builder and pickers (Quick Game and Championship)
+- Short name and element under the five hand slots
+- **R** (and the panel label) fills five random cards from the current screen’s pool
+- My Deck gallery uses the same cursor panel while browsing; **C** still opens the match-size overlay
+- No / Yes confirmation (default No) before deleting one album copy
+
+#### Changed
+
+- **X** in the builder and pickers only removes from the 5-card hand (it does not delete from the album)
+- Settings and card-preview panels fit their text and cursor
+- Championship “progress saved” notice sits in the footer, under the key hint bar
 - README and CHANGELOG in Brazilian Portuguese and English in the same file
+
+#### Fixed
+
+- Font width rounds up (`UnicodeFont.getWidth`) so labels do not spill out of rectangles
 
 ### [0.7.0] - 2026-08-27
 
