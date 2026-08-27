@@ -41,10 +41,6 @@ public final class I18n {
 		return pick("Campeonato", "Championship", "Campeonato");
 	}
 
-	public static String menuVersus() {
-		return pick("Versus", "Versus", "Versus");
-	}
-
 	public static String menuMyDeck() {
 		return pick("Meu Deck", "My Deck", "Mi mazo");
 	}
@@ -153,10 +149,6 @@ public final class I18n {
 
 	public static String hintChampionshipEnd() {
 		return pick("Esc volta ao menu", "Esc returns to the menu", "Esc vuelve al men\u00fa");
-	}
-
-	public static String comingSoon() {
-		return pick("  (Em breve)", "  (Coming soon)", "  (Pr\u00f3ximamente)");
 	}
 
 	public static String hintMenu() {
@@ -429,8 +421,14 @@ public final class I18n {
 		"Elemental: casas ganham um elemento. Carta do mesmo elemento +1 em todos os lados; elemento diferente ou sem elemento -1. Same e Plus usam os valores originais.",
 		"Morte s\u00fabita: empate inicia uma nova rodada com as cartas que cada um controlava.",
 		"",
-		"#Neste cliente",
-		"Jogue contra a IA no Jogo R\u00e1pido e no Campeonato. Random, troca cl\u00e1ssica (One, Diff, Direct, All) e regras por regi\u00e3o ainda n\u00e3o entram nesta vers\u00e3o.",
+		"#Jogo R\u00e1pido",
+		"Partida contra a IA. Escolha Meu Deck (cinco cartas do \u00e1lbum), Deck aleat\u00f3rio, um deck novo ou um deck salvo. As regras ficam \u00e0 direita. F5 recome\u00e7a com o mesmo deck.",
+		"",
+		"#Campeonato",
+		"Oito partidas contra a IA. Se o \u00e1lbum tiver menos de cinco cartas, a primeira partida cria um pack inicial. Ao vencer, pegue uma carta do advers\u00e1rio. O \u00e1lbum e as copas permanecem quando a run termina.",
+		"",
+		"#Meu Deck e perfis",
+		"Meu Deck \u00e9 o \u00e1lbum da cole\u00e7\u00e3o. Em Configura\u00e7\u00f5es d\u00e1 para editar o nome, criar outros jogadores e trocar de perfil. Cada perfil guarda o pr\u00f3prio \u00e1lbum e os decks.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -458,8 +456,14 @@ public final class I18n {
 		"Elemental: spaces gain an element. Matching element +1 on all sides; a different element or none -1. Same and Plus use the original values.",
 		"Sudden Death: a draw starts a new round with the cards each player controlled.",
 		"",
-		"#In this client",
-		"Play against the AI in Quick Game and Championship. Random, classic card trading (One, Diff, Direct, All) and regional rules are not in this version.",
+		"#Quick Game",
+		"A match against the AI. Choose My Deck (five cards from the album), Random deck, a new deck, or a saved deck. Rules are on the right. F5 rematches with the same deck.",
+		"",
+		"#Championship",
+		"Eight matches against the AI. If the album has fewer than five cards, match 1 creates a starter pack. After a win, take one opponent card. The album and cups stay when the run ends.",
+		"",
+		"#My Deck and profiles",
+		"My Deck is the collection album. In Settings you can edit the name, create other players, and switch profiles. Each profile keeps its own album and decks.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -487,8 +491,14 @@ public final class I18n {
 		"Elemental: las casillas ganan un elemento. Carta del mismo elemento +1 en todos los lados; elemento distinto o sin elemento -1. Same y Plus usan los valores originales.",
 		"Muerte s\u00fabita: el empate inicia una nueva ronda con las cartas que cada uno controlaba.",
 		"",
-		"#En este cliente",
-		"Juega contra la IA en Partida r\u00e1pida y en el Campeonato. Random, intercambio cl\u00e1sico (One, Diff, Direct, All) y reglas por regi\u00f3n a\u00fan no entran en esta versi\u00f3n.",
+		"#Partida r\u00e1pida",
+		"Partida contra la IA. Elige Mi mazo (cinco cartas del \u00e1lbum), Mazo aleatorio, un mazo nuevo o un mazo guardado. Las reglas est\u00e1n a la derecha. F5 reinicia con el mismo mazo.",
+		"",
+		"#Campeonato",
+		"Ocho partidas contra la IA. Si el \u00e1lbum tiene menos de cinco cartas, la primera partida crea un sobre inicial. Al ganar, toma una carta del rival. El \u00e1lbum y las copas permanecen cuando termina la ronda.",
+		"",
+		"#Mi mazo y perfiles",
+		"Mi mazo es el \u00e1lbum de la colecci\u00f3n. En Ajustes puedes editar el nombre, crear otros jugadores y cambiar de perfil. Cada perfil guarda su propio \u00e1lbum y mazos.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

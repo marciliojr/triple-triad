@@ -425,4 +425,13 @@ public class Card {
 	 * @return true if card playing
 	 */
 	public static boolean isCardPlaying() { return isCardPlaying; }
+
+	/**
+	 * Clears in-progress place/color animations (used when a match restarts).
+	 */
+	public static void resetAnimations() {
+		isCardPlaying = false;
+		isColorChange = false;
+		animationProgress = 0f;
+	}
 }

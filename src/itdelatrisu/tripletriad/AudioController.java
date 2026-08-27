@@ -71,6 +71,11 @@ public class AudioController {
 		 * Plays the sound effect.
 		 */
 		public void play() { if (sound != null) sound.play(); }
+
+		/**
+		 * Plays the effect, cutting any instance still ringing.
+		 */
+		public void playReplacing() { if (sound != null) sound.playReplacing(); }
 	}
 
 	/**

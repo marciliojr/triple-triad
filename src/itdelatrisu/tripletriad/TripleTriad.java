@@ -402,18 +402,19 @@ public class TripleTriad extends BasicGame {
 				return;
 			}
 
+			// next card
+			int step = Math.min(delta, 50);
 			int targetOffset = loadCardCount % 5;
 			if (loadCardOffset > targetOffset)
-				loadCardOffset -= (delta / 25f);
+				loadCardOffset -= (step / 25f);
 
-			// next card
 			if (loadCardOffset <= targetOffset) {
 				if (++loadCardCount > 9) {  // finished animating: play sound effect
 					AudioController.Effect.START.play();
 					timer = 1;
 				} else {
 					loadCardOffset = 3 + (float) container.getHeight() / Options.getCardLength();
-					AudioController.Effect.CARD.play();
+					AudioController.Effect.CARD.playReplacing();
 				}
 			}
 			return;
@@ -787,6 +788,7 @@ public class TripleTriad extends BasicGame {
 		textAlpha = 0f;
 		leaveConfirm = false;
 		leaveChoice = 0;
+		Card.resetAnimations();
 	}
 
 	/**
