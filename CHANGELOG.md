@@ -12,6 +12,14 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### [Unreleased]
 
+### [1.1.1] - 2026-09-01
+
+O diálogo de exportar/importar save fecha de verdade e não reabre sozinho.
+
+#### Fixed
+
+- `FileDialog` do menu Salvar roda no EDT, tem janela dona, faz `dispose` e ignora Z/Enter/clique residual — o gerenciador de arquivos (Dolphin etc.) não fica reabrindo depois de salvar ou cancelar
+
 ### [1.1.0] - 2026-09-01
 
 Menu Salvar (exportar/importar `.ttsave`) e ordenação das grades de cartas.
@@ -191,6 +199,14 @@ All notable changes to this fork are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [SemVer](https://semver.org/).
 
 ### [Unreleased]
+
+### [1.1.1] - 2026-09-01
+
+The save export/import dialog actually closes and does not reopen by itself.
+
+#### Fixed
+
+- Save-menu `FileDialog` runs on the EDT, uses an owner window, is disposed, and ignores leftover Z/Enter/click — the file manager (Dolphin, etc.) no longer keeps reopening after save or cancel
 
 ### [1.1.0] - 2026-09-01
 

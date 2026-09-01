@@ -68,6 +68,9 @@ public class Input {
 	/** Game that receives repeated presses. */
 	private BasicGame game;
 
+	/** Ignore key/mouse until this epoch ms (0 = not ignoring). */
+	private long ignoreUntil;
+
 	/**
 	 * Enables Slick-style key repeat.
 	 */
@@ -101,11 +104,39 @@ public class Input {
 	}
 
 	/**
+	 * Drops key-repeat state and ignores input for a short time.
+	 * Used after a native file dialog so leftover Z/Enter/click do not fire again.
+	 * @param ms milliseconds to ignore
+	 */
+	public void suppress(int ms) {
+		clearHeld();
+		long until = System.currentTimeMillis() + Math.max(0, ms);
+		if (until > ignoreUntil)
+			ignoreUntil = until;
+	}
+
+	/**
+	 * @return true if key and mouse presses should be ignored
+	 */
+	public boolean isSuppressed() {
+		return System.currentTimeMillis() < ignoreUntil;
+	}
+
+	/**
+	 * Clears the held key so repeat cannot fire.
+	 */
+	public void clearHeld() {
+		heldKey = -1;
+		heldTime = 0;
+		repeatAccum = 0;
+	}
+
+	/**
 	 * Fires repeated keyPressed events.
 	 * @param delta milliseconds since last frame
 	 */
 	void updateRepeat(int delta) {
-		if (!keyRepeat || heldKey < 0 || game == null)
+		if (isSuppressed() || !keyRepeat || heldKey < 0 || game == null)
 			return;
 		heldTime += delta;
 		if (heldTime < REPEAT_START_MS)

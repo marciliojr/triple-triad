@@ -118,6 +118,8 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 		int delta = (int) (Gdx.graphics.getDeltaTime() * 1000f);
 		if (delta < 0)
 			delta = 0;
+		if (Gfx.getInput().isSuppressed() && delta > 50)
+			delta = 50;
 		Gfx.getInput().updateRepeat(delta);
 		try {
 			update(container, delta);
@@ -136,6 +138,8 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 
 	@Override
 	public boolean keyDown(int keycode) {
+		if (Gfx.getInput().isSuppressed())
+			return true;
 		if (keycode == com.badlogic.gdx.Input.Keys.NUMPAD_ENTER)
 			keycode = Input.KEY_ENTER;
 		lastKeycode = keycode;
@@ -154,6 +158,8 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 
 	@Override
 	public boolean keyTyped(char character) {
+		if (Gfx.getInput().isSuppressed())
+			return true;
 		if (isPrintableKey(lastKeycode))
 			keyPressed(lastKeycode, character);
 		else if (character != 0 && !Character.isISOControl(character))
@@ -163,6 +169,8 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		if (Gfx.getInput().isSuppressed())
+			return true;
 		mousePressed(button, screenX, screenY);
 		return true;
 	}

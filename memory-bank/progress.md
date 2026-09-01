@@ -30,6 +30,7 @@
 - [x] Parse do level em `Deck` lê a coluna Level (`tokens[4]`)
 - [x] Menu Salvar: exportar/importar álbum e campeonato (`.ttsave`, diálogo do sistema, confirmação ao substituir)
 - [x] 1.1.0 (save portátil e ordenação das cartas)
+- [x] 1.1.1 (diálogo de save fecha de verdade; não reabre Dolphin/file picker)
 
 ## Não feito (de propósito)
 

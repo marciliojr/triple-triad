@@ -1,8 +1,8 @@
 # Active context
 
-Último marco: **1.1.0** — menu Salvar (export/import `.ttsave`) e ordenação das grades com **T**.
+Último marco: **1.1.1** — diálogo de export/import `.ttsave` fecha e não reabre.
 
-Branch de trabalho típica: `master` na 1.1.0 (`v1.1.0`).
+Branch de trabalho típica: `master` na 1.1.1 (`v1.1.1`).
 
 ## Ao continuar
 

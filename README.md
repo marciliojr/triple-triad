@@ -2,7 +2,7 @@
 
 [Português (Brasil)](#português-brasil) · [English](#english)
 
-**1.1.0** — save portátil e ordenação das cartas. Zip na [GitHub Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.0).
+**1.1.1** — diálogo de save que fecha de verdade. Zip na [GitHub Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.1).
 
 ---
 
@@ -26,7 +26,7 @@ Regras: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad). 
 ./gradlew clean
 ```
 
-A [Release v1.1.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.0) traz o mesmo zip (`res/` + `cards/` + jar).
+A [Release v1.1.1](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.1) traz o mesmo zip (`res/` + `cards/` + jar).
 
 ### Fluxo
 
@@ -118,7 +118,7 @@ Rules: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad). V
 ./gradlew clean
 ```
 
-The [v1.1.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.0) ships the same zip (`res/` + `cards/` + jar).
+The [v1.1.1 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.1) ships the same zip (`res/` + `cards/` + jar).
 
 ### Flow
 

@@ -20,7 +20,7 @@ Textos de UI passam por `I18n` + `Lang` (PT_BR, EN, ES). Nomes de regras em `Rul
 
 Campeonato: `ChampionshipRun` (round, mãos, bag da run, IA por round). Álbum em `Profile` (`COLLECTION`). Save da run: `RUN_ROUND`, `RUN_WINS`, `RUN_HAND`, `RUN_OPPONENT`, `RUN_BAG`. `championshipOpponentAI` em `TripleTriad` não grava no cfg. Aviso de save fica em `ChampionshipScreen` (`saveNoticeUntil`).
 
-Export/import: `SaveTransfer` (AWT `FileDialog`, formato `KEY = value` com `KIND = DECK` ou `CHAMPIONSHIP`). `SaveScreen` escolhe o tipo, exporta ou importa; import aplica `Profile.replaceCollection` ou os `RUN_*` depois da confirmação, e chama `saveProfile()`. Decks nomeados do Jogo Rápido não entram no `.ttsave`.
+Export/import: `SaveTransfer` (AWT `FileDialog` no EDT, com janela dona e `dispose`; formato `KEY = value` com `KIND = DECK` ou `CHAMPIONSHIP`). Depois do diálogo, `Input.suppress` ignora Z/Enter/clique residual. `SaveScreen` escolhe o tipo, exporta ou importa; import aplica `Profile.replaceCollection` ou os `RUN_*` depois da confirmação, e chama `saveProfile()`. Decks nomeados do Jogo Rápido não entram no `.ttsave`.
 
 ## Áudio
 
