@@ -20,6 +20,7 @@ package itdelatrisu.tripletriad.ui;
 
 import itdelatrisu.tripletriad.AudioController;
 import itdelatrisu.tripletriad.Card;
+import itdelatrisu.tripletriad.CardSort;
 import itdelatrisu.tripletriad.ChampionshipRun;
 import itdelatrisu.tripletriad.Deck;
 import itdelatrisu.tripletriad.GameImage;
@@ -312,10 +313,10 @@ public class ChampionshipScreen extends Screen {
 		if (previewOpen)
 			return;
 		if (mode == MODE_PICK) {
-			ArrayList<Integer> bag = collection();
+			ArrayList<Integer> view = collectionView();
 			int cols = columns();
 			if (change < 0)
-				cursor = Math.min(bag.size() - 1, cursor + cols);
+				cursor = Math.min(view.size() - 1, cursor + cols);
 			else if (change > 0)
 				cursor = Math.max(0, cursor - cols);
 		} else if (mode == MODE_TRADE_WIN && shownIds.length > 0) {
@@ -412,11 +413,13 @@ public class ChampionshipScreen extends Screen {
 		ChampionshipRun run = game.getChampionshipRun();
 		int round = (run != null) ? run.getRound() : 1;
 		Ui.drawCentered(font, I18n.championshipPickTitle(), height * 0.03f, Ui.TITLE);
-		Ui.drawCentered(small, I18n.championshipRoundOf(round) + "    " + I18n.cardCount(selected.size()),
+		Ui.drawCentered(small, I18n.championshipRoundOf(round) + "    "
+			+ I18n.cardCount(selected.size()) + "    " + I18n.sortLine(),
 			height * 0.09f, Ui.HINT);
 
 		Deck catalog = game.getDeck();
 		ArrayList<Integer> bag = collection();
+		ArrayList<Integer> view = collectionView();
 		Ui.drawHandSlots(g, catalog, Ui.idsFromBag(bag, selected));
 
 		int cols = columns();
@@ -425,18 +428,20 @@ public class ChampionshipScreen extends Screen {
 		int gridX = Ui.pickGridX(cols, gridSize, gap);
 		int gridY = (int) Ui.handGridY();
 		int visibleRows = Math.max(1, (height - gridY - (int) (height * 0.12f)) / (gridSize + gap));
-		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
+		int rows = (view.size() + cols - 1) / Math.max(1, cols);
 		clampScroll(rows, visibleRows, cols);
 
 		for (int row = scrollRow; row < rows && row < scrollRow + visibleRows; row++) {
 			for (int col = 0; col < cols; col++) {
 				int index = row * cols + col;
-				if (index >= bag.size())
+				if (index >= view.size())
 					break;
-				Card card = catalog.getCardById(bag.get(index).intValue());
+				int bagIndex = view.get(index).intValue();
+				Card card = (bagIndex >= 0 && bagIndex < bag.size())
+					? catalog.getCardById(bag.get(bagIndex).intValue()) : null;
 				float x = gridX + col * (gridSize + gap);
 				float y = gridY + (row - scrollRow) * (gridSize + gap);
-				boolean inHand = selected.contains(Integer.valueOf(index));
+				boolean inHand = selected.contains(Integer.valueOf(bagIndex));
 				if (card != null)
 					card.drawSized(x, y, gridSize, inHand, !inHand);
 				if (index == cursor) {
@@ -447,13 +452,13 @@ public class ChampionshipScreen extends Screen {
 				}
 			}
 		}
-		int cursorId = (cursor >= 0 && cursor < bag.size()) ? bag.get(cursor).intValue() : 0;
-		Ui.drawCursorCardPanel(g, catalog, cursorId);
+		Ui.drawCursorCardPanel(g, catalog, cardIdAt(cursor));
 		boolean canSave = game.canChampionshipSave();
 		String saveLabel = I18n.championshipSave();
 		Ui.drawPanelLabel(g, saveLabel, Ui.panelActionY(), canSave ? Ui.TITLE : Ui.DISABLED);
-		if (previewOpen && cursor >= 0 && cursor < bag.size())
-			Ui.drawCardPreview(g, catalog, bag.get(cursor).intValue());
+		int previewBag = bagAt(cursor);
+		if (previewOpen && previewBag >= 0 && previewBag < bag.size())
+			Ui.drawCardPreview(g, catalog, bag.get(previewBag).intValue());
 		float hintY = height * 0.88f;
 		Ui.drawCentered(small, previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipPick(),
 			hintY, Ui.HINT);
@@ -604,7 +609,7 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private void keyPick(int key) {
-		ArrayList<Integer> bag = collection();
+		ArrayList<Integer> view = collectionView();
 		if (previewOpen) {
 			if (key == Input.KEY_LEFT) {
 				if (cursor > 0) {
@@ -612,7 +617,7 @@ public class ChampionshipScreen extends Screen {
 					AudioController.playCursor();
 				}
 			} else if (key == Input.KEY_RIGHT) {
-				if (cursor < bag.size() - 1) {
+				if (cursor < view.size() - 1) {
 					cursor++;
 					AudioController.playCursor();
 				}
@@ -631,7 +636,7 @@ public class ChampionshipScreen extends Screen {
 			return;
 		}
 		int cols = columns();
-		int rows = (bag.size() + cols - 1) / Math.max(1, cols);
+		int rows = (view.size() + cols - 1) / Math.max(1, cols);
 		int row = (cols > 0) ? cursor / cols : 0;
 		switch (key) {
 		case Input.KEY_ESCAPE:
@@ -639,7 +644,7 @@ public class ChampionshipScreen extends Screen {
 			game.championshipBackToLobby();
 			break;
 		case Input.KEY_RIGHT:
-			if (cursor < bag.size() - 1) {
+			if (cursor < view.size() - 1) {
 				cursor++;
 				AudioController.playCursor();
 			}
@@ -652,7 +657,7 @@ public class ChampionshipScreen extends Screen {
 			break;
 		case Input.KEY_DOWN:
 			if (row < rows - 1) {
-				int next = Math.min(bag.size() - 1, cursor + cols);
+				int next = Math.min(view.size() - 1, cursor + cols);
 				if (next != cursor) {
 					cursor = next;
 					AudioController.playCursor();
@@ -669,7 +674,7 @@ public class ChampionshipScreen extends Screen {
 			togglePick();
 			break;
 		case Input.KEY_C:
-			if (cursor >= 0 && cursor < bag.size()) {
+			if (cursor >= 0 && cursor < view.size()) {
 				previewOpen = true;
 				AudioController.Effect.SELECT.play();
 			} else {
@@ -686,6 +691,9 @@ public class ChampionshipScreen extends Screen {
 			break;
 		case Input.KEY_R:
 			fillRandom();
+			break;
+		case Input.KEY_T:
+			cycleSort();
 			break;
 		case Input.KEY_ENTER:
 			confirmPickHand();
@@ -778,7 +786,7 @@ public class ChampionshipScreen extends Screen {
 			return;
 		}
 		if (Ui.hitCursorCard(x, y)) {
-			if (cursor >= 0 && cursor < collection().size()) {
+			if (cursor >= 0 && cursor < collectionView().size()) {
 				previewOpen = true;
 				AudioController.Effect.SELECT.play();
 			} else {
@@ -831,7 +839,8 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private void removeFromPick() {
-		Integer key = Integer.valueOf(cursor);
+		int bagIndex = bagAt(cursor);
+		Integer key = Integer.valueOf(bagIndex);
 		int pos = selected.indexOf(key);
 		if (pos < 0) {
 			AudioController.Effect.INVALID.play();
@@ -851,10 +860,10 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private void togglePick() {
-		ArrayList<Integer> bag = collection();
-		if (cursor < 0 || cursor >= bag.size())
+		int bagIndex = bagAt(cursor);
+		if (bagIndex < 0)
 			return;
-		Integer key = Integer.valueOf(cursor);
+		Integer key = Integer.valueOf(bagIndex);
 		int pos = selected.indexOf(key);
 		if (pos >= 0) {
 			selected.remove(pos);
@@ -969,6 +978,32 @@ public class ChampionshipScreen extends Screen {
 		return new ArrayList<Integer>();
 	}
 
+	private ArrayList<Integer> collectionView() {
+		return CardSort.sortedBagIndices(collection(), game.getDeck());
+	}
+
+	private int bagAt(int viewIndex) {
+		return CardSort.bagAt(collectionView(), viewIndex);
+	}
+
+	private int cardIdAt(int viewIndex) {
+		ArrayList<Integer> bag = collection();
+		int bagIndex = bagAt(viewIndex);
+		if (bagIndex < 0 || bagIndex >= bag.size())
+			return 0;
+		return bag.get(bagIndex).intValue();
+	}
+
+	private void cycleSort() {
+		ArrayList<Integer> view = collectionView();
+		int focusBag = bagAt(cursor);
+		CardSort.cycle();
+		view = collectionView();
+		int next = CardSort.indexOfBag(view, focusBag);
+		cursor = (next >= 0) ? next : 0;
+		AudioController.playCursor();
+	}
+
 	private void drawCursor(float textX, float textY, UnicodeFont small) {
 		Image cursorImg = GameImage.CURSOR.getImage();
 		cursorImg.draw(
@@ -1023,7 +1058,7 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private int hitGrid(int x, int y) {
-		ArrayList<Integer> bag = collection();
+		ArrayList<Integer> view = collectionView();
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);
@@ -1036,7 +1071,7 @@ public class ChampionshipScreen extends Screen {
 		if (col < 0 || col >= cols)
 			return -1;
 		int index = row * cols + col;
-		if (index < 0 || index >= bag.size())
+		if (index < 0 || index >= view.size())
 			return -1;
 		int cellX = gridX + col * (gridSize + gap);
 		int cellY = gridY + (row - scrollRow) * (gridSize + gap);

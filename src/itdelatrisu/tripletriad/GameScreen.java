@@ -30,6 +30,7 @@ public enum GameScreen {
 	HOW_TO_PLAY,
 	SETTINGS,
 	MY_DECK,
+	SAVE,
 	CHAMPIONSHIP,
 	MATCH
 }

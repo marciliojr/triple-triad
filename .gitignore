@@ -2,6 +2,7 @@
 /.triple-triad.cfg
 /.triple-triad-profile
 /.triple-triad-profiles/
+*.ttsave
 
 # Eclipse
 /.settings/

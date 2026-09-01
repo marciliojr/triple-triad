@@ -26,6 +26,10 @@
 - [x] Seleção híbrida: nome/elemento nos slots, painel médio do cursor
 - [x] Galeria Meu Deck com o mesmo painel de preview ao navegar
 - [x] 1.0.0 (primeira versão jogável)
+- [x] Ordenar grids de cartas (T: nível / valor / catálogo) no construtor, Meu Deck e pick do Campeonato
+- [x] Parse do level em `Deck` lê a coluna Level (`tokens[4]`)
+- [x] Menu Salvar: exportar/importar álbum e campeonato (`.ttsave`, diálogo do sistema, confirmação ao substituir)
+- [x] 1.1.0 (save portátil e ordenação das cartas)
 
 ## Não feito (de propósito)
 

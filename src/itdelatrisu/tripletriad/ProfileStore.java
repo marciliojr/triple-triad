@@ -427,7 +427,7 @@ public class ProfileStore {
 	/**
 	 * Parses a comma-separated list of card IDs.
 	 */
-	private static int[] parseCardIds(String value) {
+	static int[] parseCardIds(String value) {
 		if (value == null || value.isEmpty())
 			return new int[0];
 		String[] tokens = value.split(",");
@@ -452,7 +452,7 @@ public class ProfileStore {
 	/**
 	 * Formats a list of card IDs as a comma-separated list.
 	 */
-	private static String formatIdList(ArrayList<Integer> ids) {
+	static String formatIdList(ArrayList<Integer> ids) {
 		if (ids == null || ids.isEmpty())
 			return "";
 		int[] array = new int[ids.size()];
@@ -464,7 +464,7 @@ public class ProfileStore {
 	/**
 	 * Formats card IDs as a comma-separated list.
 	 */
-	private static String formatCardIds(int[] ids) {
+	static String formatCardIds(int[] ids) {
 		if (ids == null || ids.length == 0)
 			return "";
 		StringBuilder sb = new StringBuilder();

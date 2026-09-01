@@ -39,6 +39,7 @@ public class Input {
 	public static final int KEY_E = Keys.E;
 	public static final int KEY_S = Keys.S;
 	public static final int KEY_R = Keys.R;
+	public static final int KEY_T = Keys.T;
 	public static final int KEY_F1 = Keys.F1;
 	public static final int KEY_F5 = Keys.F5;
 	public static final int MOUSE_LEFT_BUTTON = Buttons.LEFT;

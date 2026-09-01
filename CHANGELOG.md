@@ -12,6 +12,27 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### [Unreleased]
 
+### [1.1.0] - 2026-09-01
+
+Menu Salvar (exportar/importar `.ttsave`) e ordenação das grades de cartas.
+
+#### Added
+
+- Item de menu **Salvar**: exportar/importar o álbum (Meu Deck) e o checkpoint do Campeonato via diálogo do sistema (arquivos `.ttsave`)
+- Confirmação Não / Sim (default Não) ao importar por cima do álbum ou da run
+- Tecla **T** cicla a ordem do grid (catálogo/ID, nível, valor/soma dos ranks) no construtor, Meu Deck e pick do Campeonato
+- `CardSort` (view da sessão; não muta catálogo, álbum nem bag)
+
+#### Changed
+
+- Menu passa a incluir Salvar entre Meu Deck e Como Jogar
+- Dicas de teclas incluem **T**; Como Jogar cobre Salvar e a ordenação
+- README, CHANGELOG e memory-bank alinhados à 1.1.0
+
+#### Fixed
+
+- Parse do level em `Deck` lê a coluna Level (`tokens[4]`) de `cards/deck.txt`
+
 ### [1.0.0] - 2026-08-27
 
 Primeira versão jogável: seleção de cartas com identidade visível, preview na galeria e confirmação ao apagar do álbum.
@@ -170,6 +191,27 @@ All notable changes to this fork are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [SemVer](https://semver.org/).
 
 ### [Unreleased]
+
+### [1.1.0] - 2026-09-01
+
+Save menu (export/import `.ttsave`) and card-grid sorting.
+
+#### Added
+
+- **Save** menu item: export/import the album (My Deck) and the Championship checkpoint via the system file dialog (`.ttsave` files)
+- No / Yes confirmation (default No) before importing over the album or the run
+- **T** cycles the grid order (catalog/ID, level, value/rank-sum) in the builder, My Deck, and Championship pick
+- `CardSort` (session view; does not mutate catalog, album, or bag)
+
+#### Changed
+
+- The menu now includes Save between My Deck and How to Play
+- Key hints include **T**; How to Play covers Save and sorting
+- README, CHANGELOG, and memory-bank aligned to 1.1.0
+
+#### Fixed
+
+- Level parse in `Deck` reads the Level column (`tokens[4]`) from `cards/deck.txt`
 
 ### [1.0.0] - 2026-08-27
 

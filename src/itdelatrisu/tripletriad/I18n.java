@@ -45,6 +45,96 @@ public final class I18n {
 		return pick("Meu Deck", "My Deck", "Mi mazo");
 	}
 
+	public static String menuSave() {
+		return pick("Salvar", "Save", "Guardar");
+	}
+
+	public static String saveTitle() {
+		return menuSave();
+	}
+
+	public static String saveKind() {
+		return pick("Tipo", "Type", "Tipo");
+	}
+
+	public static String saveKindDeck() {
+		return pick("Deck", "Deck", "Mazo");
+	}
+
+	public static String saveKindChampionship() {
+		return menuChampionship();
+	}
+
+	public static String saveExport() {
+		return pick("Exportar", "Export", "Exportar");
+	}
+
+	public static String saveImport() {
+		return pick("Importar", "Import", "Importar");
+	}
+
+	public static String saveNoChampionship() {
+		return pick("N\u00e3o h\u00e1 save de campeonato.",
+			"There is no championship save.",
+			"No hay partida de campeonato guardada.");
+	}
+
+	public static String saveNone() {
+		return pick("Sem save", "No save", "Sin partida");
+	}
+
+	public static String saveBadFile() {
+		return pick("Arquivo inv\u00e1lido.", "Invalid file.", "Archivo no v\u00e1lido.");
+	}
+
+	public static String saveWrongKind() {
+		return pick("Este arquivo n\u00e3o \u00e9 deste tipo.",
+			"This file is not that type of save.",
+			"Este archivo no es de este tipo.");
+	}
+
+	public static String saveExported() {
+		return pick("Arquivo exportado.", "File exported.", "Archivo exportado.");
+	}
+
+	public static String saveImported() {
+		return pick("Save importado.", "Save imported.", "Partida importada.");
+	}
+
+	public static String saveConfirmReplaceDeck() {
+		return pick("Substituir o \u00e1lbum?",
+			"Replace the album?",
+			"\u00bfSustituir el \u00e1lbum?");
+	}
+
+	public static String saveConfirmReplaceChampionship() {
+		return pick("Substituir o save do campeonato?",
+			"Replace the championship save?",
+			"\u00bfSustituir la partida del campeonato?");
+	}
+
+	public static String saveDialogExport() {
+		return pick("Exportar save", "Export save", "Exportar partida");
+	}
+
+	public static String saveDialogImport() {
+		return pick("Importar save", "Import save", "Importar partida");
+	}
+
+	public static String saveFileDeck() {
+		return "meu-deck.ttsave";
+	}
+
+	public static String saveFileChampionship() {
+		return "campeonato.ttsave";
+	}
+
+	public static String hintSave() {
+		return pick("Cima/baixo escolhe    Esquerda/direita tipo    Z/Enter    Esc voltar",
+			"Up/down selects    Left/right type    Z/Enter    Esc back",
+			"Arriba/abajo elige    Izquierda/derecha tipo    Z/Enter    Esc volver");
+	}
+
 	public static String championshipHint() {
 		return pick("Novo jogo usa Meu Deck. Se estiver vazio, a 1\u00aa partida cria o pack.",
 			"New game uses My Deck. If it is empty, match 1 creates the pack.",
@@ -118,9 +208,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipPick() {
-		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    S salva    Enter jogar    Esc lobby",
-			"Z selects    X removes    C enlarges    R random    S save    Enter play    Esc lobby",
-			"Z selecciona    X quita    C amplia    R aleatorio    S guarda    Enter jugar    Esc lobby");
+		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    S salva    Enter jogar    Esc lobby",
+			"Z selects    X removes    C enlarges    R random    T sorts    S save    Enter play    Esc lobby",
+			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guarda    Enter jugar    Esc lobby");
 	}
 
 	public static String championshipTradeWin() {
@@ -262,9 +352,9 @@ public final class I18n {
 	}
 
 	public static String hintMyDeck() {
-		return pick("C amplia    X/Del remove    Esc voltar",
-			"C enlarges    X/Del removes    Esc back",
-			"C amplia    X/Del quita    Esc volver");
+		return pick("C amplia    X/Del remove    T ordena    Esc voltar",
+			"C enlarges    X/Del removes    T sorts    Esc back",
+			"C amplia    X/Del quita    T ordena    Esc volver");
 	}
 
 	public static String confirmRemoveAlbum(String name) {
@@ -282,9 +372,9 @@ public final class I18n {
 	}
 
 	public static String hintMyDeckPick() {
-		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    Enter jogar    Esc voltar",
-			"Z selects    X removes    C enlarges    R random    Enter play    Esc back",
-			"Z selecciona    X quita    C amplia    R aleatorio    Enter jugar    Esc volver");
+		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    Enter jogar    Esc voltar",
+			"Z selects    X removes    C enlarges    R random    T sorts    Enter play    Esc back",
+			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    Enter jugar    Esc volver");
 	}
 
 	public static String hintCardPreview() {
@@ -344,9 +434,26 @@ public final class I18n {
 	}
 
 	public static String hintBuilder() {
-		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    S salvar    Enter jogar    Esc voltar",
-			"Z selects    X removes    C enlarges    R random    S save    Enter play    Esc back",
-			"Z selecciona    X quita    C amplia    R aleatorio    S guardar    Enter jugar    Esc volver");
+		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    S salvar    Enter jogar    Esc voltar",
+			"Z selects    X removes    C enlarges    R random    T sorts    S save    Enter play    Esc back",
+			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guardar    Enter jugar    Esc volver");
+	}
+
+	public static String sortLine() {
+		String mode;
+		switch (CardSort.current()) {
+			case LEVEL:
+				mode = pick("N\u00edvel", "Level", "Nivel");
+				break;
+			case VALUE:
+				mode = pick("Valor", "Value", "Valor");
+				break;
+			case ORDER:
+			default:
+				mode = pick("Cat\u00e1logo", "Order", "Cat\u00e1logo");
+				break;
+		}
+		return pick("Ordem: ", "Sort: ", "Orden: ") + mode;
 	}
 
 	public static String randomFill() {
@@ -498,13 +605,16 @@ public final class I18n {
 		"Morte s\u00fabita: empate inicia uma nova rodada com as cartas que cada um controlava.",
 		"",
 		"#Jogo R\u00e1pido",
-		"Partida contra a IA. Escolha Meu Deck (cinco cartas do \u00e1lbum), Deck aleat\u00f3rio, um deck novo ou um deck salvo. C amplia as cartas. As regras ficam \u00e0 direita. F5 recome\u00e7a com o mesmo deck.",
+		"Partida contra a IA. Escolha Meu Deck (cinco cartas do \u00e1lbum), Deck aleat\u00f3rio, um deck novo ou um deck salvo. C amplia as cartas. T ordena o grid (cat\u00e1logo, n\u00edvel, valor). As regras ficam \u00e0 direita. F5 recome\u00e7a com o mesmo deck.",
 		"",
 		"#Campeonato",
-		"Oito partidas contra a IA. Se o \u00e1lbum tiver menos de cinco cartas, a primeira partida cria um pack inicial. Ao vencer, pegue uma carta do advers\u00e1rio. C amplia as cartas no pack, no pick e na troca. O \u00e1lbum e as copas permanecem quando a run termina.",
+		"Oito partidas contra a IA. Se o \u00e1lbum tiver menos de cinco cartas, a primeira partida cria um pack inicial. Ao vencer, pegue uma carta do advers\u00e1rio. C amplia as cartas no pack, no pick e na troca. T ordena o grid no pick. O \u00e1lbum e as copas permanecem quando a run termina.",
 		"",
 		"#Meu Deck e perfis",
-		"Meu Deck \u00e9 o \u00e1lbum da cole\u00e7\u00e3o. C amplia; X ou Del remove uma c\u00f3pia. Em Configura\u00e7\u00f5es d\u00e1 para editar o nome, criar outros jogadores, trocar de perfil e escolher a dificuldade da IA. Cada perfil guarda o pr\u00f3prio \u00e1lbum e os decks.",
+		"Meu Deck \u00e9 o \u00e1lbum da cole\u00e7\u00e3o. C amplia; T ordena o grid; X ou Del remove uma c\u00f3pia. Em Configura\u00e7\u00f5es d\u00e1 para editar o nome, criar outros jogadores, trocar de perfil e escolher a dificuldade da IA. Cada perfil guarda o pr\u00f3prio \u00e1lbum e os decks.",
+		"",
+		"#Salvar",
+		"No menu Salvar d\u00e1 para exportar ou importar o \u00e1lbum (Meu Deck) ou o checkpoint do Campeonato em um arquivo .ttsave pelo di\u00e1logo do sistema. Importar pede confirma\u00e7\u00e3o antes de substituir.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -533,13 +643,16 @@ public final class I18n {
 		"Sudden Death: a draw starts a new round with the cards each player controlled.",
 		"",
 		"#Quick Game",
-		"A match against the AI. Choose My Deck (five cards from the album), Random deck, a new deck, or a saved deck. C enlarges cards. Rules are on the right. F5 rematches with the same deck.",
+		"A match against the AI. Choose My Deck (five cards from the album), Random deck, a new deck, or a saved deck. C enlarges cards. T sorts the grid (catalog, level, value). Rules are on the right. F5 rematches with the same deck.",
 		"",
 		"#Championship",
-		"Eight matches against the AI. If the album has fewer than five cards, match 1 creates a starter pack. After a win, take one opponent card. C enlarges cards in the pack, pick, and trade. The album and cups stay when the run ends.",
+		"Eight matches against the AI. If the album has fewer than five cards, match 1 creates a starter pack. After a win, take one opponent card. C enlarges cards in the pack, pick, and trade. T sorts the pick grid. The album and cups stay when the run ends.",
 		"",
 		"#My Deck and profiles",
-		"My Deck is the collection album. C enlarges; X or Del removes one copy. In Settings you can edit the name, create other players, switch profiles, and set AI difficulty. Each profile keeps its own album and decks.",
+		"My Deck is the collection album. C enlarges; T sorts the grid; X or Del removes one copy. In Settings you can edit the name, create other players, switch profiles, and set AI difficulty. Each profile keeps its own album and decks.",
+		"",
+		"#Save",
+		"The Save menu exports or imports the album (My Deck) or the Championship checkpoint as a .ttsave file through the system dialog. Import asks for confirmation before replacing.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -568,13 +681,16 @@ public final class I18n {
 		"Muerte s\u00fabita: el empate inicia una nueva ronda con las cartas que cada uno controlaba.",
 		"",
 		"#Partida r\u00e1pida",
-		"Partida contra la IA. Elige Mi mazo (cinco cartas del \u00e1lbum), Mazo aleatorio, un mazo nuevo o un mazo guardado. C amplia las cartas. Las reglas est\u00e1n a la derecha. F5 reinicia con el mismo mazo.",
+		"Partida contra la IA. Elige Mi mazo (cinco cartas del \u00e1lbum), Mazo aleatorio, un mazo nuevo o un mazo guardado. C amplia las cartas. T ordena la cuadr\u00edcula (cat\u00e1logo, nivel, valor). Las reglas est\u00e1n a la derecha. F5 reinicia con el mismo mazo.",
 		"",
 		"#Campeonato",
-		"Ocho partidas contra la IA. Si el \u00e1lbum tiene menos de cinco cartas, la primera partida crea un sobre inicial. Al ganar, toma una carta del rival. C amplia las cartas en el sobre, la elecci\u00f3n y el intercambio. El \u00e1lbum y las copas permanecen cuando termina la ronda.",
+		"Ocho partidas contra la IA. Si el \u00e1lbum tiene menos de cinco cartas, la primera partida crea un sobre inicial. Al ganar, toma una carta del rival. C amplia las cartas en el sobre, la elecci\u00f3n y el intercambio. T ordena la cuadr\u00edcula en la elecci\u00f3n. El \u00e1lbum y las copas permanecen cuando termina la ronda.",
 		"",
 		"#Mi mazo y perfiles",
-		"Mi mazo es el \u00e1lbum de la colecci\u00f3n. C amplia; X o Del quita una copia. En Ajustes puedes editar el nombre, crear otros jugadores, cambiar de perfil y elegir la dificultad de la IA. Cada perfil guarda su propio \u00e1lbum y mazos.",
+		"Mi mazo es el \u00e1lbum de la colecci\u00f3n. C amplia; T ordena la cuadr\u00edcula; X o Del quita una copia. En Ajustes puedes editar el nombre, crear otros jugadores, cambiar de perfil y elegir la dificultad de la IA. Cada perfil guarda su propio \u00e1lbum y mazos.",
+		"",
+		"#Guardar",
+		"En el men\u00fa Guardar puedes exportar o importar el \u00e1lbum (Mi mazo) o el punto de control del Campeonato en un archivo .ttsave con el di\u00e1logo del sistema. Importar pide confirmaci\u00f3n antes de sustituir.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

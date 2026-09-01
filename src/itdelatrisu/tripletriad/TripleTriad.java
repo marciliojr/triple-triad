@@ -31,6 +31,7 @@ import itdelatrisu.tripletriad.ui.MenuScreen;
 import itdelatrisu.tripletriad.ui.MyDeckScreen;
 import itdelatrisu.tripletriad.ui.ProfileScreen;
 import itdelatrisu.tripletriad.ui.ProfilesScreen;
+import itdelatrisu.tripletriad.ui.SaveScreen;
 import itdelatrisu.tripletriad.ui.Screen;
 import itdelatrisu.tripletriad.ui.SettingsScreen;
 import itdelatrisu.tripletriad.ui.Ui;
@@ -143,6 +144,7 @@ public class TripleTriad extends BasicGame {
 	private DeckBuilderScreen deckBuilderScreen;
 	private ChampionshipScreen championshipScreen;
 	private MyDeckScreen myDeckScreen;
+	private SaveScreen saveScreen;
 
 	/** Card IDs for the player's current match deck. */
 	private int[] currentPlayerDeckIds;
@@ -221,6 +223,7 @@ public class TripleTriad extends BasicGame {
 		this.settingsScreen = new SettingsScreen(this);
 		this.championshipScreen = new ChampionshipScreen(this);
 		this.myDeckScreen = new MyDeckScreen(this);
+		this.saveScreen = new SaveScreen(this);
 
 		loadActiveProfile();
 		if (profile != null && profile.isValid())
@@ -942,6 +945,7 @@ public class TripleTriad extends BasicGame {
 			case HOW_TO_PLAY: return howToPlayScreen;
 			case SETTINGS: return settingsScreen;
 			case MY_DECK: return myDeckScreen;
+			case SAVE: return saveScreen;
 			case CHAMPIONSHIP: return championshipScreen;
 			case MENU:
 			default: return menuScreen;
@@ -1172,6 +1176,14 @@ public class TripleTriad extends BasicGame {
 	public void showMyDeck() {
 		currentScreen = GameScreen.MY_DECK;
 		myDeckScreen.enterGallery();
+	}
+
+	/**
+	 * Shows export/import of album and championship saves.
+	 */
+	public void showSave() {
+		currentScreen = GameScreen.SAVE;
+		saveScreen.enter();
 	}
 
 	/**

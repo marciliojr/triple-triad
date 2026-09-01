@@ -1,8 +1,8 @@
 # Active context
 
-Último marco: **1.0.0** — primeira versão jogável. Seleção híbrida (nome/elemento, painel médio, **R**), preview na galeria Meu Deck, confirmação ao apagar do álbum, painéis sem vazamento de texto, aviso de save no rodapé.
+Último marco: **1.1.0** — menu Salvar (export/import `.ttsave`) e ordenação das grades com **T**.
 
-Branch de trabalho típica após o marco: `master` na 1.0.0 (`v1.0.0`).
+Branch de trabalho típica: `master` na 1.1.0 (`v1.1.0`).
 
 ## Ao continuar
 
@@ -11,6 +11,8 @@ Branch de trabalho típica após o marco: `master` na 1.0.0 (`v1.0.0`).
 - Textos de UI: adicionar em `I18n` (PT/EN/ES), não hardcode
 - Assets novos: soltar em `res/` ou `cards/` e carregar pelo nome do arquivo
 - Versus: só quando o produto pedir; não está no menu
+- Ordenação de cartas: só via `CardSort` (view); não mutar catálogo, álbum nem bag da run
+- Export/import: só via `SaveTransfer` + `SaveScreen`; não misturar com o `.profile` automático
 
 ## Dívida conhecida
 

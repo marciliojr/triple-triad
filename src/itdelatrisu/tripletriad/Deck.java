@@ -95,7 +95,7 @@ public class Deck {
 				// level
 				int level = 0;
 				try {
-					level = Integer.parseInt(tokens[0]);
+					level = Integer.parseInt(tokens[4]);
 				} catch (NumberFormatException e) {
 					Log.warn(String.format("Failed to parse level in line: %s", line), e);
 					continue;

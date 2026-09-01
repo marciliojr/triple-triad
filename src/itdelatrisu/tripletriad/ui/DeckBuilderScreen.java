@@ -20,6 +20,7 @@ package itdelatrisu.tripletriad.ui;
 
 import itdelatrisu.tripletriad.AudioController;
 import itdelatrisu.tripletriad.Card;
+import itdelatrisu.tripletriad.CardSort;
 import itdelatrisu.tripletriad.Deck;
 import itdelatrisu.tripletriad.I18n;
 import itdelatrisu.tripletriad.Options;
@@ -111,10 +112,11 @@ public class DeckBuilderScreen extends Screen {
 		int width = container.getWidth();
 		int height = container.getHeight();
 		Deck catalog = game.getDeck();
-		ArrayList<Card> cards = catalog.getCards();
+		ArrayList<Card> cards = catalogView();
 
 		Ui.drawCentered(font, editing == null ? I18n.buildDeck() : I18n.editDeck(), height * 0.03f, Ui.TITLE);
-		Ui.drawCentered(small, I18n.cardCount(selectedIds.size()), height * 0.09f, Ui.HINT);
+		Ui.drawCentered(small, I18n.cardCount(selectedIds.size()) + "    " + I18n.sortLine(),
+			height * 0.09f, Ui.HINT);
 
 		Ui.drawHandSlots(g, catalog, Ui.packHandIds(selectedIds));
 
@@ -174,7 +176,7 @@ public class DeckBuilderScreen extends Screen {
 			return;
 		}
 
-		ArrayList<Card> cards = game.getDeck().getCards();
+		ArrayList<Card> cards = catalogView();
 		if (previewIndex >= 0) {
 			if (key == Input.KEY_LEFT) {
 				if (previewIndex > 0) {
@@ -257,6 +259,9 @@ public class DeckBuilderScreen extends Screen {
 		case Input.KEY_R:
 			fillRandom();
 			break;
+		case Input.KEY_T:
+			cycleSort();
+			break;
 		default:
 			break;
 		}
@@ -305,7 +310,7 @@ public class DeckBuilderScreen extends Screen {
 	public void mouseWheelMoved(int change) {
 		if (naming || previewIndex >= 0)
 			return;
-		ArrayList<Card> cards = game.getDeck().getCards();
+		ArrayList<Card> cards = catalogView();
 		int cols = columns();
 		if (change < 0)
 			cursor = Math.min(cards.size() - 1, cursor + cols);
@@ -343,8 +348,24 @@ public class DeckBuilderScreen extends Screen {
 			name.append(c);
 	}
 
+	private void cycleSort() {
+		ArrayList<Card> view = catalogView();
+		int focusId = (cursor >= 0 && cursor < view.size()) ? view.get(cursor).getID() : 0;
+		CardSort.cycle();
+		view = catalogView();
+		int next = CardSort.indexOfCardId(view, focusId);
+		cursor = (next >= 0) ? next : 0;
+		if (previewIndex >= 0)
+			previewIndex = cursor;
+		AudioController.playCursor();
+	}
+
+	private ArrayList<Card> catalogView() {
+		return CardSort.sortedCatalog(game.getDeck().getCards());
+	}
+
 	private void openPreview() {
-		ArrayList<Card> cards = game.getDeck().getCards();
+		ArrayList<Card> cards = catalogView();
 		if (cursor < 0 || cursor >= cards.size()) {
 			AudioController.Effect.INVALID.play();
 			return;
@@ -354,7 +375,7 @@ public class DeckBuilderScreen extends Screen {
 	}
 
 	private void removeFromTray() {
-		ArrayList<Card> cards = game.getDeck().getCards();
+		ArrayList<Card> cards = catalogView();
 		int index = (previewIndex >= 0) ? previewIndex : cursor;
 		if (index < 0 || index >= cards.size()) {
 			AudioController.Effect.INVALID.play();
@@ -402,7 +423,7 @@ public class DeckBuilderScreen extends Screen {
 	}
 
 	private void toggleCursor() {
-		ArrayList<Card> cards = game.getDeck().getCards();
+		ArrayList<Card> cards = catalogView();
 		if (cursor < 0 || cursor >= cards.size())
 			return;
 		int id = cards.get(cursor).getID();
@@ -462,7 +483,7 @@ public class DeckBuilderScreen extends Screen {
 	}
 
 	private int hitGrid(int x, int y) {
-		ArrayList<Card> cards = game.getDeck().getCards();
+		ArrayList<Card> cards = catalogView();
 		int cols = columns();
 		int gridSize = cellSize();
 		int gap = Math.max(4, gridSize / 12);

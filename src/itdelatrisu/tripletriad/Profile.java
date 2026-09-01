@@ -19,6 +19,7 @@
 package itdelatrisu.tripletriad;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Local player profile: display name and saved decks.
@@ -134,6 +135,21 @@ public class Profile {
 	 */
 	public void clearCollection() {
 		collection.clear();
+	}
+
+	/**
+	 * Replaces the album with the given card IDs (IDs of 0 or less are skipped).
+	 * @param cards the IDs
+	 */
+	public void replaceCollection(List<Integer> cards) {
+		collection.clear();
+		if (cards == null)
+			return;
+		for (int i = 0; i < cards.size(); i++) {
+			int id = cards.get(i).intValue();
+			if (id > 0)
+				collection.add(Integer.valueOf(id));
+		}
 	}
 
 	/**
