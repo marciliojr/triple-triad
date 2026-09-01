@@ -18,8 +18,10 @@
 
 package itdelatrisu.tripletriad;
 
+import java.awt.EventQueue;
 import java.awt.FileDialog;
 import java.awt.Frame;
+import java.awt.Window;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -29,8 +31,12 @@ import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import itdelatrisu.tripletriad.gfx.Gfx;
+import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.Log;
 
 /**
@@ -39,6 +45,12 @@ import itdelatrisu.tripletriad.gfx.Log;
 public final class SaveTransfer {
 	/** File extension for portable saves. */
 	public static final String EXTENSION = ".ttsave";
+
+	/** True while a file dialog is on screen. */
+	private static final AtomicBoolean DIALOG_OPEN = new AtomicBoolean(false);
+
+	/** Ignore leftover Z/Enter/click after the native dialog closes. */
+	private static final int DIALOG_SUPPRESS_MS = 500;
 
 	/** Kind of portable save. */
 	public enum Kind {
@@ -236,21 +248,75 @@ public final class SaveTransfer {
 	}
 
 	private static File showDialog(String title, String defaultName, int mode) {
-		FileDialog dialog = new FileDialog((Frame) null, title != null ? title : "", mode);
-		dialog.setFilenameFilter(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				return name != null && name.toLowerCase().endsWith(EXTENSION);
-			}
-		});
-		if (defaultName != null)
-			dialog.setFile(defaultName);
-		dialog.setVisible(true);
-		String dir = dialog.getDirectory();
-		String name = dialog.getFile();
-		if (dir == null || name == null || name.isEmpty())
+		suppressInput();
+		if (!DIALOG_OPEN.compareAndSet(false, true))
 			return null;
-		return new File(dir, name);
+		final String windowTitle = title != null ? title : "";
+		final File[] chosen = new File[1];
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				chosen[0] = showDialogOnEdt(windowTitle, defaultName, mode);
+			}
+		};
+		try {
+			if (EventQueue.isDispatchThread())
+				task.run();
+			else
+				EventQueue.invokeAndWait(task);
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			return null;
+		} catch (InvocationTargetException e) {
+			Log.error("File dialog failed.", e.getCause());
+			return null;
+		} finally {
+			DIALOG_OPEN.set(false);
+			suppressInput();
+		}
+		return chosen[0];
+	}
+
+	private static File showDialogOnEdt(String title, String defaultName, int mode) {
+		Frame owner = new Frame();
+		FileDialog dialog = null;
+		try {
+			owner.setUndecorated(true);
+			owner.setType(Window.Type.UTILITY);
+			owner.setSize(1, 1);
+			owner.setLocation(-2000, -2000);
+			owner.setVisible(true);
+			dialog = new FileDialog(owner, title, mode);
+			dialog.setMultipleMode(false);
+			dialog.setFilenameFilter(new FilenameFilter() {
+				@Override
+				public boolean accept(File dir, String name) {
+					return name != null && name.toLowerCase().endsWith(EXTENSION);
+				}
+			});
+			if (defaultName != null)
+				dialog.setFile(defaultName);
+			dialog.setAlwaysOnTop(true);
+			dialog.setVisible(true);
+			String dir = dialog.getDirectory();
+			String name = dialog.getFile();
+			if (dir == null || name == null || name.isEmpty())
+				return null;
+			return new File(dir, name);
+		} finally {
+			if (dialog != null) {
+				dialog.setVisible(false);
+				dialog.dispose();
+			}
+			owner.setVisible(false);
+			owner.dispose();
+		}
+	}
+
+	private static void suppressInput() {
+		Input input = Gfx.getInput();
+		if (input != null)
+			input.suppress(DIALOG_SUPPRESS_MS);
 	}
 
 	private static File ensureExtension(File file) {
