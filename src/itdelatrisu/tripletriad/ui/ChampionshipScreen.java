@@ -472,6 +472,7 @@ public class ChampionshipScreen extends Screen {
 		Ui.drawCentered(Options.getFont(), I18n.menuChampionship(), height * 0.08f, Ui.TITLE);
 		Ui.drawCentered(Options.getSmallFont(), I18n.championshipTradeWin(), height * 0.16f, Ui.HINT);
 		drawShownRow(g, height * 0.36f);
+		drawOwnedDetail(height);
 		if (previewOpen && tradeIndex >= 0 && tradeIndex < shownIds.length)
 			Ui.drawCardPreview(g, game.getDeck(), shownIds[tradeIndex]);
 		Ui.drawCentered(Options.getSmallFont(),
@@ -525,7 +526,57 @@ public class ChampionshipScreen extends Screen {
 				g.drawRect(x - 3, y - 3, size + 6, size + 6);
 				g.setLineWidth(1f);
 			}
+			if (mode == MODE_TRADE_WIN)
+				drawOwnedLabel(shownIds[i], x + size / 2f, y + size + 8f, size + gap * 0.9f);
 		}
+	}
+
+	/** Highlight for cards the player does not own yet. */
+	private static final Color NEW_CARD = new Color(0.55f, 1f, 0.55f);
+
+	/**
+	 * Number of copies of a card in the player's permanent album (Meu Deck).
+	 */
+	private int ownedCopies(int cardId) {
+		Profile profile = game.getProfile();
+		if (profile == null || cardId <= 0)
+			return 0;
+		int n = 0;
+		for (Integer id : profile.getCollection())
+			if (id != null && id.intValue() == cardId)
+				n++;
+		return n;
+	}
+
+	/**
+	 * Draws "Já possui / no deck: N" or "Nova!" centered under a trade card.
+	 */
+	private void drawOwnedLabel(int cardId, float cx, float y, float width) {
+		UnicodeFont small = Options.getSmallFont();
+		int copies = ownedCopies(cardId);
+		if (copies > 0) {
+			String l1 = Ui.fit(small, I18n.ownedYes(), width);
+			String l2 = Ui.fit(small, I18n.ownedCount(copies), width);
+			small.drawString(cx - small.getWidth(l1) / 2f, y, l1, Ui.TITLE);
+			small.drawString(cx - small.getWidth(l2) / 2f, y + small.getLineHeight(), l2, Ui.HINT);
+		} else {
+			String l1 = Ui.fit(small, I18n.ownedNew(), width);
+			small.drawString(cx - small.getWidth(l1) / 2f, y, l1, NEW_CARD);
+		}
+	}
+
+	/**
+	 * Draws the owned-copies sentence for the card under the trade cursor.
+	 */
+	private void drawOwnedDetail(int height) {
+		if (tradeIndex < 0 || tradeIndex >= shownIds.length)
+			return;
+		Card card = game.getDeck().getCardById(shownIds[tradeIndex]);
+		if (card == null)
+			return;
+		int copies = ownedCopies(card.getID());
+		Ui.drawCentered(Options.getSmallFont(), I18n.ownedDetail(card.getName(), copies),
+			height * 0.72f, copies > 0 ? Ui.SELECTED : NEW_CARD);
 	}
 
 	private void keyPack(int key) {
