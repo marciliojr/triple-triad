@@ -31,6 +31,7 @@
 - [x] Menu Salvar: exportar/importar álbum e campeonato (`.ttsave`, diálogo do sistema, confirmação ao substituir)
 - [x] 1.1.0 (save portátil e ordenação das cartas)
 - [x] 1.1.1 (diálogo de save fecha de verdade; não reabre Dolphin/file picker)
+- [x] 1.2.0 (troca do Campeonato mostra Já possui / Nova!; cartas sem elemento sem quadrado vazio)
 
 ## Não feito (de propósito)
 

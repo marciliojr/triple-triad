@@ -462,7 +462,7 @@ public final class I18n {
 
 	public static String elementName(Element element) {
 		if (element == null || element == Element.NEUTRAL)
-			return "\u2014";
+			return "";
 		switch (element) {
 		case FIRE:
 			return pick("Fogo", "Fire", "Fuego");
@@ -481,15 +481,49 @@ public final class I18n {
 		case HOLY:
 			return pick("Sagrado", "Holy", "Sagrado");
 		default:
-			return "\u2014";
+			return "";
 		}
 	}
 
 	public static String cardIdentity(Card card) {
 		if (card == null)
 			return "";
-		return String.format("%03d  %s  \u2014  %s",
-			card.getID(), card.getName(), elementName(card.getElement()));
+		String ele = elementName(card.getElement());
+		if (ele.isEmpty())
+			return String.format("%03d  %s", card.getID(), card.getName());
+		return String.format("%03d  %s  -  %s", card.getID(), card.getName(), ele);
+	}
+
+	/** Owned-copies caption under a trade card (first line). */
+	public static String ownedYes() {
+		return pick("J\u00e1 possui", "Owned", "La tienes");
+	}
+
+	/** Copies in Meu Deck under a trade card (second line). */
+	public static String ownedCount(int copies) {
+		if (copies == 1)
+			return pick("1 c\u00f3pia", "1 copy", "1 copia");
+		return pick(copies + " c\u00f3pias", copies + " copies", copies + " copias");
+	}
+
+	/** Caption under a trade card the player does not own yet. */
+	public static String ownedNew() {
+		return pick("Nova!", "New!", "\u00a1Nueva!");
+	}
+
+	/** Detail line for the card under the trade cursor. */
+	public static String ownedDetail(String cardName, int copies) {
+		if (copies <= 0)
+			return pick("Voc\u00ea ainda n\u00e3o tem " + cardName + " no Meu Deck.",
+				"You don't have " + cardName + " in My Deck yet.",
+				"A\u00fan no tienes " + cardName + " en Mi Mazo.");
+		if (copies == 1)
+			return pick("Voc\u00ea j\u00e1 tem 1 c\u00f3pia de " + cardName + " no Meu Deck.",
+				"You already have 1 copy of " + cardName + " in My Deck.",
+				"Ya tienes 1 copia de " + cardName + " en Mi Mazo.");
+		return pick("Voc\u00ea j\u00e1 tem " + copies + " c\u00f3pias de " + cardName + " no Meu Deck.",
+			"You already have " + copies + " copies of " + cardName + " in My Deck.",
+			"Ya tienes " + copies + " copias de " + cardName + " en Mi Mazo.");
 	}
 
 	public static String hintHowTo() {

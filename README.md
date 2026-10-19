@@ -2,7 +2,7 @@
 
 [Português (Brasil)](#português-brasil) · [English](#english)
 
-**1.1.1** — diálogo de save que fecha de verdade. Zip na [GitHub Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.1).
+**1.2.0** — troca do Campeonato mostra se você já tem a carta; cartas sem elemento sem quadrado vazio. Zip na [GitHub Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.0).
 
 ---
 
@@ -26,7 +26,7 @@ Regras: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad). 
 ./gradlew clean
 ```
 
-A [Release v1.1.1](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.1) traz o mesmo zip (`res/` + `cards/` + jar).
+A [Release v1.2.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.0) traz o mesmo zip (`res/` + `cards/` + jar).
 
 ### Fluxo
 
@@ -44,7 +44,7 @@ A [Release v1.1.1](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.
 
 **Salvar** — exportar ou importar o álbum (Meu Deck) ou o checkpoint do Campeonato em um arquivo `.ttsave` pelo diálogo do sistema. Importar pede Não/Sim (default Não) antes de substituir.
 
-**Campeonato** — lobby: Novo jogo, Continuar, Apagar progresso (não zera o álbum). Pack se o álbum tiver menos de 5 cartas; senão pick. **T** ordena o grid no pick. **S** / Salvar (da 2ª luta em diante) grava a run; o aviso aparece no rodapé. Vitória adiciona a carta ao álbum e à bag; derrota tira só da run.
+**Campeonato** — lobby: Novo jogo, Continuar, Apagar progresso (não zera o álbum). Pack se o álbum tiver menos de 5 cartas; senão pick. **T** ordena o grid no pick. **S** / Salvar (da 2ª luta em diante) grava a run; o aviso aparece no rodapé. Vitória adiciona a carta ao álbum e à bag; na escolha, cada carta do adversário mostra **Já possui** (com quantas cópias no Meu Deck) ou **Nova!**. Derrota tira só da run.
 
 **Configurações** — música, som do cursor, idioma (pt-BR, en, es), dificuldade da IA (Fácil/Normal/Difícil), nome e perfis.
 
@@ -118,7 +118,7 @@ Rules: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad). V
 ./gradlew clean
 ```
 
-The [v1.1.1 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.1.1) ships the same zip (`res/` + `cards/` + jar).
+The [v1.2.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.0) ships the same zip (`res/` + `cards/` + jar).
 
 ### Flow
 
@@ -136,7 +136,7 @@ The [v1.1.1 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 
 **Save** — export or import the album (My Deck) or the Championship checkpoint as a `.ttsave` file through the system dialog. Import asks No/Yes (default No) before replacing.
 
-**Championship** — lobby: New game, Continue, Clear progress (does not wipe the album). Pack if the album has fewer than 5 cards; otherwise pick. **T** sorts the pick grid. **S** / Save (from match 2) writes the run; the notice appears in the footer. A win adds the card to the album and bag; a loss removes it only from the run.
+**Championship** — lobby: New game, Continue, Clear progress (does not wipe the album). Pack if the album has fewer than 5 cards; otherwise pick. **T** sorts the pick grid. **S** / Save (from match 2) writes the run; the notice appears in the footer. A win adds the card to the album and bag; on the pick, each opponent card shows **Owned** (with how many copies are in My Deck) or **New!**. A loss removes it only from the run.
 
 **Settings** — music, cursor sound, language (pt-BR, en, es), AI difficulty (Easy/Normal/Hard), name and profiles.
 
