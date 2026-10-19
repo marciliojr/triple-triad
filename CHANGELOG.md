@@ -12,6 +12,19 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### [Unreleased]
 
+### [1.2.0] - 2026-10-18
+
+Troca do Campeonato mostra se você já tem a carta, e cartas sem elemento deixam de mostrar um quadrado vazio.
+
+#### Added
+
+- Na escolha de carta após vencer no Campeonato, cada carta do adversário mostra **Já possui / no deck: N** ou **Nova!**, e uma linha abaixo diz quantas cópias da carta do cursor já estão no Meu Deck
+
+#### Fixed
+
+- Cartas sem elemento (NEUTRAL) não mostram mais um quadrado vazio no rótulo de elemento dos slots e do painel da carta: o texto fica em branco
+- Linha id / nome / elemento usa `-` como separador em vez de travessão (U+2014), que não existe na fonte gerada e aparecia como quadrado
+
 ### [1.1.1] - 2026-09-01
 
 O diálogo de exportar/importar save fecha de verdade e não reabre sozinho.
@@ -199,6 +212,19 @@ All notable changes to this fork are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [SemVer](https://semver.org/).
 
 ### [Unreleased]
+
+### [1.2.0] - 2026-10-18
+
+The Championship trade shows whether you already own the card, and cards with no element no longer show an empty square.
+
+#### Added
+
+- On the card pick after a Championship win, each opponent card shows **Owned / in deck: N** or **New!**, and a line below says how many copies of the cursor card are already in My Deck
+
+#### Fixed
+
+- Cards with no element (NEUTRAL) no longer show an empty square in the element label of the hand slots and the card panel: the text is left blank
+- The id / name / element line uses `-` as separator instead of an em dash (U+2014), which is missing from the generated font and rendered as a square
 
 ### [1.1.1] - 2026-09-01
 
