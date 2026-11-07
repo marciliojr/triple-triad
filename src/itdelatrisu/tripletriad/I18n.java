@@ -243,6 +243,10 @@ public final class I18n {
 		return pick("Esc volta ao menu", "Esc returns to the menu", "Esc vuelve al men\u00fa");
 	}
 
+	public static String hintEndgameVideo() {
+		return pick("Campeonato vencido!    Qualquer tecla continua", "Championship won!    Press any key to continue", "\u00a1Campeonato ganado!    Cualquier tecla contin\u00faa");
+	}
+
 	public static String hintMenu() {
 		return pick("Z/Enter seleciona    Esc sai", "Z/Enter selects    Esc quits", "Z/Enter selecciona    Esc sale");
 	}

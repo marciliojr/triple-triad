@@ -98,6 +98,15 @@ public class AudioController {
 			bgm.pause();
 	}
 
+	/**
+	 * Pauses the BGM (e.g. while a video with its own audio plays).
+	 * Call {@link #applyMusic()} to resume.
+	 */
+	public static void pauseMusic() {
+		if (bgm != null)
+			bgm.pause();
+	}
+
 	// This class should not be instantiated.
 	private AudioController() {}
 

@@ -4,6 +4,10 @@
 
 Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
 
+## Em andamento
+
+- Branch `feat/1.3.0-video-endgame`: vídeo em loop na zerada do Campeonato (`gfx.VideoLoop` + `ChampionshipScreen.MODE_WON`). Fonte `res/endgame.mp4`; o jogo usa `res/endgame/frame_NNN.jpg` + `res/endgame.ogg`. Para trocar o vídeo: `ffmpeg -i endgame.mp4 -vf scale=640:360 -r 24 -q:v 7 res/endgame/frame_%03d.jpg` e `ffmpeg -i endgame.mp4 -vn -c:a libvorbis -q:a 4 res/endgame.ogg`
+
 ## Ao continuar
 
 - Não mexer em `CardResult` / regras de captura sem teste de Same/Plus/Combo/Elemental
@@ -16,6 +20,8 @@ Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
 - Export/import: só via `SaveTransfer` + `SaveScreen`; não misturar com o `.profile` automático
 
 ## Dívida conhecida
+
+- Vídeo é quadros JPEG (sem decoder de vídeo no libGDX); `res/endgame.mp4` vai no zip só como fonte
 
 - Avisos JNI/`Unsafe` do LWJGL 3.3.3 em JDK 25 (não quebram o jogo)
 - `build.xml` cita JARs removidos

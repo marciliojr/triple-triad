@@ -39,3 +39,4 @@
 - [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões
 - [ ] Fat JAR / instalador
 - [ ] Testes automatizados do motor de captura
+- [ ] 1.3.0 (em `feat/1.3.0-video-endgame`): vídeo `endgame` em loop ao zerar o Campeonato, sai com qualquer tecla/clique, fallback para a mensagem

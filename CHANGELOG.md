@@ -12,6 +12,11 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### [Unreleased]
 
+#### Added
+
+- Ao vencer o Campeonato, o vídeo `res/endgame.mp4` toca em loop (com o áudio, se a música estiver ligada) até o jogador apertar qualquer tecla ou clicar; depois volta ao menu. Se o vídeo não carregar, aparece a mensagem de parabéns de antes
+- O vídeo é tocado a partir de quadros JPEG pré-extraídos em `res/endgame/` (24 fps, 640x360) e do áudio `res/endgame.ogg`, porque o libGDX não decodifica vídeo
+
 ### [1.2.0] - 2026-10-18
 
 Troca do Campeonato mostra se você já tem a carta, e cartas sem elemento deixam de mostrar um quadrado vazio.
@@ -212,6 +217,11 @@ All notable changes to this fork are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [SemVer](https://semver.org/).
 
 ### [Unreleased]
+
+#### Added
+
+- Winning the Championship loops the `res/endgame.mp4` video (with audio when music is on) until the player presses any key or clicks, then returns to the menu. If the video fails to load, the previous congratulations message is shown
+- The video plays from JPEG frames pre-extracted into `res/endgame/` (24 fps, 640x360) plus the `res/endgame.ogg` audio, since libGDX has no video decoder
 
 ### [1.2.0] - 2026-10-18
 

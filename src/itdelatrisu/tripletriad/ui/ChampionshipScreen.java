@@ -40,6 +40,9 @@ import itdelatrisu.tripletriad.gfx.Graphics;
 import itdelatrisu.tripletriad.gfx.Image;
 import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
+import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.gfx.SlickException;
+import itdelatrisu.tripletriad.gfx.VideoLoop;
 
 /**
  * Championship lobby, starter pack, hand pick, card trade and result.
@@ -63,6 +66,15 @@ public class ChampionshipScreen extends Screen {
 
 	/** Game instance. */
 	private final TripleTriad game;
+
+	/** Frame rate of {@code res/endgame/} frames. */
+	private static final float ENDGAME_FPS = 24f;
+
+	/** Championship-complete video (lazy), or null if not loaded / failed. */
+	private VideoLoop endgameVideo;
+
+	/** Whether loading the endgame video already failed. */
+	private boolean endgameVideoFailed;
 
 	/** Current mode. */
 	private int mode = MODE_LOBBY;
@@ -186,6 +198,48 @@ public class ChampionshipScreen extends Screen {
 	 */
 	public void showWon() {
 		mode = MODE_WON;
+		startEndgameVideo();
+	}
+
+	/**
+	 * Starts the looping endgame video; on failure the plain message is shown.
+	 */
+	private void startEndgameVideo() {
+		if (endgameVideo == null && !endgameVideoFailed) {
+			try {
+				endgameVideo = new VideoLoop("endgame", ENDGAME_FPS);
+			} catch (SlickException e) {
+				Log.error("Endgame video unavailable; showing message.", e);
+				endgameVideoFailed = true;
+			}
+		}
+		if (endgameVideo == null)
+			return;
+		boolean withAudio = Options.isMusicEnabled();
+		if (withAudio)
+			AudioController.pauseMusic();
+		endgameVideo.play(withAudio);
+	}
+
+	/**
+	 * Stops the endgame video if it is playing.
+	 * @return true if a video was playing
+	 */
+	private boolean stopEndgameVideo() {
+		if (endgameVideo == null || !endgameVideo.isPlaying())
+			return false;
+		endgameVideo.stop();
+		AudioController.applyMusic();
+		return true;
+	}
+
+	/**
+	 * Leaves the championship-complete screen.
+	 */
+	private void leaveWon() {
+		stopEndgameVideo();
+		AudioController.Effect.BACK.play();
+		game.showMenu();
 	}
 
 	/**
@@ -212,6 +266,18 @@ public class ChampionshipScreen extends Screen {
 			renderTradeLose(container, g);
 			break;
 		case MODE_WON:
+			if (endgameVideo != null && endgameVideo.isPlaying()) {
+				if (endgameVideo.draw(0, 0, container.getWidth(), container.getHeight())) {
+					Ui.drawCentered(Options.getSmallFont(), I18n.hintEndgameVideo(),
+						container.getHeight() * 0.94f, Ui.HINT);
+					break;
+				}
+				// decode failed: fall back to the message
+				stopEndgameVideo();
+				endgameVideoFailed = true;
+				endgameVideo.dispose();
+				endgameVideo = null;
+			}
 			renderEnd(container, true);
 			break;
 		case MODE_LOST:
@@ -256,6 +322,8 @@ public class ChampionshipScreen extends Screen {
 			}
 			break;
 		case MODE_WON:
+			leaveWon();
+			break;
 		case MODE_LOST:
 			if (key == Input.KEY_ESCAPE || key == Input.KEY_ENTER || key == Input.KEY_Z) {
 				AudioController.Effect.BACK.play();
@@ -269,6 +337,10 @@ public class ChampionshipScreen extends Screen {
 
 	@Override
 	public void mousePressed(int button, int x, int y) {
+		if (mode == MODE_WON) {
+			leaveWon();
+			return;
+		}
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
 		if (previewOpen) {
@@ -304,7 +376,7 @@ public class ChampionshipScreen extends Screen {
 			game.championshipStealAck();
 			return;
 		}
-		if (mode == MODE_WON || mode == MODE_LOST)
+		if (mode == MODE_LOST)
 			game.showMenu();
 	}
 
