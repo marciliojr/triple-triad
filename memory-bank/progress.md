@@ -21,7 +21,7 @@
 - [x] GitHub Actions: build no PR; tag + Release no merge na `master`
 - [x] Teclas padronizadas: Z seleciona, X/Del remove, C amplia, R aleatório (construtor/picks)
 - [x] Dificuldade da IA nas Configurações (Fácil/Normal/Difícil)
-- [x] Versus fora do menu
+- [x] Versus no menu (1.3.0)
 - [x] Vários perfis e deck aleatório no Jogo Rápido
 - [x] Seleção híbrida: nome/elemento nos slots, painel médio do cursor
 - [x] Galeria Meu Deck com o mesmo painel de preview ao navegar
@@ -32,15 +32,10 @@
 - [x] 1.1.0 (save portátil e ordenação das cartas)
 - [x] 1.1.1 (diálogo de save fecha de verdade; não reabre Dolphin/file picker)
 - [x] 1.2.0 (troca do Campeonato mostra Já possui / Nova!; cartas sem elemento sem quadrado vazio)
+- [x] 1.3.0 (intro e vídeo final, Memory Card PS1 15 blocos, Versus, joystick + todas as ações remapeáveis, teclado virtual, Cheats, Troféus, avatares, legendas HintBar)
 
 ## Não feito (de propósito)
 
-- [ ] Versus
 - [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões
 - [ ] Fat JAR / instalador
 - [ ] Testes automatizados do motor de captura
-- [ ] 1.3.0 (em `feat/1.3.0-video-endgame`): vídeo `endgame` em loop ao zerar o Campeonato, sai com qualquer tecla/clique, fallback para a mensagem
-- [ ] 1.3.0: abertura `intro` (S pula) e save do Campeonato estilo Memory Card PS1 com 15 blocos, apagar manual, migração do save antigo
-- [ ] 1.3.0: menu Cheats (cid, edea, balamb, monster)
-- [ ] 1.3.0: não pegar carta + música de vitória, Versus, remover cartas, joystick/controles, seleção de perfil com avatar, troféus
-- [ ] 1.3.0 lote 4: ações todas remapeáveis + dicas dinâmicas, fallback js*, nome/teste do controle, teclado virtual, Versus sem repetir na mão

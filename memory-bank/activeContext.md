@@ -1,10 +1,10 @@
 # Active context
 
-Último marco: **1.2.0** — troca do Campeonato mostra se a carta já está no Meu Deck; NEUTRAL sem rótulo (sem quadrado vazio).
+Último marco: **1.3.0** — intro/endgame em vídeo, Memory Card PS1, Versus, joystick com ações remapeáveis + teclado virtual, Cheats, Troféus, avatares, legendas `HintBar`.
 
-Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
+Branch de trabalho típica: `master` na 1.3.0 (`v1.3.0`).
 
-## Em andamento
+## Entregue na 1.3.0 (notas técnicas)
 
 - Branch `feat/1.3.0-video-endgame`: vídeo em loop na zerada do Campeonato (`gfx.VideoLoop` + `ChampionshipScreen.MODE_WON`). Fonte `res/endgame.mp4`; o jogo usa `res/endgame/frame_NNN.jpg` + `res/endgame.ogg`. Para trocar o vídeo: `ffmpeg -i endgame.mp4 -vf scale=640:360 -r 24 -q:v 7 res/endgame/frame_%03d.jpg` e `ffmpeg -i endgame.mp4 -vn -c:a libvorbis -q:a 4 res/endgame.ogg`
 
@@ -21,7 +21,8 @@ Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
 - Textos de UI: adicionar em `I18n` (PT/EN/ES), não hardcode
 - Fonte é gerada com `DEFAULT_CHARS` + acentos (Latin-1): caracteres fora disso (ex.: travessão U+2014) viram quadrado
 - Assets novos: soltar em `res/` ou `cards/` e carregar pelo nome do arquivo
-- Versus: só quando o produto pedir; não está no menu
+- Versus está no menu (local, Open forçado, sem IA)
+- Hints novas: escrever no estilo "Z/Enter ação    Esc volta" em funções `hint*` do I18n (passam por `Controls.dyn`) e desenhar com `HintBar.draw`/`Ps1.hint`; telas comparam com `Controls.is(key, Action.X)` ou o código canônico
 - Ordenação de cartas: só via `CardSort` (view); não mutar catálogo, álbum nem bag da run
 - Export/import: só via `SaveTransfer` + `SaveScreen`; não misturar com o `.profile` automático
 

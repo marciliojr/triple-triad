@@ -12,6 +12,10 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 ### [Unreleased]
 
+### [1.3.0] - 2026-11-08
+
+Abertura e vídeo final, save estilo Memory Card PS1 com 15 blocos, Versus local, joystick com todos os botões personalizáveis e teclado virtual, Cheats, Troféus, perfis com avatar e legendas de botões estilo PS1.
+
 #### Added
 
 - Legendas de botões redesenhadas no estilo PS1 (`ui/HintBar`): painel escuro com uma entrada por ação, tecla como keycap cinza e botão do joystick colorido (A verde, B vermelho, X azul, Y amarelo), quebra em várias linhas e fonte menor quando precisa, sem cortar texto. Usado no Campeonato, Versus, decks, Memory Card, Cheats, Controles e demais telas com dica no rodapé
@@ -241,6 +245,10 @@ All notable changes to this fork are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project uses [SemVer](https://semver.org/).
 
 ### [Unreleased]
+
+### [1.3.0] - 2026-11-08
+
+Opening and ending videos, PS1 Memory Card style save with 15 blocks, local Versus, joystick with every button customizable and a virtual keyboard, Cheats, Trophies, profiles with avatars and PS1-style button legends.
 
 #### Added
 
