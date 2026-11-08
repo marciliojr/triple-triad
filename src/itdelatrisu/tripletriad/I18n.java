@@ -75,9 +75,9 @@ public final class I18n {
 	}
 
 	public static String hintRemoveAll() {
-		return pick("Cima/baixo escolhe    Z/Enter remove    Esc volta",
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter remove    Esc volta",
 			"Up/down selects    Z/Enter removes    Esc back",
-			"Arriba/abajo elige    Z/Enter quita    Esc volver");
+			"Arriba/abajo elige    Z/Enter quita    Esc volver"));
 	}
 
 	// --- profiles
@@ -102,9 +102,9 @@ public final class I18n {
 	}
 
 	public static String hintProfileSelect() {
-		return pick("Cima/baixo escolhe    Esq/Dir p\u00e1gina    Z/Enter confirma    Esc sai",
+		return Controls.dyn(pick("Cima/baixo escolhe    Esq/Dir p\u00e1gina    Z/Enter confirma    Esc sai",
 			"Up/down selects    Left/Right page    Z/Enter confirms    Esc quits",
-			"Arriba/abajo elige    Izq/Der p\u00e1gina    Z/Enter confirma    Esc sale");
+			"Arriba/abajo elige    Izq/Der p\u00e1gina    Z/Enter confirma    Esc sale"));
 	}
 
 	// --- trophies
@@ -168,9 +168,9 @@ public final class I18n {
 	}
 
 	public static String hintVersusPick() {
-		return pick("Z adiciona    X tira    R aleat\u00f3rio    Enter confirma    Esc menu",
+		return Controls.dyn(pick("Z adiciona    X tira    R aleat\u00f3rio    Enter confirma    Esc menu",
 			"Z adds    X removes    R random    Enter confirms    Esc menu",
-			"Z a\u00f1ade    X quita    R aleatorio    Enter confirma    Esc men\u00fa");
+			"Z a\u00f1ade    X quita    R aleatorio    Enter confirma    Esc men\u00fa"));
 	}
 
 	public static String versusTurn(boolean playerA) {
@@ -203,7 +203,7 @@ public final class I18n {
 	}
 
 	public static String controlsHelp() {
-		return pick("Z/Enter: tecla    Esq/Dir: coluna teclado/joystick", "Z/Enter: set    Left/Right: keyboard/joystick column", "Z/Enter: asignar    Izq/Der: columna teclado/joystick");
+		return Controls.dyn(pick("Z/Enter: tecla    Esq/Dir: coluna teclado/joystick", "Z/Enter: set    Left/Right: keyboard/joystick column", "Z/Enter: asignar    Izq/Der: columna teclado/joystick"));
 	}
 
 	public static String controlsPress(boolean pad) {
@@ -219,18 +219,80 @@ public final class I18n {
 		switch (a) {
 			case CONFIRM: return pick("Confirmar", "Confirm", "Confirmar");
 			case CANCEL: return pick("Cancelar", "Cancel", "Cancelar");
+			case SELECT: return pick("Selecionar (ordenar/editar)", "Select (sort/edit)", "Seleccionar (ordenar/editar)");
 			case MENU: return pick("Menu / Iniciar", "Menu / Start", "Men\u00fa / Iniciar");
-			case DELETE: return pick("Apagar", "Delete", "Borrar");
-			case SKIP: return pick("Pular", "Skip", "Saltar");
-			case PAGE_LEFT: return pick("P\u00e1gina esquerda", "Page left", "P\u00e1gina izquierda");
-			default: return pick("P\u00e1gina direita", "Page right", "P\u00e1gina derecha");
+			case SKIP: return pick("Pular intro", "Skip intro", "Saltar intro");
+			case DELETE: return pick("Remover / Apagar", "Remove / Delete", "Quitar / Borrar");
+			case ZOOM: return pick("Zoom (ampliar)", "Zoom (enlarge)", "Zoom (ampliar)");
+			case PAGE_LEFT: return pick("P\u00e1gina \u2190", "Page \u2190", "P\u00e1gina \u2190");
+			case PAGE_RIGHT: return pick("P\u00e1gina \u2192", "Page \u2192", "P\u00e1gina \u2192");
+			case RANDOM: return pick("Aleat\u00f3rio", "Random", "Aleatorio");
+			case SAVE: return pick("Salvar", "Save", "Guardar");
+			case REMATCH: return pick("Revanche", "Rematch", "Revancha");
+			case AUTO_PLAY: return pick("Jogada autom\u00e1tica", "Auto play", "Jugada autom\u00e1tica");
+			case UP: return pick("Cima", "Up", "Arriba");
+			case DOWN: return pick("Baixo", "Down", "Abajo");
+			case LEFT: return pick("Esquerda", "Left", "Izquierda");
+			default: return pick("Direita", "Right", "Derecha");
 		}
 	}
 
+	public static String keySpace() {
+		return pick("Espa\u00e7o", "Space", "Espacio");
+	}
+
+	public static String padButton(int n) {
+		return pick("Bot\u00e3o " + n, "Button " + n, "Bot\u00f3n " + n);
+	}
+
+	public static String padAxis(int axis, int dir) {
+		return pick("Eixo ", "Axis ", "Eje ") + axis + (dir > 0 ? " +" : " -");
+	}
+
+	public static String controllerDetected(String name, boolean generic) {
+		return pick("Controle: ", "Controller: ", "Mando: ") + name
+			+ (generic ? pick(" (gen\u00e9rico)", " (generic)", " (gen\u00e9rico)") : "");
+	}
+
+	public static String controllerNone() {
+		return pick("Nenhum controle detectado", "No controller detected", "Ning\u00fan mando detectado");
+	}
+
+	public static String controllerIncompatible() {
+		return pick("Controle em modo incompat\u00edvel: ligue no modo X-input",
+			"Controller in an incompatible mode: switch it to X-input mode",
+			"Mando en modo incompatible: c\u00e1mbialo al modo X-input");
+	}
+
+	public static String controllerTest(String input) {
+		return pick("Teste: ", "Test: ", "Prueba: ")
+			+ (input != null ? input : pick("aperte um bot\u00e3o do controle", "press a controller button", "pulsa un bot\u00f3n del mando"));
+	}
+
+	public static String controlsColumns() {
+		return pick("Teclado / Joystick", "Keyboard / Joystick", "Teclado / Joystick");
+	}
+
+	public static String howToBindingsTitle() {
+		return pick("#Bot\u00f5es atuais (teclado / joystick)", "#Current buttons (keyboard / joystick)", "#Botones actuales (teclado / joystick)");
+	}
+
+	// --- virtual keyboard
+	public static String vkSpace() { return pick("ESPA\u00c7O", "SPACE", "ESPACIO"); }
+	public static String vkDelete() { return pick("APAGAR", "DELETE", "BORRAR"); }
+	public static String vkShift() { return "SHIFT"; }
+	public static String vkOk() { return "OK"; }
+	public static String vkCancel() { return pick("CANCELAR", "CANCEL", "CANCELAR"); }
+	public static String hintVirtualKeyboard() {
+		return Controls.dyn(pick("Setas movem    Z/Enter tecla    Del apaga    Esc cancela",
+			"Arrows move    Z/Enter key    Del deletes    Esc cancels",
+			"Flechas mueven    Z/Enter tecla    Del borra    Esc cancela"));
+	}
+
 	public static String hintControls() {
-		return pick("Cima/baixo escolhe    Z/Enter remapeia    Esc volta",
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter remapeia    Esc volta",
 			"Up/down selects    Z/Enter remaps    Esc back",
-			"Arriba/abajo elige    Z/Enter reasigna    Esc volver");
+			"Arriba/abajo elige    Z/Enter reasigna    Esc volver"));
 	}
 
 	public static String menuCheats() {
@@ -270,9 +332,9 @@ public final class I18n {
 	}
 
 	public static String hintCheats() {
-		return pick("Enter confirma    Backspace apaga    Esc volta",
+		return Controls.dyn(pick("Enter confirma    Backspace apaga    Esc volta",
 			"Enter confirms    Backspace deletes    Esc back",
-			"Enter confirma    Backspace borra    Esc volver");
+			"Enter confirma    Backspace borra    Esc volver"));
 	}
 
 	public static String menuSettings() {
@@ -372,9 +434,9 @@ public final class I18n {
 	}
 
 	public static String hintSave() {
-		return pick("Cima/baixo escolhe    Esquerda/direita tipo    Z/Enter    Esc voltar",
+		return Controls.dyn(pick("Cima/baixo escolhe    Esquerda/direita tipo    Z/Enter    Esc voltar",
 			"Up/down selects    Left/right type    Z/Enter    Esc back",
-			"Arriba/abajo elige    Izquierda/derecha tipo    Z/Enter    Esc volver");
+			"Arriba/abajo elige    Izquierda/derecha tipo    Z/Enter    Esc volver"));
 	}
 
 	public static String championshipHint() {
@@ -422,9 +484,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipLobby() {
-		return pick("Cima/baixo escolhe    Z/Enter confirma    Esc voltar",
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter confirma    Esc voltar",
 			"Up/down selects    Z/Enter confirms    Esc back",
-			"Arriba/abajo elige    Z/Enter confirma    Esc volver");
+			"Arriba/abajo elige    Z/Enter confirma    Esc volver"));
 	}
 
 	public static String championshipPackTitle() {
@@ -450,9 +512,9 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipPick() {
-		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    S salva    Enter jogar    Esc lobby",
+		return Controls.dyn(pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    S salva    Enter jogar    Esc lobby",
 			"Z selects    X removes    C enlarges    R random    T sorts    S save    Enter play    Esc lobby",
-			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guarda    Enter jugar    Esc lobby");
+			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guarda    Enter jugar    Esc lobby"));
 	}
 
 	public static String championshipSkipCard() {
@@ -480,21 +542,22 @@ public final class I18n {
 	}
 
 	public static String hintChampionshipConfirm() {
-		return pick("Z/Enter continua    C amplia    Esc menu",
+		return Controls.dyn(pick("Z/Enter continua    C amplia    Esc menu",
 			"Z/Enter continues    C enlarges    Esc menu",
-			"Z/Enter sigue    C amplia    Esc men\u00fa");
+			"Z/Enter sigue    C amplia    Esc men\u00fa"));
 	}
 
 	public static String hintChampionshipEnd() {
-		return pick("Esc volta ao menu", "Esc returns to the menu", "Esc vuelve al men\u00fa");
+		return Controls.dyn(pick("Esc volta ao menu", "Esc returns to the menu", "Esc vuelve al men\u00fa"));
 	}
 
 	public static String hintEndgameVideo() {
-		return pick("Campeonato vencido!    Qualquer tecla continua", "Championship won!    Press any key to continue", "\u00a1Campeonato ganado!    Cualquier tecla contin\u00faa");
+		return Controls.dyn(pick("Campeonato vencido!    Qualquer tecla continua", "Championship won!    Press any key to continue", "\u00a1Campeonato ganado!    Cualquier tecla contin\u00faa"));
 	}
 
 	public static String hintSkipIntro() {
-		return pick("S para pular", "S to skip", "S para saltar");
+		String k = Controls.label(Controls.Action.SKIP);
+		return pick(k + " para pular", k + " to skip", k + " para saltar");
 	}
 
 	public static String memoryCardInUse() {
@@ -576,13 +639,13 @@ public final class I18n {
 	}
 
 	public static String hintMemoryCard(boolean save) {
-		return save
+		return Controls.dyn(save
 			? pick("Z/Enter salva    D apaga    Esq/Dir p\u00e1gina    Esc volta",
 				"Z/Enter saves    D deletes    Left/Right page    Esc back",
 				"Z/Enter guarda    D borra    Izq/Der p\u00e1gina    Esc volver")
 			: pick("Z/Enter carrega    D apaga    Esq/Dir p\u00e1gina    Esc volta",
 				"Z/Enter loads    D deletes    Left/Right page    Esc back",
-				"Z/Enter carga    D borra    Izq/Der p\u00e1gina    Esc volver");
+				"Z/Enter carga    D borra    Izq/Der p\u00e1gina    Esc volver"));
 	}
 
 	/** FF8 places used as the "location" of each championship round. */
@@ -597,13 +660,13 @@ public final class I18n {
 	}
 
 	public static String hintMenu() {
-		return pick("Z/Enter seleciona    Esc sai", "Z/Enter selects    Esc quits", "Z/Enter selecciona    Esc sale");
+		return Controls.dyn(pick("Z/Enter seleciona    Esc sai", "Z/Enter selects    Esc quits", "Z/Enter selecciona    Esc sale"));
 	}
 
 	public static String hintEscBack() {
-		return pick("Cima/baixo escolhe    Z/Enter altera    Esc voltar",
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter altera    Esc voltar",
 			"Up/down selects    Z/Enter changes    Esc back",
-			"Arriba/abajo elige    Z/Enter cambia    Esc volver");
+			"Arriba/abajo elige    Z/Enter cambia    Esc volver"));
 	}
 
 	public static String confirmLeaveMatch() {
@@ -619,9 +682,9 @@ public final class I18n {
 	}
 
 	public static String hintLeaveConfirm() {
-		return pick("Cima/baixo escolhe    Enter confirma    Esc cancela",
+		return Controls.dyn(pick("Cima/baixo escolhe    Enter confirma    Esc cancela",
 			"Up/down selects    Enter confirms    Esc cancels",
-			"Arriba/abajo elige    Enter confirma    Esc cancela");
+			"Arriba/abajo elige    Enter confirma    Esc cancela"));
 	}
 
 	public static String profilePrompt() {
@@ -641,11 +704,11 @@ public final class I18n {
 	}
 
 	public static String hintProfile() {
-		return pick("Esq/Dir avatar    Enter confirma    Esc sai", "Left/Right avatar    Enter confirms    Esc quits", "Izq/Der avatar    Enter confirma    Esc sale");
+		return Controls.dyn(pick("Esq/Dir avatar    Enter confirma    Esc sai", "Left/Right avatar    Enter confirms    Esc quits", "Izq/Der avatar    Enter confirma    Esc sale"));
 	}
 
 	public static String hintProfileEdit() {
-		return pick("Esq/Dir avatar    Enter confirma    Esc voltar", "Left/Right avatar    Enter confirms    Esc back", "Izq/Der avatar    Enter confirma    Esc volver");
+		return Controls.dyn(pick("Esq/Dir avatar    Enter confirma    Esc voltar", "Left/Right avatar    Enter confirms    Esc back", "Izq/Der avatar    Enter confirma    Esc volver"));
 	}
 
 	public static String settingsPlayerName() {
@@ -669,9 +732,9 @@ public final class I18n {
 	}
 
 	public static String hintProfiles() {
-		return pick("Z/Enter troca    Del apaga    Esc voltar",
+		return Controls.dyn(pick("Z/Enter troca    Del apaga    Esc voltar",
 			"Z/Enter switches    Del deletes    Esc back",
-			"Z/Enter cambia    Del borra    Esc volver");
+			"Z/Enter cambia    Del borra    Esc volver"));
 	}
 
 	public static String profilesCount(int n) {
@@ -705,9 +768,9 @@ public final class I18n {
 	}
 
 	public static String hintMyDeck() {
-		return pick("C amplia    X/Del remove    T ordena    Esc voltar",
+		return Controls.dyn(pick("C amplia    X/Del remove    T ordena    Esc voltar",
 			"C enlarges    X/Del removes    T sorts    Esc back",
-			"C amplia    X/Del quita    T ordena    Esc volver");
+			"C amplia    X/Del quita    T ordena    Esc volver"));
 	}
 
 	public static String confirmRemoveAlbum(String name) {
@@ -719,21 +782,21 @@ public final class I18n {
 	}
 
 	public static String hintMyDeckPreview() {
-		return pick("Esquerda/direita    X/Del remove    Esc/C fecha",
+		return Controls.dyn(pick("Esquerda/direita    X/Del remove    Esc/C fecha",
 			"Left/right    X/Del removes    Esc/C closes",
-			"Izquierda/derecha    X/Del quita    Esc/C cierra");
+			"Izquierda/derecha    X/Del quita    Esc/C cierra"));
 	}
 
 	public static String hintMyDeckPick() {
-		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    Enter jogar    Esc voltar",
+		return Controls.dyn(pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    Enter jogar    Esc voltar",
 			"Z selects    X removes    C enlarges    R random    T sorts    Enter play    Esc back",
-			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    Enter jugar    Esc volver");
+			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    Enter jugar    Esc volver"));
 	}
 
 	public static String hintCardPreview() {
-		return pick("Esquerda/direita cartas    Esc/C fecha",
+		return Controls.dyn(pick("Esquerda/direita cartas    Esc/C fecha",
 			"Left/right cards    Esc/C closes",
-			"Izquierda/derecha cartas    Esc/C cierra");
+			"Izquierda/derecha cartas    Esc/C cierra"));
 	}
 
 	public static String rulesTitle() {
@@ -749,21 +812,21 @@ public final class I18n {
 	}
 
 	public static String hintDeckRules() {
-		return pick("Cima/baixo escolhe    Z/Enter liga/desliga    Esquerda decks    Esc voltar",
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter liga/desliga    Esquerda decks    Esc voltar",
 			"Up/down selects    Z/Enter toggles    Left decks    Esc back",
-			"Arriba/abajo elige    Z/Enter activa/desactiva    Izquierda mazos    Esc volver");
+			"Arriba/abajo elige    Z/Enter activa/desactiva    Izquierda mazos    Esc volver"));
 	}
 
 	public static String hintDeckList() {
-		return pick("Z/Enter jogar    C amplia    E editar    X/Del apagar    Direita regras    Esc voltar",
+		return Controls.dyn(pick("Z/Enter jogar    C amplia    E editar    X/Del apagar    Direita regras    Esc voltar",
 			"Z/Enter play    C enlarges    E edit    X/Del delete    Right rules    Esc back",
-			"Z/Enter jugar    C amplia    E editar    X/Del borrar    Derecha reglas    Esc volver");
+			"Z/Enter jugar    C amplia    E editar    X/Del borrar    Derecha reglas    Esc volver"));
 	}
 
 	public static String hintDeckPreview() {
-		return pick("Esquerda/direita cartas    Esc/C fecha    X apaga deck",
+		return Controls.dyn(pick("Esquerda/direita cartas    Esc/C fecha    X apaga deck",
 			"Left/right cards    Esc/C closes    X deletes deck",
-			"Izquierda/derecha cartas    Esc/C cierra    X borra mazo");
+			"Izquierda/derecha cartas    Esc/C cierra    X borra mazo"));
 	}
 
 	public static String buildDeck() {
@@ -783,13 +846,13 @@ public final class I18n {
 	}
 
 	public static String hintNaming() {
-		return pick("Enter salva    Esc cancela", "Enter saves    Esc cancels", "Enter guarda    Esc cancela");
+		return Controls.dyn(pick("Enter salva    Esc cancela", "Enter saves    Esc cancels", "Enter guarda    Esc cancela"));
 	}
 
 	public static String hintBuilder() {
-		return pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    S salvar    Enter jogar    Esc voltar",
+		return Controls.dyn(pick("Z seleciona    X tira    C amplia    R aleat\u00f3rio    T ordena    S salvar    Enter jogar    Esc voltar",
 			"Z selects    X removes    C enlarges    R random    T sorts    S save    Enter play    Esc back",
-			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guardar    Enter jugar    Esc volver");
+			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guardar    Enter jugar    Esc volver"));
 	}
 
 	public static String sortLine() {
@@ -880,9 +943,9 @@ public final class I18n {
 	}
 
 	public static String hintHowTo() {
-		return pick("Cima/baixo ou roda    Esc voltar",
+		return Controls.dyn(pick("Cima/baixo ou roda    Esc voltar",
 			"Up/down or wheel    Esc back",
-			"Arriba/abajo o rueda    Esc volver");
+			"Arriba/abajo o rueda    Esc volver"));
 	}
 
 	public static String settingsTitle() {
@@ -952,12 +1015,21 @@ public final class I18n {
 	 * @return the paragraphs
 	 */
 	public static String[] howToParagraphs() {
+		String[] base;
 		switch (Options.getLang()) {
-			case EN: return HOW_TO_EN;
-			case ES: return HOW_TO_ES;
+			case EN: base = HOW_TO_EN; break;
+			case ES: base = HOW_TO_ES; break;
 			case PT_BR:
-			default: return HOW_TO_PT;
+			default: base = HOW_TO_PT; break;
 		}
+		java.util.ArrayList<String> out = new java.util.ArrayList<String>();
+		for (String p : base)
+			out.add(p.startsWith("#") ? p : Controls.dyn(p));
+		out.add("");
+		out.add(howToBindingsTitle());
+		for (Controls.Action a : Controls.Action.values())
+			out.add(controlAction(a) + ": [" + Controls.keyName(Controls.getKey(a)) + "] / [" + Controls.padName(a) + "]");
+		return out.toArray(new String[0]);
 	}
 
 	private static String pick(String pt, String en, String es) {
@@ -1004,13 +1076,13 @@ public final class I18n {
 		"No menu Salvar d\u00e1 para exportar ou importar o \u00e1lbum (Meu Deck) ou o checkpoint do Campeonato em um arquivo .ttsave pelo di\u00e1logo do sistema. Importar pede confirma\u00e7\u00e3o antes de substituir.",
 		"",
 		"#Versus",
-		"Dois jogadores no mesmo computador, com a regra Open. Os dois escolhem cartas do Meu Deck do perfil atual (pode repetir cartas): primeiro o Jogador A (direita), depois o B (esquerda). Joystick 1 joga com o A; joystick 2 ou o teclado jogam com o B (sem joystick, o teclado joga com os dois). Ningu\u00e9m ganha nem perde cartas e nada \u00e9 salvo.",
+		"Dois jogadores no mesmo computador, com a regra Open. Os dois escolhem cartas do Meu Deck do perfil atual (sem repetir carta na pr\u00f3pria m\u00e3o; os dois podem escolher as mesmas cartas): primeiro o Jogador A (direita), depois o B (esquerda). Joystick 1 joga com o A; joystick 2 ou o teclado jogam com o B (sem joystick, o teclado joga com os dois). Ningu\u00e9m ganha nem perde cartas e nada \u00e9 salvo.",
 		"",
 		"#Trof\u00e9us",
 		"Contadores do perfil: campeonatos vencidos, partidas do campeonato, vit\u00f3rias, derrotas e empates no Jogo R\u00e1pido. Versus n\u00e3o conta.",
 		"",
 		"#Controles e joystick",
-		"Direcional e anal\u00f3gico movem o cursor em todas as telas. Em Configura\u00e7\u00f5es > Controles d\u00e1 para trocar Confirmar, Cancelar, Menu, Apagar, Pular e P\u00e1gina esquerda/direita no teclado e no joystick, ou restaurar o padr\u00e3o.",
+		"Direcional e anal\u00f3gico movem o cursor em todas as telas. Em Configura\u00e7\u00f5es > Controles cada a\u00e7\u00e3o tem uma tecla e um bot\u00e3o do joystick personaliz\u00e1veis; a tela mostra o controle detectado e um teste de bot\u00f5es ao vivo. Campos de texto abrem um teclado virtual quando voc\u00ea usa o joystick.",
 		"",
 		"#Cheats",
 		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
@@ -1054,13 +1126,13 @@ public final class I18n {
 		"The Save menu exports or imports the album (My Deck) or the Championship checkpoint as a .ttsave file through the system dialog. Import asks for confirmation before replacing.",
 		"",
 		"#Versus",
-		"Two players on the same computer, with the Open rule. Both pick cards from the current profile's My Deck (repeats allowed): Player A (right) first, then B (left). Joystick 1 plays as A; joystick 2 or the keyboard play as B (with no joystick, the keyboard plays both). No cards are won or lost and nothing is saved.",
+		"Two players on the same computer, with the Open rule. Both pick cards from the current profile's My Deck (no repeated card within a hand; both players may pick the same cards): Player A (right) first, then B (left). Joystick 1 plays as A; joystick 2 or the keyboard play as B (with no joystick, the keyboard plays both). No cards are won or lost and nothing is saved.",
 		"",
 		"#Trophies",
 		"Profile counters: championships won, championship matches, Quick Game wins, losses and draws. Versus does not count.",
 		"",
 		"#Controls and joystick",
-		"D-pad and stick move the cursor on every screen. Settings > Controls remaps Confirm, Cancel, Menu, Delete, Skip and Page left/right for keyboard and joystick, or restores the defaults.",
+		"D-pad and stick move the cursor on every screen. Settings > Controls remaps every action (one key and one joystick button each), shows the detected controller and has a live button test. Text fields show a virtual keyboard when you use the joystick.",
 		"",
 		"#Cheats",
 		"In the Cheats menu type a code and press Enter. cid = all cards | edea = Guardian Forces (levels 8-9) | balamb = characters (level 10) | monster = monsters (levels 1-7).",
@@ -1104,13 +1176,13 @@ public final class I18n {
 		"En el men\u00fa Guardar puedes exportar o importar el \u00e1lbum (Mi mazo) o el punto de control del Campeonato en un archivo .ttsave con el di\u00e1logo del sistema. Importar pide confirmaci\u00f3n antes de sustituir.",
 		"",
 		"#Versus",
-		"Dos jugadores en el mismo ordenador, con la regla Open. Ambos eligen cartas de Mi mazo del perfil actual (se pueden repetir): primero el Jugador A (derecha), luego el B (izquierda). El joystick 1 juega con A; el joystick 2 o el teclado juegan con B (sin joystick, el teclado juega con ambos). Nadie gana ni pierde cartas y nada se guarda.",
+		"Dos jugadores en el mismo ordenador, con la regla Open. Ambos eligen cartas de Mi mazo del perfil actual (sin repetir carta en la propia mano; ambos pueden elegir las mismas cartas): primero el Jugador A (derecha), luego el B (izquierda). El joystick 1 juega con A; el joystick 2 o el teclado juegan con B (sin joystick, el teclado juega con ambos). Nadie gana ni pierde cartas y nada se guarda.",
 		"",
 		"#Trofeos",
 		"Contadores del perfil: campeonatos ganados, partidas del campeonato, victorias, derrotas y empates en Partida r\u00e1pida. Versus no cuenta.",
 		"",
 		"#Controles y joystick",
-		"La cruceta y el stick mueven el cursor en todas las pantallas. En Ajustes > Controles puedes cambiar Confirmar, Cancelar, Men\u00fa, Borrar, Saltar y P\u00e1gina izquierda/derecha en teclado y joystick, o restaurar los valores.",
+		"La cruceta y el stick mueven el cursor en todas las pantallas. En Ajustes > Controles cada acci\u00f3n tiene una tecla y un bot\u00f3n del joystick personalizables; la pantalla muestra el mando detectado y una prueba de botones en vivo. Los campos de texto abren un teclado virtual cuando usas el joystick.",
 		"",
 		"#Cheats",
 		"En el men\u00fa Trucos escribe un c\u00f3digo y pulsa Enter. cid = todas las cartas | edea = Guardian Forces (niveles 8-9) | balamb = personajes (nivel 10) | monster = monstruos (niveles 1-7).",

@@ -186,8 +186,6 @@ public class VersusScreen extends Screen {
 		case Input.KEY_Z:
 			add(cards.get(cursor).intValue());
 			break;
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 		case Input.KEY_DELETE:
 		case Input.KEY_ESCAPE:
 			if (!hand.isEmpty()) {

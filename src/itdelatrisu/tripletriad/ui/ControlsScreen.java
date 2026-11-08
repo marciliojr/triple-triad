@@ -104,8 +104,6 @@ public class ControlsScreen extends Screen {
 			activate();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			AudioController.Effect.BACK.play();
 			Options.saveOptions();
 			game.showSettings();

@@ -304,8 +304,6 @@ public class SaveScreen extends Screen {
 			AudioController.playCursor();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			cancelConfirm();
 			break;
 		case Input.KEY_Z:

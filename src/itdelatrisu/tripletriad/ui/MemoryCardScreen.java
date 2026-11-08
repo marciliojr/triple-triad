@@ -346,13 +346,10 @@ public class MemoryCardScreen extends Screen {
 		case Input.KEY_ENTER:
 			activate();
 			break;
-		case Input.KEY_D:
 		case Input.KEY_DELETE:
 			askDelete();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			AudioController.Effect.BACK.play();
 			game.memoryCardBack(saveMode);
 			break;
@@ -373,8 +370,6 @@ public class MemoryCardScreen extends Screen {
 			resolveConfirm(confirmChoice == 1);
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			resolveConfirm(false);
 			break;
 		default:

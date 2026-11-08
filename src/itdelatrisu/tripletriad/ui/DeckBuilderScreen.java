@@ -193,7 +193,7 @@ public class DeckBuilderScreen extends Screen {
 			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
 				previewIndex = -1;
 				AudioController.Effect.BACK.play();
-			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+			} else if (key == Input.KEY_DELETE) {
 				removeFromTray();
 			} else if (key == Input.KEY_Z) {
 				toggleCursor();
@@ -249,8 +249,6 @@ public class DeckBuilderScreen extends Screen {
 			openPreview();
 			break;
 		case Input.KEY_DELETE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			removeFromTray();
 			break;
 		case Input.KEY_S:

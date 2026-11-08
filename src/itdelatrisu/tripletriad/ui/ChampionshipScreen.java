@@ -757,7 +757,7 @@ public class ChampionshipScreen extends Screen {
 			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
 				previewOpen = false;
 				AudioController.Effect.BACK.play();
-			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+			} else if (key == Input.KEY_DELETE) {
 				removeFromPick();
 			} else if (key == Input.KEY_Z) {
 				togglePick();
@@ -815,8 +815,6 @@ public class ChampionshipScreen extends Screen {
 			}
 			break;
 		case Input.KEY_DELETE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			removeFromPick();
 			break;
 		case Input.KEY_S:

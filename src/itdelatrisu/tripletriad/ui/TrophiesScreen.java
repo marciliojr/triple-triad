@@ -65,7 +65,7 @@ public class TrophiesScreen extends Screen {
 
 	@Override
 	public void keyPressed(int key, char c) {
-		if (key == Input.KEY_ESCAPE || key == Input.KEY_X || key == Input.KEY_BACK
+		if (key == Input.KEY_ESCAPE
 				|| key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			AudioController.Effect.BACK.play();
 			game.showMenu();

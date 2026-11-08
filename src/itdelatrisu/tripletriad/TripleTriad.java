@@ -692,9 +692,8 @@ public class TripleTriad extends BasicGame {
 			return;
 		}
 
-		// pad / remapped Cancel backs out of a board position before offering to leave
-		if (key == Input.KEY_ESCAPE && !leaveConfirm && Controls.lastSource() != Controls.SOURCE_KEYBOARD
-				&& selectedPosition != -1) {
+		// Cancel backs out of a board position before offering to leave
+		if (key == Input.KEY_ESCAPE && !leaveConfirm && selectedPosition != -1) {
 			key = Input.KEY_X;
 		}
 
@@ -790,7 +789,6 @@ public class TripleTriad extends BasicGame {
 			}
 			break;
 		case Input.KEY_X:
-		case Input.KEY_BACK:
 			if (selectedPosition != -1) {
 				selectedPosition = -1;
 				AudioController.Effect.BACK.play();
@@ -998,7 +996,6 @@ public class TripleTriad extends BasicGame {
 			AudioController.playCursor();
 			break;
 		case Input.KEY_X:
-		case Input.KEY_BACK:
 			leaveConfirm = false;
 			AudioController.Effect.BACK.play();
 			break;

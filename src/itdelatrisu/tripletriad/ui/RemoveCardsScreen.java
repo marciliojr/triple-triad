@@ -103,8 +103,6 @@ public class RemoveCardsScreen extends Screen {
 				resolve(confirmChoice == 1);
 				break;
 			case Input.KEY_ESCAPE:
-			case Input.KEY_X:
-			case Input.KEY_BACK:
 				resolve(false);
 				break;
 			default:
@@ -126,8 +124,6 @@ public class RemoveCardsScreen extends Screen {
 			ask();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			AudioController.Effect.BACK.play();
 			game.showMyDeck();
 			break;

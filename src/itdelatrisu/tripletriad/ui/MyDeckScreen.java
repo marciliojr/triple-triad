@@ -179,7 +179,7 @@ public class MyDeckScreen extends Screen {
 			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
 				previewIndex = -1;
 				AudioController.Effect.BACK.play();
-			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+			} else if (key == Input.KEY_DELETE) {
 				if (mode == MODE_GALLERY)
 					beginDeleteConfirm();
 				else
@@ -252,8 +252,6 @@ public class MyDeckScreen extends Screen {
 			cycleSort();
 			break;
 		case Input.KEY_DELETE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			if (mode == MODE_GALLERY)
 				beginDeleteConfirm();
 			else
@@ -404,8 +402,6 @@ public class MyDeckScreen extends Screen {
 			AudioController.playCursor();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			clearDeleteConfirm();
 			AudioController.Effect.BACK.play();
 			break;

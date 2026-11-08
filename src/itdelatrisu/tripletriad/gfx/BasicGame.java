@@ -124,6 +124,7 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 		if (Gfx.getInput().isSuppressed() && delta > 50)
 			delta = 50;
 		Gfx.getInput().updateRepeat(delta);
+		itdelatrisu.tripletriad.Controls.poll();
 		try {
 			update(container, delta);
 			Gfx.beginFrame();
@@ -147,13 +148,15 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 			return true;
 		itdelatrisu.tripletriad.Controls.fromKeyboard();
 		int raw = keycode;
+		// only keys bound to an action reach the screens (text comes via keyTyped)
 		keycode = itdelatrisu.tripletriad.Controls.translateKey(keycode);
-		if (keycode == com.badlogic.gdx.Input.Keys.NUMPAD_ENTER)
-			keycode = Input.KEY_ENTER;
 		lastKeycode = keycode;
 		lastRawPrintable = isPrintableKey(raw);
+		if (keycode == 0 && !lastRawPrintable)
+			return true;
 		char c = charFromKey(raw);
-		Gfx.getInput().onKeyDown(keycode, c);
+		if (keycode != 0)
+			Gfx.getInput().onKeyDown(keycode, c);
 		if (!lastRawPrintable)
 			keyPressed(keycode, c);
 		return true;
@@ -161,7 +164,7 @@ public abstract class BasicGame extends ApplicationAdapter implements InputProce
 
 	@Override
 	public boolean keyUp(int keycode) {
-		Gfx.getInput().onKeyUp(keycode);
+		Gfx.getInput().onKeyUp(itdelatrisu.tripletriad.Controls.translateKey(keycode));
 		return true;
 	}
 
