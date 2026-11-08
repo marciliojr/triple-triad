@@ -32,3 +32,5 @@ Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
 - Avisos JNI/`Unsafe` do LWJGL 3.3.3 em JDK 25 (não quebram o jogo)
 - `build.xml` cita JARs removidos
 - `lib/docs` e `lib/src` ainda têm zips da era Slick/LWJGL 2
+
+- Lote 4: `Controls.Action` tem todas as ações (canônico interno + tecla padrão + papel do pad); `BasicGame.keyDown` só repassa teclas ligadas a uma ação (texto vem por `keyTyped`; Backspace passa para edição). `Controls.dyn()` troca nomes de tecla nas dicas (`hint*` do I18n) pelos atalhos atuais; `Controls.is(key, Action)` nas telas novas. Joystick: Jamepad carrega `/gamecontrollerdb.txt` do classpath (`resources/`); sem controle SDL, `Controls.poll()` lê `/dev/input/js*` (threads) e detecta receptor 8BitDo em HID (hidraw 2dc8) para avisar. `ui.VirtualKeyboard` em ProfileScreen, DeckBuilderScreen (nome) e CheatsScreen. Diagnóstico: 8BitDo Ultimate Wireless em 2dc8:3109 (só hidraw) não vira joystick; precisa X-input (2dc8:3106, driver xpad)

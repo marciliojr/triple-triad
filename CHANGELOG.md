@@ -14,6 +14,11 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 #### Added
 
+- Controles: todas as ações são personalizáveis (1 tecla + 1 botão do joystick cada): Confirmar, Cancelar, Selecionar (ordenar/editar), Menu, Pular intro, Remover/Apagar, Zoom, Página esquerda/direita, Aleatório, Salvar, Revanche, Jogada automática e Cima/Baixo/Esquerda/Direita. Teclas fora dos atalhos não fazem mais nada (sem atalhos fixos); Del na tela de Controles limpa um atalho
+- Dicas do rodapé e o Como Jogar mostram os atalhos atuais (ex.: "[S]/[X] para pular"); o Como Jogar ganhou a lista completa de botões
+- Configurações > Controles mostra o controle detectado, um teste ao vivo do último botão/eixo e, se houver um receptor 8BitDo só em modo HID (2dc8:3109), a dica "Controle em modo incompatível: ligue no modo X-input"
+- `gamecontrollerdb.txt` (SDL_GameControllerDB) vai junto no jar e é carregado pelo Jamepad; se o SDL não achar controle, o jogo lê `/dev/input/js*` como joystick genérico (botões numerados, analógico e direcional)
+- Teclado virtual estilo PS1 (letras, números, espaço, apagar, shift, OK, cancelar) no nome do perfil, no nome do deck e nos Cheats; abre sozinho quando a entrada vem do joystick e some ao usar o teclado físico
 - Vitória no Campeonato: na escolha da carta há a opção **Não pegar nenhuma carta** (evita duplicatas) e a música `res/victory.ogg` toca em loop nessa tela; ao sair, a música normal volta
 - Menu **Versus**: 2 jogadores locais com a regra Open forçada. Jogador A escolhe 5 cartas do Meu Deck do perfil atual (pode repetir), depois o B; turnos alternados, vencedor na tela e volta ao menu. Não dá nem tira cartas e não salva nada. Joystick 1 = A, joystick 2 ou teclado = B (sem joystick, teclado para os dois)
 - Meu Deck: **Remover todas as cartas** (R ou o rótulo no painel) abre uma tela estilo PS1 para remover tudo ou por categoria (monstros 1-5, chefes 6-7, GFs 8-9, personagens 10) com confirmação Sim/Não
@@ -30,6 +35,8 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 #### Changed
 
+- Versus: a mesma carta não pode entrar duas vezes na mão de um jogador (o aleatório também não repete); os dois jogadores ainda podem escolher as mesmas cartas
+- Na partida, Cancelar primeiro desfaz a posição escolhida no tabuleiro, depois oferece sair
 - O save do Campeonato não é mais apagado ao vencer ou perder a run: o bloco só some quando o jogador apaga. "Continuar" e "Apagar progresso" do lobby viraram "Carregar" (abre o Memory Card)
 - O save único antigo (`RUN_*` no perfil) migra sozinho para o bloco 01. Exportar/importar `.ttsave` continua: exporta o bloco salvo por último e importa para o primeiro bloco livre
 
@@ -236,6 +243,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 #### Added
 
+- Controls: every action is customizable (1 key + 1 joystick button each): Confirm, Cancel, Select (sort/edit), Menu, Skip intro, Remove/Delete, Zoom, Page left/right, Random, Save, Rematch, Auto play and Up/Down/Left/Right. Keys outside the bindings do nothing (no fixed shortcuts); Del on the Controls screen clears a binding
+- Footer hints and How to Play show the current bindings (e.g. "[S]/[X] to skip"); How to Play lists every button
+- Settings > Controls shows the detected controller, a live test of the last button/axis and, when an 8BitDo receiver is only in HID mode (2dc8:3109), the hint "Controller in an incompatible mode: switch it to X-input mode"
+- `gamecontrollerdb.txt` (SDL_GameControllerDB) ships in the jar and is loaded by Jamepad; when SDL finds no controller, the game reads `/dev/input/js*` as a generic joystick (numbered buttons, stick and D-pad)
+- PS1-style virtual keyboard (letters, numbers, space, delete, shift, OK, cancel) for profile name, deck name and Cheats; opens when input comes from the joystick and hides when the physical keyboard is used
 - Championship victory: the card pick has a **Don't take any card** option (avoids duplicates) and `res/victory.ogg` loops on that screen; leaving it brings back the normal music
 - **Versus** menu: 2 local players with the Open rule forced. Player A picks 5 cards from the current profile's My Deck (repeats allowed), then B; alternating turns, winner shown, back to the menu. No cards change hands and nothing is saved. Joystick 1 = A, joystick 2 or keyboard = B (no joystick: keyboard plays both)
 - My Deck: **Remove all cards** (R or the panel label) opens a PS1-style screen to remove everything or one category (monsters 1-5, bosses 6-7, GFs 8-9, characters 10) with a Yes/No confirmation
@@ -252,6 +264,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 #### Changed
 
+- Versus: the same card cannot enter a player's hand twice (random fill does not repeat either); both players may still pick the same cards
+- In a match, Cancel first undoes the chosen board position, then offers to leave
 - The Championship save is no longer erased when the run is won or lost: a block only goes away when the player deletes it. Lobby "Continue" and "Clear progress" became "Load" (opens the Memory Card)
 - The old single save (`RUN_*` in the profile) migrates to block 01 automatically. `.ttsave` export/import still works: export writes the most recently saved block, import goes to the first free block
 
