@@ -112,7 +112,7 @@ public class CheatsScreen extends Screen {
 		if (vk.isActive())
 			vk.render(g, height * 0.56f, height * 0.97f);
 		else
-			Ui.drawCentered(small, I18n.hintCheats(), height * 0.90f, Ui.HINT);
+			HintBar.draw(I18n.hintCheats(), height * 0.90f);
 	}
 
 	private static void drawTagged(UnicodeFont small, String tag, String text, float x, float y, float h) {

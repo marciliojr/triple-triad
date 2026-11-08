@@ -166,12 +166,11 @@ public class DeckBuilderScreen extends Screen {
 			if (vk.isActive())
 				vk.render(g, height * 0.63f, height * 0.99f);
 			else
-				Ui.drawCentered(small, I18n.hintNaming(), height * 0.56f, Ui.HINT);
+				HintBar.draw(I18n.hintNaming(), height * 0.56f);
 		} else if (previewIndex >= 0) {
-			Ui.drawCentered(small, I18n.hintCardPreview(), height * 0.92f, Ui.HINT);
+			HintBar.draw(I18n.hintCardPreview(), height * 0.92f);
 		} else {
-			Ui.drawCentered(small, I18n.hintBuilder(),
-					height * 0.92f, Ui.HINT);
+			HintBar.draw(I18n.hintBuilder(), height * 0.92f);
 		}
 	}
 

@@ -170,8 +170,7 @@ public class ProfileScreen extends Screen {
 			vk.render(g, height * 0.68f, height * 0.99f);
 			return;
 		}
-		Ui.drawCentered(small, mode == MODE_FIRST ? I18n.hintProfile() : I18n.hintProfileEdit(),
-			height * 0.82f, Ui.HINT);
+		HintBar.draw(mode == MODE_FIRST ? I18n.hintProfile() : I18n.hintProfileEdit(), height * 0.82f);
 	}
 
 	@Override

@@ -153,6 +153,6 @@ public final class Ps1 {
 
 	/** Footer hint. */
 	public static void hint(String text) {
-		Ui.drawCentered(Options.getSmallFont(), text, Options.getHeight() * 0.92f, Ui.HINT);
+		HintBar.draw(text, Options.getHeight() * 0.92f);
 	}
 }

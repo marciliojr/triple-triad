@@ -152,7 +152,7 @@ public class MyDeckScreen extends Screen {
 				hint = I18n.hintMyDeckPick();
 			else
 				hint = I18n.hintMyDeck();
-			Ui.drawCentered(small, hint, height * 0.93f, Ui.HINT);
+			HintBar.draw(hint, height * 0.93f);
 		}
 	}
 

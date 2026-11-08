@@ -95,7 +95,7 @@ public class ProfilesScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, I18n.hintProfiles(), height * 0.90f, Ui.HINT);
+		HintBar.draw(I18n.hintProfiles(), height * 0.90f);
 	}
 
 	@Override

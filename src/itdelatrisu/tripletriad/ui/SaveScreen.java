@@ -148,7 +148,7 @@ public class SaveScreen extends Screen {
 		if (confirm)
 			Ui.drawYesNoConfirm(g, confirmTitle(), confirmChoice);
 		else {
-			Ui.drawCentered(small, I18n.hintSave(), height * 0.88f, Ui.HINT);
+			HintBar.draw(I18n.hintSave(), height * 0.88f);
 			if (notice != null && System.currentTimeMillis() < noticeUntil)
 				Ui.drawCentered(small, notice, height * 0.93f, Ui.TITLE);
 		}

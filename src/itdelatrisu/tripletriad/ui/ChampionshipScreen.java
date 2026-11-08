@@ -469,7 +469,7 @@ public class ChampionshipScreen extends Screen {
 				drawCursor(panelX + 36, y, small);
 		}
 
-		Ui.drawCentered(small, I18n.hintChampionshipLobby(), height * 0.92f, Ui.HINT);
+		HintBar.draw(I18n.hintChampionshipLobby(), height * 0.92f);
 	}
 
 	private void renderPack(GameContainer container, Graphics g) {
@@ -481,8 +481,7 @@ public class ChampionshipScreen extends Screen {
 		drawShownRow(g, height * 0.36f);
 		if (previewOpen && packCursor >= 0 && packCursor < shownIds.length)
 			Ui.drawCardPreview(g, game.getDeck(), shownIds[packCursor]);
-		Ui.drawCentered(small, previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(),
-			height * 0.88f, Ui.HINT);
+		HintBar.draw(previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(), height * 0.88f);
 	}
 
 	private void renderPick(GameContainer container, Graphics g) {
@@ -539,11 +538,10 @@ public class ChampionshipScreen extends Screen {
 		if (previewOpen && previewBag >= 0 && previewBag < bag.size())
 			Ui.drawCardPreview(g, catalog, bag.get(previewBag).intValue());
 		float hintY = height * 0.88f;
-		Ui.drawCentered(small, previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipPick(),
-			hintY, Ui.HINT);
+		HintBar.draw(previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipPick(), hintY);
 		if (System.currentTimeMillis() < saveNoticeUntil)
 			Ui.drawCentered(small, I18n.championshipSaved(),
-				height * 0.93f, Ui.TITLE);
+				HintBar.lastTop() - small.getLineHeight() * 1.2f, Ui.TITLE);
 	}
 
 	private void renderTradeWin(GameContainer container, Graphics g) {
@@ -557,9 +555,7 @@ public class ChampionshipScreen extends Screen {
 			height * 0.79f, skipOn ? Ui.TITLE : Ui.HINT);
 		if (previewOpen && tradeIndex >= 0 && tradeIndex < shownIds.length)
 			Ui.drawCardPreview(g, game.getDeck(), shownIds[tradeIndex]);
-		Ui.drawCentered(Options.getSmallFont(),
-			previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(),
-			height * 0.88f, Ui.HINT);
+		HintBar.draw(previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(), height * 0.88f);
 	}
 
 	private void renderTradeLose(GameContainer container, Graphics g) {
@@ -573,9 +569,7 @@ public class ChampionshipScreen extends Screen {
 			card.drawSized((width - size) / 2f, height * 0.32f, size, false, true);
 		if (previewOpen)
 			Ui.drawCardPreview(g, game.getDeck(), stolenId);
-		Ui.drawCentered(Options.getSmallFont(),
-			previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(),
-			height * 0.88f, Ui.HINT);
+		HintBar.draw(previewOpen ? I18n.hintCardPreview() : I18n.hintChampionshipConfirm(), height * 0.88f);
 	}
 
 	private void renderEnd(GameContainer container, boolean won) {
@@ -583,7 +577,7 @@ public class ChampionshipScreen extends Screen {
 		Ui.drawCentered(Options.getFont(),
 			won ? I18n.championshipWon() : I18n.championshipLost(),
 			height * 0.40f, Ui.TITLE);
-		Ui.drawCentered(Options.getSmallFont(), I18n.hintChampionshipEnd(), height * 0.55f, Ui.HINT);
+		HintBar.draw(I18n.hintChampionshipEnd(), height * 0.55f);
 	}
 
 	private void drawShownRow(Graphics g, float y) {

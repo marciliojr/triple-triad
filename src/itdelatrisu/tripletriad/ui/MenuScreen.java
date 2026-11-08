@@ -89,7 +89,7 @@ public class MenuScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, I18n.hintMenu(), height * 0.90f, Ui.HINT);
+		HintBar.draw(I18n.hintMenu(), height * 0.90f);
 	}
 
 	@Override

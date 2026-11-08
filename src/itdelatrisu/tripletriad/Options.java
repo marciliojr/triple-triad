@@ -75,6 +75,9 @@ public class Options {
 	/** Smaller font for menus and hints. */
 	private static UnicodeFont smallFont;
 
+	/** Font for dense button legends (falls back to the small font). */
+	private static UnicodeFont tinyFont;
+
 	/** Font file. */
 	private static File fontFile = new File("OpenSans-Light.ttf");
 
@@ -116,6 +119,9 @@ public class Options {
 	 * @return the UnicodeFont
 	 */
 	public static UnicodeFont getSmallFont() { return smallFont != null ? smallFont : font; }
+
+	/** @return the legend font (smaller than the small font) */
+	public static UnicodeFont getTinyFont() { return tinyFont != null ? tinyFont : getSmallFont(); }
 
 	/**
 	 * Returns the player AI type.
@@ -248,6 +254,12 @@ public class Options {
 			smallFont.addGlyphs(extraGlyphs);
 			smallFont.getEffects().add(new ColorEffect());
 			smallFont.loadGlyphs();
+
+			tinyFont = new UnicodeFont(fontFile.getName(),
+					Math.max(11, (int) (14 * (cardLength / 256f) * 1.6f)), false, false);
+			tinyFont.addAsciiGlyphs();
+			tinyFont.addGlyphs(extraGlyphs);
+			tinyFont.loadGlyphs();
 		} catch (SlickException e) {
 			Log.error("Failed to load fonts.", e);
 		}

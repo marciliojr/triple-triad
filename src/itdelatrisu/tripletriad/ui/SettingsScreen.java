@@ -136,7 +136,7 @@ public class SettingsScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, I18n.hintEscBack(), height * 0.92f, Ui.HINT);
+		HintBar.draw(I18n.hintEscBack(), height * 0.92f);
 	}
 
 	@Override

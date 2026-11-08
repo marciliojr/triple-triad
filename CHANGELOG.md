@@ -14,6 +14,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 #### Added
 
+- Legendas de botões redesenhadas no estilo PS1 (`ui/HintBar`): painel escuro com uma entrada por ação, tecla como keycap cinza e botão do joystick colorido (A verde, B vermelho, X azul, Y amarelo), quebra em várias linhas e fonte menor quando precisa, sem cortar texto. Usado no Campeonato, Versus, decks, Memory Card, Cheats, Controles e demais telas com dica no rodapé
 - Controles: todas as ações são personalizáveis (1 tecla + 1 botão do joystick cada): Confirmar, Cancelar, Selecionar (ordenar/editar), Menu, Pular intro, Remover/Apagar, Zoom, Página esquerda/direita, Aleatório, Salvar, Revanche, Jogada automática e Cima/Baixo/Esquerda/Direita. Teclas fora dos atalhos não fazem mais nada (sem atalhos fixos); Del na tela de Controles limpa um atalho
 - Dicas do rodapé e o Como Jogar mostram os atalhos atuais (ex.: "[S]/[X] para pular"); o Como Jogar ganhou a lista completa de botões
 - Configurações > Controles mostra o controle detectado, um teste ao vivo do último botão/eixo e, se houver um receptor 8BitDo só em modo HID (2dc8:3109), a dica "Controle em modo incompatível: ligue no modo X-input"
@@ -243,6 +244,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 #### Added
 
+- Button legends redesigned in PS1 style (`ui/HintBar`): dark panel with one entry per action, keys as gray keycaps and joystick buttons colored (A green, B red, X blue, Y yellow), wrapping to several rows and a smaller font when needed, never cutting text. Used in Championship, Versus, decks, Memory Card, Cheats, Controls and the other screens with a footer hint
 - Controls: every action is customizable (1 key + 1 joystick button each): Confirm, Cancel, Select (sort/edit), Menu, Skip intro, Remove/Delete, Zoom, Page left/right, Random, Save, Rematch, Auto play and Up/Down/Left/Right. Keys outside the bindings do nothing (no fixed shortcuts); Del on the Controls screen clears a binding
 - Footer hints and How to Play show the current bindings (e.g. "[S]/[X] to skip"); How to Play lists every button
 - Settings > Controls shows the detected controller, a live test of the last button/axis and, when an 8BitDo receiver is only in HID mode (2dc8:3109), the hint "Controller in an incompatible mode: switch it to X-input mode"

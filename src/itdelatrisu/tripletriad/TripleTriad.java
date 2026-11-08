@@ -23,6 +23,7 @@ import itdelatrisu.tripletriad.ai.BalancedAI;
 import itdelatrisu.tripletriad.ai.DefensiveAI;
 import itdelatrisu.tripletriad.ai.OffensiveAI;
 import itdelatrisu.tripletriad.ai.RandomAI;
+import itdelatrisu.tripletriad.ui.HintBar;
 import itdelatrisu.tripletriad.ui.ChampionshipScreen;
 import itdelatrisu.tripletriad.ui.CheatsScreen;
 import itdelatrisu.tripletriad.ui.ControlsScreen;
@@ -982,7 +983,7 @@ public class TripleTriad extends BasicGame {
 			leaveChoice == 0 ? Ui.SELECTED : Ui.HINT);
 		Ui.drawCentered(Options.getSmallFont(), I18n.confirmLeaveYes(), height * 0.58f,
 			leaveChoice == 1 ? Ui.SELECTED : Ui.HINT);
-		Ui.drawCentered(Options.getSmallFont(), I18n.hintLeaveConfirm(), height * 0.78f, Ui.HINT);
+		HintBar.draw(I18n.hintLeaveConfirm(), height * 0.78f);
 	}
 
 	/**

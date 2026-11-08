@@ -122,7 +122,7 @@ public final class Ui {
 			choice == 0 ? SELECTED : HINT);
 		drawCentered(Options.getSmallFont(), I18n.confirmLeaveYes(), height * 0.58f,
 			choice == 1 ? SELECTED : HINT);
-		drawCentered(Options.getSmallFont(), I18n.hintLeaveConfirm(), height * 0.78f, HINT);
+		HintBar.draw(I18n.hintLeaveConfirm(), height * 0.78f);
 	}
 
 	/**

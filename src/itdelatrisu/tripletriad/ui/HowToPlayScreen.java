@@ -86,7 +86,7 @@ public class HowToPlayScreen extends Screen {
 			small.drawString(x, y, line, color);
 		}
 
-		Ui.drawCentered(small, I18n.hintHowTo(), height * 0.92f, Ui.HINT);
+		HintBar.draw(I18n.hintHowTo(), height * 0.92f);
 	}
 
 	@Override

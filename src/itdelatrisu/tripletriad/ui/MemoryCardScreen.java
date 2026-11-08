@@ -190,7 +190,7 @@ public class MemoryCardScreen extends Screen {
 		// footer
 		String pageText = (page() + 1) + "/" + PAGES;
 		small.drawString(width - m - small.getWidth(pageText), height * 0.915f, pageText, TAG);
-		Ui.drawCentered(small, I18n.hintMemoryCard(saveMode), height * 0.915f, Ui.HINT);
+		HintBar.draw(I18n.hintMemoryCard(saveMode), height * 0.915f);
 		if (notice != null && System.currentTimeMillis() < noticeUntil)
 			Ui.drawCentered(small, notice, height * 0.955f, Ui.TITLE);
 

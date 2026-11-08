@@ -176,7 +176,7 @@ public class DeckSelectScreen extends Screen {
 			hint = I18n.hintDeckRules();
 		else
 			hint = I18n.hintDeckList();
-		Ui.drawCentered(small, hint, height * 0.92f, Ui.HINT);
+		HintBar.draw(hint, height * 0.92f);
 	}
 
 	@Override
