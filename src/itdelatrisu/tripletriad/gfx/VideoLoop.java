@@ -63,6 +63,12 @@ public class VideoLoop {
 	/** Whether playback is running. */
 	private boolean playing;
 
+	/** Whether playback restarts at the end (default true). */
+	private boolean looping = true;
+
+	/** Whether a non-looping playback reached the end. */
+	private boolean finished;
+
 	/**
 	 * Loads the frames and audio of a video.
 	 * @param name the base name (e.g. {@code endgame})
@@ -102,7 +108,9 @@ public class VideoLoop {
 	public void play(boolean withAudio) {
 		time = 0f;
 		playing = true;
+		finished = false;
 		if (audio != null && withAudio) {
+			audio.setLooping(looping);
 			audio.setVolume(Gfx.getMusicVolume());
 			audio.play();
 		}
@@ -117,6 +125,15 @@ public class VideoLoop {
 			audio.stop();
 	}
 
+	/**
+	 * Sets whether playback loops (call before {@link #play(boolean)}).
+	 * @param looping false to play once
+	 */
+	public void setLooping(boolean looping) { this.looping = looping; }
+
+	/** @return true once a non-looping playback reached its last frame */
+	public boolean isFinished() { return finished; }
+
 	/** @return whether playback is running */
 	public boolean isPlaying() { return playing; }
 
@@ -128,7 +145,15 @@ public class VideoLoop {
 		if (!playing)
 			return false;
 		time += Gdx.graphics.getDeltaTime();
-		int index = ((int) (time * fps)) % frames.size();
+		int index = (int) (time * fps);
+		if (index >= frames.size()) {
+			if (looping)
+				index %= frames.size();
+			else {
+				index = frames.size() - 1;
+				finished = true;
+			}
+		}
 		if (index != shownFrame && !upload(index))
 			return false;
 		float scale = Math.min(w / texture.getWidth(), h / texture.getHeight());

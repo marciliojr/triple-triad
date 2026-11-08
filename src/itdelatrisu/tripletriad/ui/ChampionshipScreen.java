@@ -61,8 +61,7 @@ public class ChampionshipScreen extends Screen {
 
 	private static final int LOBBY_NEW = 0;
 	private static final int LOBBY_CONTINUE = 1;
-	private static final int LOBBY_CLEAR = 2;
-	private static final int LOBBY_COUNT = 3;
+	private static final int LOBBY_COUNT = 2;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -434,7 +433,7 @@ public class ChampionshipScreen extends Screen {
 				drawCursor(infoLeft(), y, small);
 			if (i == LOBBY_CONTINUE && canContinue && profile != null)
 				small.drawString(infoLeft(), y + small.getLineHeight(),
-					I18n.championshipRoundOf(profile.getRunRound()), Ui.HINT);
+					I18n.memoryCardUsed(usedSlots(profile)), Ui.HINT);
 		}
 
 		float panelX = rulesLeft();
@@ -716,7 +715,7 @@ public class ChampionshipScreen extends Screen {
 			if (focus == FOCUS_RULES)
 				ruleIndex = (ruleIndex + ruleCount - 1) % ruleCount;
 			else
-				lobbyIndex = (lobbyIndex + 1) % LOBBY_COUNT;
+				lobbyIndex = (lobbyIndex + LOBBY_COUNT - 1) % LOBBY_COUNT;
 			AudioController.playCursor();
 			break;
 		case Input.KEY_Z:
@@ -1006,16 +1005,7 @@ public class ChampionshipScreen extends Screen {
 				return;
 			}
 			AudioController.Effect.SELECT.play();
-			game.championshipContinue();
-			return;
-		}
-		if (lobbyIndex == LOBBY_CLEAR) {
-			if (!hasSave()) {
-				AudioController.Effect.INVALID.play();
-				return;
-			}
-			AudioController.Effect.SELECT.play();
-			game.championshipClearProgress();
+			game.showMemoryCard(false);
 			return;
 		}
 		AudioController.Effect.SELECT.play();
@@ -1023,7 +1013,7 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private boolean lobbyEnabled(int index) {
-		if (index == LOBBY_CONTINUE || index == LOBBY_CLEAR)
+		if (index == LOBBY_CONTINUE)
 			return hasSave();
 		return true;
 	}
@@ -1031,8 +1021,7 @@ public class ChampionshipScreen extends Screen {
 	private String lobbyLabel(int index) {
 		switch (index) {
 			case LOBBY_NEW: return I18n.championshipNewGame();
-			case LOBBY_CONTINUE: return I18n.championshipContinue();
-			case LOBBY_CLEAR: return I18n.championshipClearProgress();
+			case LOBBY_CONTINUE: return I18n.memoryCardLoadTitle();
 			default: return "";
 		}
 	}
@@ -1043,8 +1032,16 @@ public class ChampionshipScreen extends Screen {
 			return;
 		}
 		AudioController.Effect.SELECT.play();
-		game.championshipSave();
-		saveNoticeUntil = System.currentTimeMillis() + 2500L;
+		game.showMemoryCard(true);
+	}
+
+	private static int usedSlots(Profile profile) {
+		int n = 0;
+		for (int i = 0; i < Profile.SLOTS; i++) {
+			if (profile.getSlot(i) != null)
+				n++;
+		}
+		return n;
 	}
 
 	private boolean hitSaveLabel(int x, int y) {

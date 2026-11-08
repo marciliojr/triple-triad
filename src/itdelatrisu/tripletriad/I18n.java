@@ -247,6 +247,109 @@ public final class I18n {
 		return pick("Campeonato vencido!    Qualquer tecla continua", "Championship won!    Press any key to continue", "\u00a1Campeonato ganado!    Cualquier tecla contin\u00faa");
 	}
 
+	public static String hintSkipIntro() {
+		return pick("S para pular", "S to skip", "S para saltar");
+	}
+
+	public static String memoryCardInUse() {
+		return pick("MEMORY CARD em uso: Slot 1", "MEMORY CARD in use: Slot 1", "MEMORY CARD en uso: Ranura 1");
+	}
+
+	public static String memoryCardSaveTitle() {
+		return pick("Salvar", "Save", "Guardar");
+	}
+
+	public static String memoryCardLoadTitle() {
+		return pick("Carregar", "Load", "Cargar");
+	}
+
+	public static String memoryCardHelp(boolean save) {
+		return save
+			? pick("Escolha o bloco para salvar", "Choose block to save", "Elige el bloque para guardar")
+			: pick("Escolha o bloco para carregar", "Choose block to load", "Elige el bloque para cargar");
+	}
+
+	public static String memoryCardFree() {
+		return pick("Livre", "Free", "Libre");
+	}
+
+	public static String memoryCardEmpty() {
+		return pick("Vazio", "Empty", "Vac\u00edo");
+	}
+
+	public static String memoryCardTitle() {
+		return pick("Campeonato", "Championship", "Campeonato");
+	}
+
+	public static String memoryCardLevel(int wins) {
+		return pick("Nv " + wins, "LV " + wins, "Nv " + wins);
+	}
+
+	public static String memoryCardRound(int round) {
+		return pick("RODADA " + round + "/8", "ROUND " + round + "/8", "RONDA " + round + "/8");
+	}
+
+	public static String memoryCardPlay(String time) {
+		return pick("TEMPO " + time, "PLAY " + time, "TIEMPO " + time);
+	}
+
+	public static String memoryCardCards(int n) {
+		return pick(n + " cartas", n + " cards", n + " cartas");
+	}
+
+	public static String memoryCardUsed(int n) {
+		return pick(n + " de 15 blocos usados", n + " of 15 blocks used", n + " de 15 bloques usados");
+	}
+
+	public static String memoryCardFull() {
+		return pick("Memory Card cheio: apague um bloco.", "Memory Card full: delete a block.", "Memory Card lleno: borra un bloque.");
+	}
+
+	public static String memoryCardOverwrite(int block) {
+		return pick(String.format("Sobrescrever o bloco %02d?", block),
+			String.format("Overwrite block %02d?", block),
+			String.format("\u00bfSobrescribir el bloque %02d?", block));
+	}
+
+	public static String memoryCardDelete(int block) {
+		return pick(String.format("Apagar o bloco %02d?", block),
+			String.format("Delete block %02d?", block),
+			String.format("\u00bfBorrar el bloque %02d?", block));
+	}
+
+	public static String memoryCardSaved(int block) {
+		return pick(String.format("Salvo no bloco %02d.", block),
+			String.format("Saved to block %02d.", block),
+			String.format("Guardado en el bloque %02d.", block));
+	}
+
+	public static String memoryCardDeleted(int block) {
+		return pick(String.format("Bloco %02d apagado.", block),
+			String.format("Block %02d deleted.", block),
+			String.format("Bloque %02d borrado.", block));
+	}
+
+	public static String hintMemoryCard(boolean save) {
+		return save
+			? pick("Z/Enter salva    D apaga    Esq/Dir p\u00e1gina    Esc volta",
+				"Z/Enter saves    D deletes    Left/Right page    Esc back",
+				"Z/Enter guarda    D borra    Izq/Der p\u00e1gina    Esc volver")
+			: pick("Z/Enter carrega    D apaga    Esq/Dir p\u00e1gina    Esc volta",
+				"Z/Enter loads    D deletes    Left/Right page    Esc back",
+				"Z/Enter carga    D borra    Izq/Der p\u00e1gina    Esc volver");
+	}
+
+	/** FF8 places used as the "location" of each championship round. */
+	private static final String[] ROUND_PLACES = {
+		"Balamb", "Timber", "Dollet", "Deling City",
+		"Fisherman's Horizon", "Esthar", "Lunar Base", "Ultimecia Castle"
+	};
+
+	public static String memoryCardPlace(int round) {
+		int i = Math.max(1, Math.min(round, ROUND_PLACES.length)) - 1;
+		return ROUND_PLACES[i] + " - " + championshipRound(round);
+	}
+
 	public static String hintMenu() {
 		return pick("Z/Enter seleciona    Esc sai", "Z/Enter selects    Esc quits", "Z/Enter selecciona    Esc sale");
 	}

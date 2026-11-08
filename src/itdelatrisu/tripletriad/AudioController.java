@@ -114,9 +114,18 @@ public class AudioController {
 	 * Initializes sounds and starts the BGM track.
 	 */
 	public static void init() {
+		init(true);
+	}
+
+	/**
+	 * Initializes sounds; optionally holds the BGM (e.g. until the intro ends).
+	 * @param startMusic false to load the BGM without playing it
+	 */
+	public static void init(boolean startMusic) {
 		try {
 			bgm = new Music("bgm.ogg");
-			applyMusic();
+			if (startMusic)
+				applyMusic();
 			Effect.init();
 		} catch (SlickException e) {
 			Log.error("Failed to load audio.", e);

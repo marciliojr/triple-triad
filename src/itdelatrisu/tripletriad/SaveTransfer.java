@@ -83,6 +83,12 @@ public final class SaveTransfer {
 		/** Run bag. */
 		private final ArrayList<Integer> runBag = new ArrayList<Integer>();
 
+		/** Rules (null = not in file, 1.1.x saves). */
+		private String runRules;
+
+		/** Play time in ms. */
+		private long runPlayMillis;
+
 		/** @return the kind, or null if missing */
 		public Kind getKind() { return kind; }
 
@@ -154,20 +160,29 @@ public final class SaveTransfer {
 	public static boolean writeChampionship(File file, Profile profile) {
 		if (file == null || profile == null || !profile.hasChampionshipSave())
 			return false;
+		ChampionshipSlot slot = profile.getSlot(profile.latestSlot());
+		if (slot == null)
+			return false;
 		try (BufferedWriter writer = openWriter(file)) {
 			writer.write("# Triple Triad save");
 			writer.newLine();
 			writer.write("KIND = CHAMPIONSHIP");
 			writer.newLine();
-			writer.write(String.format("RUN_ROUND = %d", profile.getRunRound()));
+			writer.write(String.format("RUN_ROUND = %d", slot.getRound()));
 			writer.newLine();
-			writer.write(String.format("RUN_WINS = %d", profile.getRunWins()));
+			writer.write(String.format("RUN_WINS = %d", slot.getWins()));
 			writer.newLine();
-			writer.write("RUN_HAND = " + ProfileStore.formatCardIds(profile.getRunHand()));
+			writer.write("RUN_HAND = " + ProfileStore.formatCardIds(slot.getHand()));
 			writer.newLine();
-			writer.write("RUN_OPPONENT = " + ProfileStore.formatCardIds(profile.getRunOpponent()));
+			writer.write("RUN_OPPONENT = " + ProfileStore.formatCardIds(slot.getOpponent()));
 			writer.newLine();
-			writer.write("RUN_BAG = " + ProfileStore.formatIdList(profile.getRunBag()));
+			writer.write("RUN_BAG = " + ProfileStore.formatIdList(slot.getBag()));
+			writer.newLine();
+			if (slot.hasRules()) {
+				writer.write("RUN_RULES = " + slot.rulesToString());
+				writer.newLine();
+			}
+			writer.write("RUN_PLAY_MS = " + slot.getPlayMillis());
 			writer.newLine();
 			return true;
 		} catch (IOException e) {
@@ -212,6 +227,14 @@ public final class SaveTransfer {
 					snap.runHand = ProfileStore.parseCardIds(value);
 				} else if (key.equals("RUN_OPPONENT")) {
 					snap.runOpponent = ProfileStore.parseCardIds(value);
+				} else if (key.equals("RUN_RULES")) {
+					snap.runRules = value;
+				} else if (key.equals("RUN_PLAY_MS")) {
+					try {
+						snap.runPlayMillis = Long.parseLong(value);
+					} catch (NumberFormatException e) {
+						snap.runPlayMillis = 0L;
+					}
 				} else if (key.equals("RUN_BAG")) {
 					addIds(snap.runBag, ProfileStore.parseCardIds(value));
 				}
@@ -237,11 +260,20 @@ public final class SaveTransfer {
 			return true;
 		}
 		if (snap.isChampionshipValid()) {
-			profile.setRunRound(snap.runRound);
-			profile.setRunWins(snap.runWins);
-			profile.setRunHand(snap.runHand);
-			profile.setRunOpponent(snap.runOpponent);
-			profile.setRunBag(snap.runBag);
+			int index = profile.firstFreeSlot();
+			if (index < 0)
+				return false;
+			ChampionshipSlot slot = new ChampionshipSlot();
+			slot.setRound(snap.runRound);
+			slot.setWins(snap.runWins);
+			slot.setHand(snap.runHand);
+			slot.setOpponent(snap.runOpponent);
+			slot.setBag(snap.runBag.isEmpty() ? profile.getCollection() : snap.runBag);
+			if (snap.runRules != null)
+				slot.setRulesFromString(snap.runRules);
+			slot.setPlayMillis(snap.runPlayMillis);
+			slot.setSavedAt(System.currentTimeMillis());
+			profile.setSlot(index, slot);
 			return true;
 		}
 		return false;

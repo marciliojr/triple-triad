@@ -8,6 +8,8 @@ Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
 
 - Branch `feat/1.3.0-video-endgame`: vídeo em loop na zerada do Campeonato (`gfx.VideoLoop` + `ChampionshipScreen.MODE_WON`). Fonte `res/endgame.mp4`; o jogo usa `res/endgame/frame_NNN.jpg` + `res/endgame.ogg`. Para trocar o vídeo: `ffmpeg -i endgame.mp4 -vf scale=640:360 -r 24 -q:v 7 res/endgame/frame_%03d.jpg` e `ffmpeg -i endgame.mp4 -vn -c:a libvorbis -q:a 4 res/endgame.ogg`
 
+- Mesma branch: abertura `ui.IntroScreen` (`GameScreen.INTRO`, `VideoLoop.setLooping(false)`, S pula, `AudioController.init(false)` + `introFinished()` liga a BGM) e save estilo Memory Card PS1 (`ui.MemoryCardScreen`, `GameScreen.MEMORY_CARD`). Saves em `Profile` como `ChampionshipSlot[15]` gravados no perfil como `SLOT.N.ROUND/WINS/HAND/OPPONENT/BAG/RULES/PLAY_MS/SAVED_AT`; `RUN_*` antigo migra para o bloco 01 em `migrateLegacyRun()`. Fim do auto-delete: `endChampionshipSave()` só grava o álbum
+
 ## Ao continuar
 
 - Não mexer em `CardResult` / regras de captura sem teste de Same/Plus/Combo/Elemental

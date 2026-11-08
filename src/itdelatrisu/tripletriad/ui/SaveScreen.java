@@ -285,6 +285,11 @@ public class SaveScreen extends Screen {
 			AudioController.Effect.INVALID.play();
 			return;
 		}
+		if (kind == KIND_CHAMPIONSHIP && profile.firstFreeSlot() < 0) {
+			showNotice(I18n.memoryCardFull());
+			AudioController.Effect.INVALID.play();
+			return;
+		}
 		pending = snap;
 		confirmChoice = 0;
 		confirm = true;
@@ -382,7 +387,7 @@ public class SaveScreen extends Screen {
 		}
 		if (profile != null && profile.hasChampionshipSave())
 			return I18n.saveKindChampionship() + "  "
-				+ I18n.championshipRoundOf(profile.getRunRound());
+				+ I18n.championshipRoundOf(profile.getSlot(profile.latestSlot()).getRound());
 		return I18n.saveKindChampionship() + "  " + I18n.saveNone();
 	}
 

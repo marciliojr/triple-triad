@@ -35,3 +35,8 @@ Export/import: `SaveTransfer` (AWT `FileDialog` no EDT, com janela dona e `dispo
 ## Input
 
 Constantes `gfx.Input` = códigos libGDX. Mapa da UI: **Z** seleciona, **X**/Del remove, **C** amplia (`Ui.drawCardPreview`), **R** preenche 5 cartas aleatórias no construtor e nos picks (Jogo Rápido / Campeonato), **T** cicla `CardSort` (catálogo → nível → valor) no construtor, na galeria/pick de Meu Deck e no pick do Campeonato, **Esc** volta. T é ignorada em preview, confirmação e nomeação. Nos menus Z e Enter confirmam. Na galeria Meu Deck, o painel direito mostra a carta média do cursor (como no pick); C continua overlay; X/Del pede confirmação (Não / Sim; default Não) antes de apagar uma cópia do álbum; no construtor e nos picks X só tira da mão de 5. Na partida, Esc abre overlay de confirmação (Não / Sim; default Não); **X** cancela a casa do tabuleiro. F5 rematch só no Jogo Rápido.
+
+## Save do Campeonato (1.3.0)
+
+- Memory Card de 15 blocos (`ChampionshipSlot`), checkpoint entre partidas (rodada, vitórias, mãos, bag, regras, tempo). Só o jogador apaga um bloco; `.ttsave` exporta o último salvo e importa no primeiro livre
+- Vídeos: `gfx.VideoLoop` toca quadros JPEG `res/<nome>/frame_NNN.jpg` + `res/<nome>.ogg` (loop ou uma vez)

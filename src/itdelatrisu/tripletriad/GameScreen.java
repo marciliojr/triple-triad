@@ -22,6 +22,7 @@ package itdelatrisu.tripletriad;
  * Top-level UI / match states.
  */
 public enum GameScreen {
+	INTRO,
 	PROFILE,
 	PROFILES,
 	MENU,
@@ -31,6 +32,7 @@ public enum GameScreen {
 	SETTINGS,
 	MY_DECK,
 	SAVE,
+	MEMORY_CARD,
 	CHAMPIONSHIP,
 	MATCH
 }

@@ -27,6 +27,8 @@ import itdelatrisu.tripletriad.ui.ChampionshipScreen;
 import itdelatrisu.tripletriad.ui.DeckBuilderScreen;
 import itdelatrisu.tripletriad.ui.DeckSelectScreen;
 import itdelatrisu.tripletriad.ui.HowToPlayScreen;
+import itdelatrisu.tripletriad.ui.IntroScreen;
+import itdelatrisu.tripletriad.ui.MemoryCardScreen;
 import itdelatrisu.tripletriad.ui.MenuScreen;
 import itdelatrisu.tripletriad.ui.MyDeckScreen;
 import itdelatrisu.tripletriad.ui.ProfileScreen;
@@ -145,6 +147,11 @@ public class TripleTriad extends BasicGame {
 	private ChampionshipScreen championshipScreen;
 	private MyDeckScreen myDeckScreen;
 	private SaveScreen saveScreen;
+	private IntroScreen introScreen;
+
+	/** Memory-card block of the current run (-1 = none). */
+	private int championshipSlot = -1;
+	private MemoryCardScreen memoryCardScreen;
 
 	/** Card IDs for the player's current match deck. */
 	private int[] currentPlayerDeckIds;
@@ -206,7 +213,7 @@ public class TripleTriad extends BasicGame {
 
 		// initialize everything
 		Options.init(container);
-		AudioController.init();
+		AudioController.init(false);
 		GameImage.init();
 		Element.init();
 		Spinner.init();
@@ -224,8 +231,21 @@ public class TripleTriad extends BasicGame {
 		this.championshipScreen = new ChampionshipScreen(this);
 		this.myDeckScreen = new MyDeckScreen(this);
 		this.saveScreen = new SaveScreen(this);
+		this.introScreen = new IntroScreen(this);
+		this.memoryCardScreen = new MemoryCardScreen(this);
 
 		loadActiveProfile();
+		currentScreen = GameScreen.INTRO;
+		if (!introScreen.start())
+			introFinished();
+	}
+
+	/**
+	 * Called when the opening video ends, is skipped or fails: starts the BGM
+	 * and shows the menu (or profile creation).
+	 */
+	public void introFinished() {
+		AudioController.applyMusic();
 		if (profile != null && profile.isValid())
 			showMenu();
 		else
@@ -383,6 +403,8 @@ public class TripleTriad extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
+		if (championship != null && currentScreen != GameScreen.MEMORY_CARD)
+			championship.addPlayMillis(delta);
 		if (currentScreen != GameScreen.MATCH) {
 			getActiveScreen().update(container, delta);
 			return;
@@ -946,6 +968,8 @@ public class TripleTriad extends BasicGame {
 			case SETTINGS: return settingsScreen;
 			case MY_DECK: return myDeckScreen;
 			case SAVE: return saveScreen;
+			case INTRO: return introScreen;
+			case MEMORY_CARD: return memoryCardScreen;
 			case CHAMPIONSHIP: return championshipScreen;
 			case MENU:
 			default: return menuScreen;
@@ -1148,6 +1172,7 @@ public class TripleTriad extends BasicGame {
 	 */
 	public void showMenu() {
 		championship = null;
+		championshipSlot = -1;
 		championshipOpponentAI = null;
 		currentOpponentDeckIds = null;
 		currentScreen = GameScreen.MENU;
@@ -1250,8 +1275,8 @@ public class TripleTriad extends BasicGame {
 	public void championshipNew() {
 		if (profile == null)
 			return;
-		profile.clearChampionshipSave();
 		championship = new ChampionshipRun();
+		championshipSlot = -1;
 		if (profile.getCollection().size() < SavedDeck.SIZE) {
 			int[] pack = deck.createStarterPack();
 			for (int i = 0; i < pack.length; i++) {
@@ -1289,15 +1314,48 @@ public class TripleTriad extends BasicGame {
 	}
 
 	/**
-	 * Resumes a saved championship from match 2+.
+	 * Resumes the championship saved in a memory-card block.
+	 * @param index the block index
 	 */
-	public void championshipContinue() {
-		if (profile == null || !profile.hasChampionshipSave())
+	public void championshipLoad(int index) {
+		ChampionshipSlot slot = (profile != null) ? profile.getSlot(index) : null;
+		if (slot == null)
 			return;
-		championship = ChampionshipRun.fromProfile(profile);
+		championship = slot.toRun(profile);
+		championshipSlot = index;
+		Options.saveOptions();
 		currentScreen = GameScreen.CHAMPIONSHIP;
-		championshipScreen.showPick(profile.getRunHand());
+		championshipScreen.showPick(slot.getHand());
 	}
+
+	/**
+	 * Opens the memory-card screen.
+	 * @param save true to save the current run, false to load
+	 */
+	public void showMemoryCard(boolean save) {
+		if (save && !canChampionshipSave())
+			return;
+		currentScreen = GameScreen.MEMORY_CARD;
+		memoryCardScreen.open(save, championshipSlot);
+	}
+
+	/**
+	 * Leaves the memory-card screen: back to the hand pick (save) or lobby (load).
+	 * @param save the mode the screen was opened in
+	 */
+	public void memoryCardBack(boolean save) {
+		currentScreen = GameScreen.CHAMPIONSHIP;
+		if (save && championship != null)
+			championshipScreen.showPick(championship.getPlayerHandIds());
+		else
+			championshipScreen.enter();
+	}
+
+	/**
+	 * Returns the block the current run was loaded from / last saved to.
+	 * @return the index, or -1
+	 */
+	public int getChampionshipSlot() { return championshipSlot; }
 
 	/**
 	 * Returns to the championship lobby without discarding the in-memory run.
@@ -1316,25 +1374,27 @@ public class TripleTriad extends BasicGame {
 	}
 
 	/**
-	 * Writes collection and run to disk when the player chooses Salvar.
+	 * Writes collection and run to a memory-card block.
+	 * @param index the block index
 	 */
-	public void championshipSave() {
+	public void championshipSave(int index) {
 		if (profile == null || !canChampionshipSave())
 			return;
-		profile.storeChampionshipRun(championship);
+		profile.setSlot(index, ChampionshipSlot.fromRun(championship));
+		championshipSlot = index;
 		saveProfile();
 	}
 
 	/**
-	 * Clears the championship continue save. Keeps Meu Deck, cups and Quick Game decks.
+	 * Deletes a memory-card block. Keeps Meu Deck, cups and Quick Game decks.
+	 * @param index the block index
 	 */
-	public void championshipClearProgress() {
-		if (profile == null || !profile.hasChampionshipSave())
+	public void championshipDeleteSlot(int index) {
+		if (profile == null || profile.getSlot(index) == null)
 			return;
-		profile.clearChampionshipSave();
-		championship = null;
-		championshipOpponentAI = null;
-		currentOpponentDeckIds = null;
+		profile.setSlot(index, null);
+		if (championshipSlot == index)
+			championshipSlot = -1;
 		saveProfile();
 	}
 
@@ -1379,7 +1439,6 @@ public class TripleTriad extends BasicGame {
 		boolean cup = championship.recordWin();
 		if (cup) {
 			profile.addChampionshipWin();
-			profile.clearChampionshipSave();
 			saveProfile();
 			currentScreen = GameScreen.CHAMPIONSHIP;
 			championshipScreen.showWon();
@@ -1443,12 +1502,11 @@ public class TripleTriad extends BasicGame {
 	}
 
 	/**
-	 * Clears an in-progress championship save.
+	 * Run is over: writes the album. Save blocks are kept (only the player deletes them).
 	 */
 	private void endChampionshipSave() {
 		if (profile == null)
 			return;
-		profile.clearChampionshipSave();
 		saveProfile();
 	}
 }

@@ -39,6 +39,27 @@ public class ChampionshipRun {
 	/** Opponent hand IDs for the current round (kept on retry). */
 	private int[] opponentHandIds;
 
+	/** Play time of this run in milliseconds. */
+	private long playMillis;
+
+	/** @return play time in milliseconds */
+	public long getPlayMillis() { return playMillis; }
+
+	/**
+	 * Sets the play time.
+	 * @param ms milliseconds
+	 */
+	public void setPlayMillis(long ms) { this.playMillis = Math.max(0L, ms); }
+
+	/**
+	 * Adds elapsed play time.
+	 * @param ms milliseconds
+	 */
+	public void addPlayMillis(long ms) {
+		if (ms > 0)
+			playMillis += ms;
+	}
+
 	/** Cards in this run (temporary pack or a copy of Meu Deck). */
 	private final ArrayList<Integer> bag = new ArrayList<Integer>();
 
@@ -64,27 +85,6 @@ public class ChampionshipRun {
 	 */
 	public void setOpponentHandIds(int[] ids) {
 		this.opponentHandIds = (ids != null) ? ids.clone() : null;
-	}
-
-	/**
-	 * Restores a run from a profile save.
-	 * @param profile the profile
-	 * @return the run
-	 */
-	public static ChampionshipRun fromProfile(Profile profile) {
-		ChampionshipRun run = new ChampionshipRun();
-		if (profile == null)
-			return run;
-		run.setRound(profile.getRunRound());
-		run.setWins(profile.getRunWins());
-		run.setPlayerHandIds(profile.getRunHand());
-		run.setOpponentHandIds(profile.getRunOpponent());
-		ArrayList<Integer> saved = profile.getRunBag();
-		if (saved != null && !saved.isEmpty())
-			run.setBag(saved);
-		else
-			run.setBag(profile.getCollection());
-		return run;
 	}
 
 	/**
