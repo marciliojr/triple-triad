@@ -30,6 +30,7 @@ public enum GameScreen {
 	DECK_BUILDER,
 	HOW_TO_PLAY,
 	SETTINGS,
+	CHEATS,
 	MY_DECK,
 	SAVE,
 	MEMORY_CARD,

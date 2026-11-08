@@ -32,11 +32,11 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Main menu: Quick Game, Championship, My Deck, Save, how to play, settings.
+ * Main menu: Quick Game, Championship, My Deck, Save, how to play, settings, cheats.
  */
 public class MenuScreen extends Screen {
 	/** Number of menu entries. */
-	private static final int ITEM_COUNT = 6;
+	private static final int ITEM_COUNT = 7;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -142,6 +142,8 @@ public class MenuScreen extends Screen {
 			game.showHowToPlay();
 		else if (index == 5)
 			game.showSettings();
+		else if (index == 6)
+			game.showCheats();
 	}
 
 	private String label(int index) {
@@ -152,6 +154,7 @@ public class MenuScreen extends Screen {
 			case 3: return I18n.menuSave();
 			case 4: return I18n.menuHowTo();
 			case 5: return I18n.menuSettings();
+			case 6: return I18n.menuCheats();
 			default: return "";
 		}
 	}

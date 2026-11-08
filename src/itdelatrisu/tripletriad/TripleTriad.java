@@ -24,6 +24,7 @@ import itdelatrisu.tripletriad.ai.DefensiveAI;
 import itdelatrisu.tripletriad.ai.OffensiveAI;
 import itdelatrisu.tripletriad.ai.RandomAI;
 import itdelatrisu.tripletriad.ui.ChampionshipScreen;
+import itdelatrisu.tripletriad.ui.CheatsScreen;
 import itdelatrisu.tripletriad.ui.DeckBuilderScreen;
 import itdelatrisu.tripletriad.ui.DeckSelectScreen;
 import itdelatrisu.tripletriad.ui.HowToPlayScreen;
@@ -148,6 +149,7 @@ public class TripleTriad extends BasicGame {
 	private MyDeckScreen myDeckScreen;
 	private SaveScreen saveScreen;
 	private IntroScreen introScreen;
+	private CheatsScreen cheatsScreen;
 
 	/** Memory-card block of the current run (-1 = none). */
 	private int championshipSlot = -1;
@@ -232,6 +234,7 @@ public class TripleTriad extends BasicGame {
 		this.myDeckScreen = new MyDeckScreen(this);
 		this.saveScreen = new SaveScreen(this);
 		this.introScreen = new IntroScreen(this);
+		this.cheatsScreen = new CheatsScreen(this);
 		this.memoryCardScreen = new MemoryCardScreen(this);
 
 		loadActiveProfile();
@@ -969,6 +972,7 @@ public class TripleTriad extends BasicGame {
 			case MY_DECK: return myDeckScreen;
 			case SAVE: return saveScreen;
 			case INTRO: return introScreen;
+			case CHEATS: return cheatsScreen;
 			case MEMORY_CARD: return memoryCardScreen;
 			case CHAMPIONSHIP: return championshipScreen;
 			case MENU:
@@ -1177,6 +1181,14 @@ public class TripleTriad extends BasicGame {
 		currentOpponentDeckIds = null;
 		currentScreen = GameScreen.MENU;
 		menuScreen.enter();
+	}
+
+	/**
+	 * Shows the cheats screen.
+	 */
+	public void showCheats() {
+		currentScreen = GameScreen.CHEATS;
+		cheatsScreen.enter();
 	}
 
 	/**

@@ -33,6 +33,48 @@ public final class I18n {
 		return pick("Como - Jogar", "How to Play", "C\u00f3mo jugar");
 	}
 
+	public static String menuCheats() {
+		return pick("Cheats", "Cheats", "Trucos");
+	}
+
+	public static String cheatsInfo() {
+		return pick("Digite um c\u00f3digo", "Type a code", "Escribe un c\u00f3digo");
+	}
+
+	public static String cheatsHelpTag() {
+		switch (Options.getLang()) {
+			case EN: return "HELP";
+			case ES: return "AYUDA";
+			default: return "AJUDA";
+		}
+	}
+
+	public static String cheatsHelp() {
+		return pick("As cartas liberadas v\u00e3o para o Meu Deck",
+			"Unlocked cards go to My Deck",
+			"Las cartas desbloqueadas van a Mi mazo");
+	}
+
+	public static String cheatsInvalid() {
+		return pick("C\u00f3digo inv\u00e1lido", "Invalid code", "C\u00f3digo inv\u00e1lido");
+	}
+
+	public static String cheatsUnlocked(int n) {
+		if (n == 0)
+			return pick("C\u00f3digo aceito: voc\u00ea j\u00e1 tinha todas essas cartas",
+				"Code accepted: you already had all those cards",
+				"C\u00f3digo aceptado: ya ten\u00edas todas esas cartas");
+		return pick("C\u00f3digo aceito: " + n + " cartas liberadas",
+			"Code accepted: " + n + " cards unlocked",
+			"C\u00f3digo aceptado: " + n + " cartas desbloqueadas");
+	}
+
+	public static String hintCheats() {
+		return pick("Enter confirma    Backspace apaga    Esc volta",
+			"Enter confirms    Backspace deletes    Esc back",
+			"Enter confirma    Backspace borra    Esc volver");
+	}
+
 	public static String menuSettings() {
 		return pick("Configura\u00e7\u00f5es", "Settings", "Ajustes");
 	}
@@ -623,14 +665,14 @@ public final class I18n {
 		if (copies <= 0)
 			return pick("Voc\u00ea ainda n\u00e3o tem " + cardName + " no Meu Deck.",
 				"You don't have " + cardName + " in My Deck yet.",
-				"A\u00fan no tienes " + cardName + " en Mi Mazo.");
+				"A\u00fan no tienes " + cardName + " en Mi mazo.");
 		if (copies == 1)
 			return pick("Voc\u00ea j\u00e1 tem 1 c\u00f3pia de " + cardName + " no Meu Deck.",
 				"You already have 1 copy of " + cardName + " in My Deck.",
-				"Ya tienes 1 copia de " + cardName + " en Mi Mazo.");
+				"Ya tienes 1 copia de " + cardName + " en Mi mazo.");
 		return pick("Voc\u00ea j\u00e1 tem " + copies + " c\u00f3pias de " + cardName + " no Meu Deck.",
 			"You already have " + copies + " copies of " + cardName + " in My Deck.",
-			"Ya tienes " + copies + " copias de " + cardName + " en Mi Mazo.");
+			"Ya tienes " + copies + " copias de " + cardName + " en Mi mazo.");
 	}
 
 	public static String hintHowTo() {

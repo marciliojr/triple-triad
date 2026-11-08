@@ -50,22 +50,22 @@ public class MemoryCardScreen extends Screen {
 	private static final int PAGES = (Profile.SLOTS + PER_PAGE - 1) / PER_PAGE;
 
 	/** Panel gradient top. */
-	private static final com.badlogic.gdx.graphics.Color PANEL_TOP = new com.badlogic.gdx.graphics.Color(0.50f, 0.50f, 0.54f, 1f);
+	static final com.badlogic.gdx.graphics.Color PANEL_TOP = new com.badlogic.gdx.graphics.Color(0.50f, 0.50f, 0.54f, 1f);
 
 	/** Panel gradient bottom. */
-	private static final com.badlogic.gdx.graphics.Color PANEL_BOTTOM = new com.badlogic.gdx.graphics.Color(0.24f, 0.24f, 0.27f, 1f);
+	static final com.badlogic.gdx.graphics.Color PANEL_BOTTOM = new com.badlogic.gdx.graphics.Color(0.24f, 0.24f, 0.27f, 1f);
 
 	/** Inner (location) panel top. */
-	private static final com.badlogic.gdx.graphics.Color INNER_TOP = new com.badlogic.gdx.graphics.Color(0.40f, 0.40f, 0.44f, 1f);
+	static final com.badlogic.gdx.graphics.Color INNER_TOP = new com.badlogic.gdx.graphics.Color(0.40f, 0.40f, 0.44f, 1f);
 
 	/** Inner (location) panel bottom. */
-	private static final com.badlogic.gdx.graphics.Color INNER_BOTTOM = new com.badlogic.gdx.graphics.Color(0.18f, 0.18f, 0.21f, 1f);
+	static final com.badlogic.gdx.graphics.Color INNER_BOTTOM = new com.badlogic.gdx.graphics.Color(0.18f, 0.18f, 0.21f, 1f);
 
 	/** Panel border. */
 	private static final Color BORDER = new Color(0.82f, 0.82f, 0.86f);
 
 	/** Box tag (INFO / HELP) color. */
-	private static final Color TAG = new Color(0.70f, 0.70f, 0.74f);
+	static final Color TAG = new Color(0.70f, 0.70f, 0.74f);
 
 	/** Plain text. */
 	private static final Color TEXT = Color.white;
@@ -299,7 +299,7 @@ public class MemoryCardScreen extends Screen {
 	/**
 	 * Gray vertical-gradient panel with a light border (PS1 window style).
 	 */
-	private static void drawPanel(Graphics g, float x, float y, float w, float h,
+	static void drawPanel(Graphics g, float x, float y, float w, float h,
 			com.badlogic.gdx.graphics.Color top, com.badlogic.gdx.graphics.Color bottom) {
 		ShapeRenderer sr = Gfx.shapes(ShapeType.Filled);
 		// y-down camera: (x, y) is the top-left corner

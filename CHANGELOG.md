@@ -14,6 +14,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 #### Added
 
+- Menu **Cheats**: uma linha de texto para digitar códigos (sem diferenciar maiúsculas). `cid` libera todas as cartas, `edea` as Guardian Forces (níveis 8-9), `balamb` os personagens (nível 10) e `monster` os monstros (níveis 1-7, incluindo os chefes dos níveis 6-7). Cada carta que falta entra uma vez no Meu Deck e o perfil é salvo; código errado mostra "Código inválido"
 - Abertura: ao abrir o jogo toca uma vez o vídeo `res/intro.mp4` (quadros em `res/intro/` + `res/intro.ogg`) antes do menu; S pula na hora e a dica "S para pular" aparece no rodapé. A música do menu só começa depois da abertura; se o vídeo falhar, vai direto pro menu
 - Save do Campeonato no estilo Memory Card do PS1 (tela Load/Cargar do FF8): cabeçalho "MEMORY CARD em uso: Slot 1" + Salvar/Carregar, caixa AJUDA, 15 blocos numerados em páginas de 3 com cursor de mão e setas, cartas da mão como retratos, Nv (vitórias), rodada, tempo de jogo, cartas e local (lugar do FF8 + partida). Bloco vazio mostra Livre/Vazio
 - Vários saves ao mesmo tempo: salvar num bloco (confirma ao sobrescrever), carregar e apagar (D ou Delete, com confirmação). O bloco guarda rodada, vitórias, mão, mão do adversário, cartas da run, regras ativas e tempo de jogo; carregar restaura regras e esse ponto
@@ -228,6 +229,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 #### Added
 
+- **Cheats** menu: one text line to type codes (case-insensitive). `cid` unlocks every card, `edea` the Guardian Forces (levels 8-9), `balamb` the characters (level 10) and `monster` the monsters (levels 1-7, bosses at 6-7 included). Each missing card is added once to My Deck and the profile is saved; a wrong code shows "Invalid code"
 - Opening: the game plays `res/intro.mp4` once (frames in `res/intro/` + `res/intro.ogg`) before the menu; S skips it right away and a "S to skip" hint shows at the bottom. Menu music only starts after the intro; if the video fails, the menu opens directly
 - PS1 Memory Card style Championship save (FF8 Load screen): "MEMORY CARD in use: Slot 1" header + Save/Load, HELP box, 15 numbered blocks in pages of 3 with hand cursor and arrows, hand cards as portraits, LV (wins), round, play time, cards and location (FF8 place + match). Empty blocks show Free/Empty
 - Several saves at once: save to a block (confirm on overwrite), load and delete (D or Delete, with confirmation). A block stores round, wins, hand, opponent hand, run cards, active rules and play time; loading restores the rules and that point
