@@ -197,8 +197,12 @@ public class VersusScreen extends Screen {
 			break;
 		case Input.KEY_R:
 			Random rnd = new Random();
-			while (hand.size() < HAND)
-				hand.add(cards.get(rnd.nextInt(cards.size())));
+			java.util.ArrayList<Integer> pool = new java.util.ArrayList<Integer>();
+			for (Integer id : cards)
+				if (!hand.contains(id) && !pool.contains(id))
+					pool.add(id);
+			while (hand.size() < HAND && !pool.isEmpty())
+				hand.add(pool.remove(rnd.nextInt(pool.size())));
 			AudioController.Effect.SELECT.play();
 			break;
 		case Input.KEY_ENTER:
@@ -256,6 +260,11 @@ public class VersusScreen extends Screen {
 	private void add(int id) {
 		if (hand.size() >= HAND) {
 			confirm();
+			return;
+		}
+		// no repeated card inside the same hand (the other player may reuse it)
+		if (hand.contains(Integer.valueOf(id))) {
+			AudioController.Effect.INVALID.play();
 			return;
 		}
 		hand.add(Integer.valueOf(id));
