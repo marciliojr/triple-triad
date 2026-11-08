@@ -148,7 +148,7 @@ public class SaveScreen extends Screen {
 		if (confirm)
 			Ui.drawYesNoConfirm(g, confirmTitle(), confirmChoice);
 		else {
-			Ui.drawCentered(small, I18n.hintSave(), height * 0.88f, Ui.HINT);
+			HintBar.draw(I18n.hintSave(), height * 0.88f);
 			if (notice != null && System.currentTimeMillis() < noticeUntil)
 				Ui.drawCentered(small, notice, height * 0.93f, Ui.TITLE);
 		}
@@ -285,6 +285,11 @@ public class SaveScreen extends Screen {
 			AudioController.Effect.INVALID.play();
 			return;
 		}
+		if (kind == KIND_CHAMPIONSHIP && profile.firstFreeSlot() < 0) {
+			showNotice(I18n.memoryCardFull());
+			AudioController.Effect.INVALID.play();
+			return;
+		}
 		pending = snap;
 		confirmChoice = 0;
 		confirm = true;
@@ -299,8 +304,6 @@ public class SaveScreen extends Screen {
 			AudioController.playCursor();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			cancelConfirm();
 			break;
 		case Input.KEY_Z:
@@ -382,7 +385,7 @@ public class SaveScreen extends Screen {
 		}
 		if (profile != null && profile.hasChampionshipSave())
 			return I18n.saveKindChampionship() + "  "
-				+ I18n.championshipRoundOf(profile.getRunRound());
+				+ I18n.championshipRoundOf(profile.getSlot(profile.latestSlot()).getRound());
 		return I18n.saveKindChampionship() + "  " + I18n.saveNone();
 	}
 

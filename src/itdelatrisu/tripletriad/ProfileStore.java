@@ -267,6 +267,7 @@ public class ProfileStore {
 		Profile profile = new Profile();
 		Map<Integer, String> names = new HashMap<Integer, String>();
 		Map<Integer, int[]> cards = new HashMap<Integer, int[]>();
+		ChampionshipSlot[] parsedSlots = new ChampionshipSlot[Profile.SLOTS];
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 				new FileInputStream(file), "utf-8"))) {
@@ -290,6 +291,24 @@ public class ProfileStore {
 					for (int i = 0; i < ids.length; i++) {
 						if (ids[i] > 0)
 							profile.addCard(ids[i]);
+					}
+					continue;
+				}
+				if (key.equals("AVATAR") || key.startsWith("STAT_")) {
+					int n;
+					try {
+						n = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						continue;
+					}
+					switch (key) {
+						case "AVATAR": profile.setAvatar(n); break;
+						case "STAT_QUICK_WINS": profile.setQuickWins(n); break;
+						case "STAT_QUICK_LOSSES": profile.setQuickLosses(n); break;
+						case "STAT_QUICK_DRAWS": profile.setQuickDraws(n); break;
+						case "STAT_CHAMP_MATCH_WINS": profile.setChampMatchWins(n); break;
+						case "STAT_CHAMP_MATCH_LOSSES": profile.setChampMatchLosses(n); break;
+						default: break;
 					}
 					continue;
 				}
@@ -336,6 +355,11 @@ public class ProfileStore {
 					continue;
 				}
 
+				if (key.startsWith("SLOT.")) {
+					readSlotKey(parsedSlots, key, value);
+					continue;
+				}
+
 				if (key.startsWith("DECK.") && key.endsWith(".NAME")) {
 					Integer deckId = parseDeckIndex(key);
 					if (deckId != null)
@@ -370,7 +394,57 @@ public class ProfileStore {
 				profile.getDecks().add(deck);
 		}
 
+		for (int i = 0; i < Profile.SLOTS; i++)
+			profile.setSlot(i, parsedSlots[i]);
+		profile.migrateLegacyRun();
 		return profile.isValid() ? profile : null;
+	}
+
+	/**
+	 * Parses one SLOT.N.FIELD key (N is 1-based) into the profile's save block.
+	 */
+	private static void readSlotKey(ChampionshipSlot[] slots, String key, String value) {
+		String[] parts = key.split("\\.");
+		if (parts.length != 3)
+			return;
+		int index;
+		try {
+			index = Integer.parseInt(parts[1]) - 1;
+		} catch (NumberFormatException e) {
+			return;
+		}
+		if (index < 0 || index >= Profile.SLOTS)
+			return;
+		ChampionshipSlot slot = slots[index];
+		if (slot == null) {
+			slot = new ChampionshipSlot();
+			slots[index] = slot;
+		}
+		String field = parts[2];
+		try {
+			if (field.equals("ROUND"))
+				slot.setRound(Integer.parseInt(value));
+			else if (field.equals("WINS"))
+				slot.setWins(Integer.parseInt(value));
+			else if (field.equals("HAND"))
+				slot.setHand(parseCardIds(value));
+			else if (field.equals("OPPONENT"))
+				slot.setOpponent(parseCardIds(value));
+			else if (field.equals("BAG")) {
+				int[] ids = parseCardIds(value);
+				ArrayList<Integer> bag = new ArrayList<Integer>();
+				for (int i = 0; i < ids.length; i++)
+					bag.add(Integer.valueOf(ids[i]));
+				slot.setBag(bag);
+			} else if (field.equals("RULES"))
+				slot.setRulesFromString(value);
+			else if (field.equals("PLAY_MS"))
+				slot.setPlayMillis(Long.parseLong(value));
+			else if (field.equals("SAVED_AT"))
+				slot.setSavedAt(Long.parseLong(value));
+		} catch (NumberFormatException e) {
+			// keep defaults
+		}
 	}
 
 	private static void saveToFile(File file, Profile profile) {
@@ -384,16 +458,40 @@ public class ProfileStore {
 			writer.newLine();
 			writer.write(String.format("CHAMPIONSHIP_WINS = %d", profile.getChampionshipWins()));
 			writer.newLine();
-			if (profile.hasChampionshipSave()) {
-				writer.write(String.format("RUN_ROUND = %d", profile.getRunRound()));
+			writer.write(String.format("AVATAR = %d", profile.getAvatar()));
+			writer.newLine();
+			writer.write(String.format("STAT_QUICK_WINS = %d", profile.getQuickWins()));
+			writer.newLine();
+			writer.write(String.format("STAT_QUICK_LOSSES = %d", profile.getQuickLosses()));
+			writer.newLine();
+			writer.write(String.format("STAT_QUICK_DRAWS = %d", profile.getQuickDraws()));
+			writer.newLine();
+			writer.write(String.format("STAT_CHAMP_MATCH_WINS = %d", profile.getChampMatchWins()));
+			writer.newLine();
+			writer.write(String.format("STAT_CHAMP_MATCH_LOSSES = %d", profile.getChampMatchLosses()));
+			writer.newLine();
+			for (int i = 0; i < Profile.SLOTS; i++) {
+				ChampionshipSlot slot = profile.getSlot(i);
+				if (slot == null)
+					continue;
+				String p = String.format("SLOT.%d.", i + 1);
+				writer.write(p + "ROUND = " + slot.getRound());
 				writer.newLine();
-				writer.write(String.format("RUN_WINS = %d", profile.getRunWins()));
+				writer.write(p + "WINS = " + slot.getWins());
 				writer.newLine();
-				writer.write(String.format("RUN_HAND = %s", formatCardIds(profile.getRunHand())));
+				writer.write(p + "HAND = " + formatCardIds(slot.getHand()));
 				writer.newLine();
-				writer.write(String.format("RUN_OPPONENT = %s", formatCardIds(profile.getRunOpponent())));
+				writer.write(p + "OPPONENT = " + formatCardIds(slot.getOpponent()));
 				writer.newLine();
-				writer.write(String.format("RUN_BAG = %s", formatIdList(profile.getRunBag())));
+				writer.write(p + "BAG = " + formatIdList(slot.getBag()));
+				writer.newLine();
+				if (slot.hasRules()) {
+					writer.write(p + "RULES = " + slot.rulesToString());
+					writer.newLine();
+				}
+				writer.write(p + "PLAY_MS = " + slot.getPlayMillis());
+				writer.newLine();
+				writer.write(p + "SAVED_AT = " + slot.getSavedAt());
 				writer.newLine();
 			}
 			writer.newLine();

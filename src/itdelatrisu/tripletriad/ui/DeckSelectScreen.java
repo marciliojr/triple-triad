@@ -176,7 +176,7 @@ public class DeckSelectScreen extends Screen {
 			hint = I18n.hintDeckRules();
 		else
 			hint = I18n.hintDeckList();
-		Ui.drawCentered(small, hint, height * 0.92f, Ui.HINT);
+		HintBar.draw(hint, height * 0.92f);
 	}
 
 	@Override
@@ -191,7 +191,7 @@ public class DeckSelectScreen extends Screen {
 			} else if (key == Input.KEY_RIGHT) {
 				miniCursor = (miniCursor + 1) % SavedDeck.SIZE;
 				AudioController.playCursor();
-			} else if (key == Input.KEY_DELETE || key == Input.KEY_X) {
+			} else if (key == Input.KEY_DELETE) {
 				previewOpen = false;
 				if (selected > 2)
 					deleteDeck(selected - 3);
@@ -247,7 +247,7 @@ public class DeckSelectScreen extends Screen {
 				playDeck(selected - 3);
 			}
 			break;
-		case Input.KEY_E:
+		case Input.KEY_T:
 			if (focus != FOCUS_DECKS || selected < 3) {
 				AudioController.Effect.INVALID.play();
 			} else {
@@ -256,7 +256,6 @@ public class DeckSelectScreen extends Screen {
 			}
 			break;
 		case Input.KEY_DELETE:
-		case Input.KEY_X:
 			if (focus != FOCUS_DECKS || selected < 3)
 				AudioController.Effect.INVALID.play();
 			else

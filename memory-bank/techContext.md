@@ -29,3 +29,7 @@ Textos: `I18n` / `Lang`. Fonte OpenSans com glifos PT-BR e ES.
 - Slick2D, LWJGL 2, JARs em `lib/` para o jogo, pasta `native/` antiga
 - Misturar libGDX com LWJGL 3 direto
 - Ant (`build.xml`) como build oficial
+
+- gdx-controllers 2.2.4 (`gdxControllersVersion` em `gradle.properties`) para joystick (Jamepad/SDL no desktop)
+- `resources/gamecontrollerdb.txt` (SDL_GameControllerDB) entra no jar; Jamepad lê `/gamecontrollerdb.txt` do classpath. Fallback Linux `/dev/input/js*` (eventos de 8 bytes) sem dependência nova
+- Fonte extra `tinyFont` (Options) para legendas densas

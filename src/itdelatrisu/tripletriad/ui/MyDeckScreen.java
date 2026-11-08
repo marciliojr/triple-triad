@@ -135,6 +135,7 @@ public class MyDeckScreen extends Screen {
 		} else if (!bag.isEmpty()) {
 			drawGrid(g, bag, view, height);
 			Ui.drawCursorCardPanel(g, game.getDeck(), cardIdAt(cursor), false);
+			Ui.drawPanelLabel(g, I18n.removeAllTitle(), Ui.panelActionY(), Ui.TITLE);
 		}
 
 		int previewBag = bagAt(previewIndex);
@@ -151,7 +152,7 @@ public class MyDeckScreen extends Screen {
 				hint = I18n.hintMyDeckPick();
 			else
 				hint = I18n.hintMyDeck();
-			Ui.drawCentered(small, hint, height * 0.93f, Ui.HINT);
+			HintBar.draw(hint, height * 0.93f);
 		}
 	}
 
@@ -178,7 +179,7 @@ public class MyDeckScreen extends Screen {
 			} else if (key == Input.KEY_ESCAPE || key == Input.KEY_C) {
 				previewIndex = -1;
 				AudioController.Effect.BACK.play();
-			} else if (key == Input.KEY_DELETE || key == Input.KEY_X || key == Input.KEY_BACK) {
+			} else if (key == Input.KEY_DELETE) {
 				if (mode == MODE_GALLERY)
 					beginDeleteConfirm();
 				else
@@ -242,13 +243,15 @@ public class MyDeckScreen extends Screen {
 		case Input.KEY_R:
 			if (mode == MODE_PICK)
 				fillRandom();
+			else if (!album().isEmpty()) {
+				AudioController.Effect.SELECT.play();
+				game.showRemoveCards();
+			}
 			break;
 		case Input.KEY_T:
 			cycleSort();
 			break;
 		case Input.KEY_DELETE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			if (mode == MODE_GALLERY)
 				beginDeleteConfirm();
 			else
@@ -285,6 +288,12 @@ public class MyDeckScreen extends Screen {
 				}
 				return;
 			}
+		}
+		if (mode == MODE_GALLERY && !album().isEmpty()
+				&& Ui.hitPanelLabel(I18n.removeAllTitle(), Ui.panelActionY(), x, y)) {
+			AudioController.Effect.SELECT.play();
+			game.showRemoveCards();
+			return;
 		}
 		if (Ui.hitCursorCard(x, y)) {
 			openPreview();
@@ -393,8 +402,6 @@ public class MyDeckScreen extends Screen {
 			AudioController.playCursor();
 			break;
 		case Input.KEY_ESCAPE:
-		case Input.KEY_X:
-		case Input.KEY_BACK:
 			clearDeleteConfirm();
 			AudioController.Effect.BACK.play();
 			break;

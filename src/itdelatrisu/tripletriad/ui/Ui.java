@@ -122,7 +122,7 @@ public final class Ui {
 			choice == 0 ? SELECTED : HINT);
 		drawCentered(Options.getSmallFont(), I18n.confirmLeaveYes(), height * 0.58f,
 			choice == 1 ? SELECTED : HINT);
-		drawCentered(Options.getSmallFont(), I18n.hintLeaveConfirm(), height * 0.78f, HINT);
+		HintBar.draw(I18n.hintLeaveConfirm(), height * 0.78f);
 	}
 
 	/**
@@ -447,5 +447,15 @@ public final class Ui {
 		float x = panelX + (panelW - size) / 2f;
 		float y = panelY + PANEL_PAD + CARD_FRAME;
 		return new float[] { x, y, size };
+	}
+
+	/**
+	 * Hit-test for a centered single line of small text.
+	 */
+	public static boolean hitPanelLabelCentered(String text, float y, int x, int mouseY) {
+		UnicodeFont small = Options.getSmallFont();
+		float w = small.getWidth(text);
+		float left = (Options.getWidth() - w) / 2f;
+		return x >= left && x <= left + w && mouseY >= y && mouseY <= y + small.getLineHeight();
 	}
 }

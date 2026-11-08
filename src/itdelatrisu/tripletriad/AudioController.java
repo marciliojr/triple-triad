@@ -98,6 +98,51 @@ public class AudioController {
 			bgm.pause();
 	}
 
+	/**
+	 * Pauses the BGM (e.g. while a video with its own audio plays).
+	 * Call {@link #applyMusic()} to resume.
+	 */
+	public static void pauseMusic() {
+		if (bgm != null)
+			bgm.pause();
+	}
+
+	/** Victory track (lazy), or null. */
+	private static Music victory;
+
+	/** Whether the victory track is playing. */
+	private static boolean victoryPlaying;
+
+	/**
+	 * Loops the victory track ({@code res/victory.ogg}) instead of the BGM.
+	 */
+	public static void playVictory() {
+		if (victoryPlaying || !Options.isMusicEnabled())
+			return;
+		try {
+			if (victory == null)
+				victory = new Music("victory.ogg");
+		} catch (SlickException e) {
+			Log.error("Failed to load victory music.", e);
+			return;
+		}
+		pauseMusic();
+		victory.loop();
+		victoryPlaying = true;
+	}
+
+	/**
+	 * Stops the victory track and resumes the BGM.
+	 */
+	public static void stopVictory() {
+		if (!victoryPlaying)
+			return;
+		victoryPlaying = false;
+		if (victory != null)
+			victory.stop();
+		applyMusic();
+	}
+
 	// This class should not be instantiated.
 	private AudioController() {}
 
@@ -105,9 +150,18 @@ public class AudioController {
 	 * Initializes sounds and starts the BGM track.
 	 */
 	public static void init() {
+		init(true);
+	}
+
+	/**
+	 * Initializes sounds; optionally holds the BGM (e.g. until the intro ends).
+	 * @param startMusic false to load the BGM without playing it
+	 */
+	public static void init(boolean startMusic) {
 		try {
 			bgm = new Music("bgm.ogg");
-			applyMusic();
+			if (startMusic)
+				applyMusic();
 			Effect.init();
 		} catch (SlickException e) {
 			Log.error("Failed to load audio.", e);

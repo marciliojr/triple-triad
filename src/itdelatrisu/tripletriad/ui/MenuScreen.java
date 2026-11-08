@@ -32,11 +32,11 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Main menu: Quick Game, Championship, My Deck, Save, how to play, settings.
+ * Main menu: Quick Game, Championship, My Deck, Save, how to play, settings, cheats.
  */
 public class MenuScreen extends Screen {
 	/** Number of menu entries. */
-	private static final int ITEM_COUNT = 6;
+	private static final int ITEM_COUNT = 9;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -69,8 +69,10 @@ public class MenuScreen extends Screen {
 		if (game.getProfile() != null && game.getProfile().isValid())
 			Ui.drawCentered(small, game.getProfile().getName(), height * 0.19f, Ui.HINT);
 
-		float startY = height * 0.26f;
-		float line = font.getLineHeight() * 1.12f;
+		float startY = height * 0.24f;
+		float line = lineStep();
+		if (font.getLineHeight() > line)
+			font = small;
 		for (int i = 0; i < ITEM_COUNT; i++) {
 			float y = startY + i * line;
 			boolean on = (i == selected);
@@ -87,7 +89,7 @@ public class MenuScreen extends Screen {
 			}
 		}
 
-		Ui.drawCentered(small, I18n.hintMenu(), height * 0.90f, Ui.HINT);
+		HintBar.draw(I18n.hintMenu(), height * 0.90f);
 	}
 
 	@Override
@@ -125,33 +127,42 @@ public class MenuScreen extends Screen {
 		activate(index);
 	}
 
+	/** Vertical step between entries (shrinks to fit 9 items). */
+	private static float lineStep() {
+		UnicodeFont font = Options.getFont();
+		return Math.min(font.getLineHeight() * 1.12f, (Options.getHeight() * 0.86f - Options.getHeight() * 0.24f) / ITEM_COUNT);
+	}
+
 	/**
 	 * Activates a menu entry.
 	 */
 	private void activate(int index) {
 		AudioController.Effect.SELECT.play();
-		if (index == 0)
-			game.showDeckSelect();
-		else if (index == 1)
-			game.showChampionship();
-		else if (index == 2)
-			game.showMyDeck();
-		else if (index == 3)
-			game.showSave();
-		else if (index == 4)
-			game.showHowToPlay();
-		else if (index == 5)
-			game.showSettings();
+		switch (index) {
+			case 0: game.showDeckSelect(); break;
+			case 1: game.showChampionship(); break;
+			case 2: game.showVersus(); break;
+			case 3: game.showMyDeck(); break;
+			case 4: game.showTrophies(); break;
+			case 5: game.showSave(); break;
+			case 6: game.showHowToPlay(); break;
+			case 7: game.showSettings(); break;
+			case 8: game.showCheats(); break;
+			default: break;
+		}
 	}
 
 	private String label(int index) {
 		switch (index) {
 			case 0: return I18n.menuQuick();
 			case 1: return I18n.menuChampionship();
-			case 2: return I18n.menuMyDeck();
-			case 3: return I18n.menuSave();
-			case 4: return I18n.menuHowTo();
-			case 5: return I18n.menuSettings();
+			case 2: return I18n.menuVersus();
+			case 3: return I18n.menuMyDeck();
+			case 4: return I18n.menuTrophies();
+			case 5: return I18n.menuSave();
+			case 6: return I18n.menuHowTo();
+			case 7: return I18n.menuSettings();
+			case 8: return I18n.menuCheats();
 			default: return "";
 		}
 	}
@@ -161,11 +172,11 @@ public class MenuScreen extends Screen {
 	 */
 	private int hitIndex(int y) {
 		UnicodeFont font = Options.getFont();
-		float startY = Options.getHeight() * 0.26f;
-		float line = font.getLineHeight() * 1.12f;
+		float startY = Options.getHeight() * 0.24f;
+		float line = lineStep();
 		for (int i = 0; i < ITEM_COUNT; i++) {
 			float top = startY + i * line;
-			if (y >= top && y < top + font.getLineHeight())
+			if (y >= top && y < top + Math.min(font.getLineHeight(), line))
 				return i;
 		}
 		return -1;
