@@ -168,12 +168,22 @@ public final class Controls {
 				}
 
 				@Override
+				public void connected(Controller controller) {
+					Log.warn("Controller connected: " + controller.getName());
+				}
+
+				@Override
+				public void disconnected(Controller controller) {
+					Log.warn("Controller disconnected: " + controller.getName());
+				}
+
+				@Override
 				public boolean axisMoved(Controller controller, int axisCode, float value) {
 					onGdxAxis(controller, axisCode, value);
 					return true;
 				}
 			});
-			Log.warn("Controllers: " + gdxCount() + " connected (SDL).");
+			Log.warn("Controllers: " + gdxCount() + " connected (SDL)" + (gdxCount() > 0 ? ": " + Controllers.getControllers().first().getName() : "") + ".");
 		} catch (Throwable t) {
 			Log.error("Gamepad support unavailable.", t);
 		}
@@ -434,6 +444,8 @@ public final class Controls {
 	}
 
 	private static void onButton(int source, ControllerMapping m, int button) {
+		if (lastPadInput == null)
+			Log.warn("First joystick button: #" + button + " (source " + source + (m == null ? ", generic" : "") + ")");
 		lastPadInput = buttonName(button, m) + "  (#" + button + ")";
 		lastPadTime = System.currentTimeMillis();
 		if (capture != null) {

@@ -42,6 +42,8 @@ distributions {
 	main {
 		contents {
 			from('res') { into 'res' }
+			// launcher icon used by ~/.local/share/applications/triple-triad.desktop (Icon=.../bin/card-back.png)
+			from('res/card-back.png') { into 'bin' }
 			from('cards') { into 'cards' }
 			from('LICENSE')
 			from('README.md')
