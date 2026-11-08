@@ -58,6 +58,9 @@ public class DeckBuilderScreen extends Screen {
 	/** True while typing a name to save. */
 	private boolean naming;
 
+	/** On-screen keyboard for the deck name (joystick). */
+	private final VirtualKeyboard vk = new VirtualKeyboard();
+
 	/** Deck name buffer. */
 	private final StringBuilder name = new StringBuilder();
 
@@ -160,7 +163,10 @@ public class DeckBuilderScreen extends Screen {
 			Ui.drawCentered(small, I18n.deckNamePrompt(), height * 0.42f, Ui.HINT);
 			String shown = name.length() == 0 ? "_" : name.toString() + "_";
 			Ui.drawCentered(font, shown, height * 0.48f, Ui.SELECTED);
-			Ui.drawCentered(small, I18n.hintNaming(), height * 0.56f, Ui.HINT);
+			if (vk.isActive())
+				vk.render(g, height * 0.63f, height * 0.99f);
+			else
+				Ui.drawCentered(small, I18n.hintNaming(), height * 0.56f, Ui.HINT);
 		} else if (previewIndex >= 0) {
 			Ui.drawCentered(small, I18n.hintCardPreview(), height * 0.92f, Ui.HINT);
 		} else {
@@ -317,6 +323,19 @@ public class DeckBuilderScreen extends Screen {
 	}
 
 	private void handleNaming(int key, char c) {
+		switch (vk.handle(key, c)) {
+		case VirtualKeyboard.PASS: break;
+		case VirtualKeyboard.CHAR: key = 0; c = vk.typed(); break;
+		case VirtualKeyboard.DELETE: key = Input.KEY_BACK; break;
+		case VirtualKeyboard.OK: key = Input.KEY_ENTER; break;
+		case VirtualKeyboard.CANCEL: key = Input.KEY_ESCAPE; break;
+		default: return;
+		}
+		if (key == 0 && Ui.isNameChar(c)) {
+			if (name.length() < MAX_NAME)
+				name.append(c);
+			return;
+		}
 		if (key == Input.KEY_ESCAPE) {
 			naming = false;
 			AudioController.Effect.BACK.play();
@@ -394,6 +413,7 @@ public class DeckBuilderScreen extends Screen {
 			return;
 		}
 		naming = true;
+		vk.autoOpen();
 		AudioController.Effect.SELECT.play();
 	}
 

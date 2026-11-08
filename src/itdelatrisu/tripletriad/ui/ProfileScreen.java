@@ -59,6 +59,9 @@ public class ProfileScreen extends Screen {
 	/** True if a MODE_CREATE was opened from the profile selection screen. */
 	private boolean fromSelect;
 
+	/** On-screen keyboard (joystick). */
+	private final VirtualKeyboard vk = new VirtualKeyboard();
+
 	/**
 	 * Constructor.
 	 * @param game the game
@@ -72,6 +75,7 @@ public class ProfileScreen extends Screen {
 		enterFirst();
 	}
 
+
 	/**
 	 * First-run create. Esc quits the game.
 	 */
@@ -79,6 +83,7 @@ public class ProfileScreen extends Screen {
 		mode = MODE_FIRST;
 		name.setLength(0);
 		avatar = 1;
+		vk.autoOpen();
 	}
 
 	/**
@@ -100,6 +105,7 @@ public class ProfileScreen extends Screen {
 		if (current != null)
 			name.append(current);
 		avatar = currentAvatar;
+		vk.autoOpen();
 	}
 
 	/**
@@ -118,6 +124,7 @@ public class ProfileScreen extends Screen {
 		name.setLength(0);
 		avatar = 1;
 		this.fromSelect = fromSelect;
+		vk.autoOpen();
 	}
 
 	/** @return the chosen avatar */
@@ -159,12 +166,37 @@ public class ProfileScreen extends Screen {
 			}
 		}
 
+		if (vk.isActive()) {
+			vk.render(g, height * 0.68f, height * 0.99f);
+			return;
+		}
 		Ui.drawCentered(small, mode == MODE_FIRST ? I18n.hintProfile() : I18n.hintProfileEdit(),
 			height * 0.82f, Ui.HINT);
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
+		boolean onScreen = vk.isActive();
+		switch (vk.handle(key, c)) {
+		case VirtualKeyboard.PASS: break;
+		case VirtualKeyboard.CHAR: key = 0; c = vk.typed(); break;
+		case VirtualKeyboard.DELETE: key = Input.KEY_BACK; break;
+		case VirtualKeyboard.OK: key = Input.KEY_ENTER; break;
+		case VirtualKeyboard.CANCEL: key = Input.KEY_ESCAPE; break;
+		default:
+			// Select cycles the avatar while the keyboard uses the D-pad
+			if (onScreen && itdelatrisu.tripletriad.Controls.is(key, itdelatrisu.tripletriad.Controls.Action.SELECT)) {
+				avatar = (avatar % itdelatrisu.tripletriad.Profile.AVATARS) + 1;
+				AudioController.playCursor();
+			}
+			return;
+		}
+		// typed text first, so a letter bound to an action still types
+		if (Ui.isNameChar(c) && c != ' ' || (c == ' ' && key == 0)) {
+			if (name.length() < MAX_NAME)
+				name.append(c);
+			return;
+		}
 		if (key == Input.KEY_ESCAPE) {
 			if (mode == MODE_FIRST)
 				return;

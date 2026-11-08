@@ -284,9 +284,9 @@ public final class I18n {
 	public static String vkOk() { return "OK"; }
 	public static String vkCancel() { return pick("CANCELAR", "CANCEL", "CANCELAR"); }
 	public static String hintVirtualKeyboard() {
-		return Controls.dyn(pick("Setas movem    Z/Enter tecla    Del apaga    Esc cancela",
-			"Arrows move    Z/Enter key    Del deletes    Esc cancels",
-			"Flechas mueven    Z/Enter tecla    Del borra    Esc cancela"));
+		return Controls.dyn(pick("Z tecla    Enter OK    Del apaga    Esc cancela    T avatar",
+			"Z key    Enter OK    Del deletes    Esc cancels    T avatar",
+			"Z tecla    Enter OK    Del borra    Esc cancela    T avatar"));
 	}
 
 	public static String hintControls() {

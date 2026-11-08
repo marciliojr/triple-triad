@@ -48,6 +48,9 @@ public class CheatsScreen extends Screen {
 	/** Typed code. */
 	private final StringBuilder code = new StringBuilder();
 
+	/** On-screen keyboard (joystick). */
+	private final VirtualKeyboard vk = new VirtualKeyboard();
+
 	/** Feedback line and whether it is a success. */
 	private String feedback;
 	private boolean feedbackOk;
@@ -64,6 +67,7 @@ public class CheatsScreen extends Screen {
 	public void enter() {
 		code.setLength(0);
 		feedback = null;
+		vk.autoOpen();
 	}
 
 	@Override
@@ -105,7 +109,10 @@ public class CheatsScreen extends Screen {
 		if (feedback != null)
 			Ui.drawCentered(small, feedback, inY + inH + line * 1.2f, feedbackOk ? Ui.TITLE : Ui.DISABLED);
 
-		Ui.drawCentered(small, I18n.hintCheats(), height * 0.90f, Ui.HINT);
+		if (vk.isActive())
+			vk.render(g, height * 0.56f, height * 0.97f);
+		else
+			Ui.drawCentered(small, I18n.hintCheats(), height * 0.90f, Ui.HINT);
 	}
 
 	private static void drawTagged(UnicodeFont small, String tag, String text, float x, float y, float h) {
@@ -117,6 +124,14 @@ public class CheatsScreen extends Screen {
 
 	@Override
 	public void keyPressed(int key, char c) {
+		switch (vk.handle(key, c)) {
+		case VirtualKeyboard.PASS: break;
+		case VirtualKeyboard.CHAR: key = 0; c = Character.toLowerCase(vk.typed()); break;
+		case VirtualKeyboard.DELETE: key = Input.KEY_BACK; break;
+		case VirtualKeyboard.OK: key = Input.KEY_ENTER; break;
+		case VirtualKeyboard.CANCEL: key = Input.KEY_ESCAPE; break;
+		default: return;
+		}
 		switch (key) {
 		case Input.KEY_ESCAPE:
 			AudioController.Effect.BACK.play();
