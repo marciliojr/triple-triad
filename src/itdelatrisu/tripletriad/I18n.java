@@ -190,7 +190,7 @@ public final class I18n {
 	}
 
 	public static String versusBackToMenu() {
-		return pick("Z/Enter volta ao menu", "Z/Enter returns to the menu", "Z/Enter vuelve al men\u00fa");
+		return Controls.dyn(pick("Z/Enter volta ao menu", "Z/Enter returns to the menu", "Z/Enter vuelve al men\u00fa"));
 	}
 
 	// --- controls
@@ -224,8 +224,8 @@ public final class I18n {
 			case SKIP: return pick("Pular intro", "Skip intro", "Saltar intro");
 			case DELETE: return pick("Remover / Apagar", "Remove / Delete", "Quitar / Borrar");
 			case ZOOM: return pick("Zoom (ampliar)", "Zoom (enlarge)", "Zoom (ampliar)");
-			case PAGE_LEFT: return pick("P\u00e1gina \u2190", "Page \u2190", "P\u00e1gina \u2190");
-			case PAGE_RIGHT: return pick("P\u00e1gina \u2192", "Page \u2192", "P\u00e1gina \u2192");
+			case PAGE_LEFT: return pick("P\u00e1gina esquerda", "Page left", "P\u00e1gina izquierda");
+			case PAGE_RIGHT: return pick("P\u00e1gina direita", "Page right", "P\u00e1gina derecha");
 			case RANDOM: return pick("Aleat\u00f3rio", "Random", "Aleatorio");
 			case SAVE: return pick("Salvar", "Save", "Guardar");
 			case REMATCH: return pick("Revanche", "Rematch", "Revancha");
@@ -494,9 +494,9 @@ public final class I18n {
 	}
 
 	public static String championshipPackHint() {
-		return pick("Cinco cartas aleat\u00f3rias. C amplia. Z/Enter inicia a luta.",
+		return Controls.dyn(pick("Cinco cartas aleat\u00f3rias. C amplia. Z/Enter inicia a luta.",
 			"Five random cards. C enlarges. Z/Enter starts the match.",
-			"Cinco cartas aleatorias. C amplia. Z/Enter inicia el combate.");
+			"Cinco cartas aleatorias. C amplia. Z/Enter inicia el combate."));
 	}
 
 	public static String championshipPickTitle() {

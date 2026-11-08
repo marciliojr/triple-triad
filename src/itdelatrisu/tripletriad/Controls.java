@@ -62,9 +62,6 @@ public final class Controls {
 	/** Raw button of each role on a generic (xpad-style) joystick, -1 = hat / none. */
 	private static final int[] GENERIC_BUTTON = { 0, 1, 2, 3, 4, 5, 6, 7, 9, 10, -1, -1, -1, -1 };
 
-	/** Display names of the roles. */
-	private static final String[] ROLE_NAME = { "A", "B", "X", "Y", "L1", "R1", "SELECT", "START", "L3", "R3",
-		"\u2191", "\u2193", "\u2190", "\u2192" };
 
 	/** Remappable actions. */
 	public enum Action {
@@ -286,10 +283,10 @@ public final class Controls {
 			case Keys.BACKSPACE: return "Bksp";
 			case Keys.PAGE_UP: return "PgUp";
 			case Keys.PAGE_DOWN: return "PgDn";
-			case Keys.UP: return "\u2191";
-			case Keys.DOWN: return "\u2193";
-			case Keys.LEFT: return "\u2190";
-			case Keys.RIGHT: return "\u2192";
+			case Keys.UP: return I18n.controlAction(Action.UP);
+			case Keys.DOWN: return I18n.controlAction(Action.DOWN);
+			case Keys.LEFT: return I18n.controlAction(Action.LEFT);
+			case Keys.RIGHT: return I18n.controlAction(Action.RIGHT);
 			case Keys.SPACE: return I18n.keySpace();
 			case 0: return "-";
 			default:
@@ -306,7 +303,7 @@ public final class Controls {
 			return buttonName(b, m);
 		if (b == PAD_NONE || a.role == P_NONE)
 			return "-";
-		return ROLE_NAME[a.role]; // D-pad / hat
+		return dpadName(a.role); // D-pad / hat
 	}
 
 	/** @return "[key]" or "[key]/[pad]" with the current bindings */
@@ -321,7 +318,7 @@ public final class Controls {
 	}
 
 	private static final Pattern TOKENS = Pattern.compile(
-		"(?<![\\w/\\[\\-])(Esq/Dir(?= p)|Left/Right(?= p)|Izq/Der(?= p)|Z/Enter|X/Del|Esc/C|Esc|Enter|Backspace|Del|F5|F1|Z|X|C|R|T|S|D|E)(?![\\w/\\]\\-])");
+		"(?<![\\w/\\[\\-])(Esq/Dir(?= p)|Left/Right(?= p)|Izq/Der(?= p)|Z/Enter|X/Del|Esc/C|Esc|Enter|Backspace|Del|F5|F1|Z|X|C|R|T|S|D|E)(?![\\w/\\]\\-])", Pattern.UNICODE_CHARACTER_CLASS);
 
 	/**
 	 * Replaces the key names of a hint ("Z/Enter", "Esc", "C"...) with the
@@ -379,12 +376,17 @@ public final class Controls {
 			if (b == m.buttonR2) return "R2";
 			if (b == m.buttonLeftStick) return "L3";
 			if (b == m.buttonRightStick) return "R3";
-			if (b == m.buttonDpadUp) return "\u2191";
-			if (b == m.buttonDpadDown) return "\u2193";
-			if (b == m.buttonDpadLeft) return "\u2190";
-			if (b == m.buttonDpadRight) return "\u2192";
+			if (b == m.buttonDpadUp) return dpadName(P_UP);
+			if (b == m.buttonDpadDown) return dpadName(P_DOWN);
+			if (b == m.buttonDpadLeft) return dpadName(P_LEFT);
+			if (b == m.buttonDpadRight) return dpadName(P_RIGHT);
 		}
 		return I18n.padButton(b + 1);
+	}
+
+	private static String dpadName(int role) {
+		Action a = (role == P_UP) ? Action.UP : (role == P_DOWN) ? Action.DOWN : (role == P_LEFT) ? Action.LEFT : Action.RIGHT;
+		return "D-pad " + I18n.controlAction(a);
 	}
 
 	private static int roleButton(int role, ControllerMapping m) {
