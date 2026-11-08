@@ -294,6 +294,24 @@ public class ProfileStore {
 					}
 					continue;
 				}
+				if (key.equals("AVATAR") || key.startsWith("STAT_")) {
+					int n;
+					try {
+						n = Integer.parseInt(value);
+					} catch (NumberFormatException e) {
+						continue;
+					}
+					switch (key) {
+						case "AVATAR": profile.setAvatar(n); break;
+						case "STAT_QUICK_WINS": profile.setQuickWins(n); break;
+						case "STAT_QUICK_LOSSES": profile.setQuickLosses(n); break;
+						case "STAT_QUICK_DRAWS": profile.setQuickDraws(n); break;
+						case "STAT_CHAMP_MATCH_WINS": profile.setChampMatchWins(n); break;
+						case "STAT_CHAMP_MATCH_LOSSES": profile.setChampMatchLosses(n); break;
+						default: break;
+					}
+					continue;
+				}
 				if (key.equals("CHAMPIONSHIP_WINS")) {
 					try {
 						profile.setChampionshipWins(Integer.parseInt(value));
@@ -439,6 +457,18 @@ public class ProfileStore {
 			writer.write(String.format("COLLECTION = %s", formatCollection(profile)));
 			writer.newLine();
 			writer.write(String.format("CHAMPIONSHIP_WINS = %d", profile.getChampionshipWins()));
+			writer.newLine();
+			writer.write(String.format("AVATAR = %d", profile.getAvatar()));
+			writer.newLine();
+			writer.write(String.format("STAT_QUICK_WINS = %d", profile.getQuickWins()));
+			writer.newLine();
+			writer.write(String.format("STAT_QUICK_LOSSES = %d", profile.getQuickLosses()));
+			writer.newLine();
+			writer.write(String.format("STAT_QUICK_DRAWS = %d", profile.getQuickDraws()));
+			writer.newLine();
+			writer.write(String.format("STAT_CHAMP_MATCH_WINS = %d", profile.getChampMatchWins()));
+			writer.newLine();
+			writer.write(String.format("STAT_CHAMP_MATCH_LOSSES = %d", profile.getChampMatchLosses()));
 			writer.newLine();
 			for (int i = 0; i < Profile.SLOTS; i++) {
 				ChampionshipSlot slot = profile.getSlot(i);

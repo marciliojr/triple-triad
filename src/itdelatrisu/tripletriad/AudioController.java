@@ -107,6 +107,42 @@ public class AudioController {
 			bgm.pause();
 	}
 
+	/** Victory track (lazy), or null. */
+	private static Music victory;
+
+	/** Whether the victory track is playing. */
+	private static boolean victoryPlaying;
+
+	/**
+	 * Loops the victory track ({@code res/victory.ogg}) instead of the BGM.
+	 */
+	public static void playVictory() {
+		if (victoryPlaying || !Options.isMusicEnabled())
+			return;
+		try {
+			if (victory == null)
+				victory = new Music("victory.ogg");
+		} catch (SlickException e) {
+			Log.error("Failed to load victory music.", e);
+			return;
+		}
+		pauseMusic();
+		victory.loop();
+		victoryPlaying = true;
+	}
+
+	/**
+	 * Stops the victory track and resumes the BGM.
+	 */
+	public static void stopVictory() {
+		if (!victoryPlaying)
+			return;
+		victoryPlaying = false;
+		if (victory != null)
+			victory.stop();
+		applyMusic();
+	}
+
 	// This class should not be instantiated.
 	private AudioController() {}
 

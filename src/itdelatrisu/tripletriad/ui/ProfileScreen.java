@@ -53,6 +53,12 @@ public class ProfileScreen extends Screen {
 	/** Current mode. */
 	private int mode = MODE_FIRST;
 
+	/** Chosen avatar [1, 8]. */
+	private int avatar = 1;
+
+	/** True if a MODE_CREATE was opened from the profile selection screen. */
+	private boolean fromSelect;
+
 	/**
 	 * Constructor.
 	 * @param game the game
@@ -72,6 +78,7 @@ public class ProfileScreen extends Screen {
 	public void enterFirst() {
 		mode = MODE_FIRST;
 		name.setLength(0);
+		avatar = 1;
 	}
 
 	/**
@@ -79,19 +86,42 @@ public class ProfileScreen extends Screen {
 	 * @param current the current name
 	 */
 	public void enterRename(String current) {
+		enterRename(current, 1);
+	}
+
+	/**
+	 * Edit name and avatar of the active profile.
+	 * @param current the current name
+	 * @param currentAvatar the current avatar
+	 */
+	public void enterRename(String current, int currentAvatar) {
 		mode = MODE_RENAME;
 		name.setLength(0);
 		if (current != null)
 			name.append(current);
+		avatar = currentAvatar;
 	}
 
 	/**
 	 * Create an extra profile. Esc returns to the profile list.
 	 */
 	public void enterCreate() {
+		enterCreate(false);
+	}
+
+	/**
+	 * Create an extra profile.
+	 * @param fromSelect true to return to the profile selection on Esc
+	 */
+	public void enterCreate(boolean fromSelect) {
 		mode = MODE_CREATE;
 		name.setLength(0);
+		avatar = 1;
+		this.fromSelect = fromSelect;
 	}
+
+	/** @return the chosen avatar */
+	public int getAvatar() { return avatar; }
 
 	/**
 	 * True if Esc should exit the application.
@@ -108,12 +138,26 @@ public class ProfileScreen extends Screen {
 		UnicodeFont small = Options.getSmallFont();
 		int height = container.getHeight();
 
-		Ui.drawCentered(font, "TRIPLE TRIAD", height * 0.18f, Ui.TITLE);
-		Ui.drawCentered(small, prompt(), height * 0.32f, Ui.HINT);
-		Ui.drawCentered(small, I18n.profileName(), height * 0.46f, Ui.HINT);
+		Ui.drawCentered(font, "TRIPLE TRIAD", height * 0.08f, Ui.TITLE);
+		Ui.drawCentered(small, prompt(), height * 0.18f, Ui.HINT);
+		Ui.drawCentered(small, I18n.profileName(), height * 0.26f, Ui.HINT);
 
 		String shown = name.length() == 0 ? "_" : name.toString() + "_";
-		Ui.drawCentered(font, shown, height * 0.52f, Ui.SELECTED);
+		Ui.drawCentered(font, shown, height * 0.31f, Ui.SELECTED);
+
+		Ui.drawCentered(small, I18n.profileAvatar(), height * 0.44f, Ui.HINT);
+		float[] box = avatarBox(0);
+		for (int i = 0; i < itdelatrisu.tripletriad.Profile.AVATARS; i++) {
+			box = avatarBox(i);
+			boolean on = (i + 1 == avatar);
+			if (on)
+				Ps1.panel(g, box[0] - 4, box[1] - 4, box[2] + 8, box[3] + 8);
+			Avatars.draw(i + 1, box[0], box[1], box[2], box[3]);
+			if (!on) {
+				g.setColor(new itdelatrisu.tripletriad.gfx.Color(0f, 0f, 0f, 0.45f));
+				g.fillRect(box[0], box[1], box[2], box[3]);
+			}
+		}
 
 		Ui.drawCentered(small, mode == MODE_FIRST ? I18n.hintProfile() : I18n.hintProfileEdit(),
 			height * 0.82f, Ui.HINT);
@@ -127,6 +171,8 @@ public class ProfileScreen extends Screen {
 			AudioController.Effect.BACK.play();
 			if (mode == MODE_RENAME)
 				game.showSettings();
+			else if (fromSelect)
+				game.showProfileSelect();
 			else
 				game.showProfiles();
 			return;
@@ -151,6 +197,12 @@ public class ProfileScreen extends Screen {
 			AudioController.Effect.SELECT.play();
 			return;
 		}
+		if (key == Input.KEY_LEFT || key == Input.KEY_RIGHT) {
+			int n = itdelatrisu.tripletriad.Profile.AVATARS;
+			avatar = (key == Input.KEY_LEFT) ? ((avatar + n - 2) % n) + 1 : (avatar % n) + 1;
+			AudioController.playCursor();
+			return;
+		}
 		if (key == Input.KEY_BACK && name.length() > 0) {
 			name.deleteCharAt(name.length() - 1);
 			AudioController.Effect.BACK.play();
@@ -158,6 +210,33 @@ public class ProfileScreen extends Screen {
 		}
 		if (Ui.isNameChar(c) && name.length() < MAX_NAME) {
 			name.append(c);
+		}
+	}
+
+	/** @return x, y, w, h of avatar i (0-based) */
+	private static float[] avatarBox(int i) {
+		int n = itdelatrisu.tripletriad.Profile.AVATARS;
+		float w = Options.getWidth() * 0.085f;
+		float h = w * 1.25f;
+		float gap = w * 0.18f;
+		float total = n * w + (n - 1) * gap;
+		float x0 = (Options.getWidth() - total) / 2f;
+		return new float[] { x0 + i * (w + gap), Options.getHeight() * 0.50f, w, h };
+	}
+
+	@Override
+	public void mousePressed(int button, int x, int y) {
+		if (button != Input.MOUSE_LEFT_BUTTON)
+			return;
+		for (int i = 0; i < itdelatrisu.tripletriad.Profile.AVATARS; i++) {
+			float[] b = avatarBox(i);
+			if (x >= b[0] && x < b[0] + b[2] && y >= b[1] && y < b[1] + b[3]) {
+				if (avatar != i + 1) {
+					avatar = i + 1;
+					AudioController.playCursor();
+				}
+				return;
+			}
 		}
 	}
 

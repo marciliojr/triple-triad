@@ -448,4 +448,14 @@ public final class Ui {
 		float y = panelY + PANEL_PAD + CARD_FRAME;
 		return new float[] { x, y, size };
 	}
+
+	/**
+	 * Hit-test for a centered single line of small text.
+	 */
+	public static boolean hitPanelLabelCentered(String text, float y, int x, int mouseY) {
+		UnicodeFont small = Options.getSmallFont();
+		float w = small.getWidth(text);
+		float left = (Options.getWidth() - w) / 2f;
+		return x >= left && x <= left + w && mouseY >= y && mouseY <= y + small.getLineHeight();
+	}
 }

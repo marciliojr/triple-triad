@@ -124,6 +124,7 @@ public class ChampionshipScreen extends Screen {
 
 	@Override
 	public void enter() {
+		AudioController.stopVictory();
 		mode = MODE_LOBBY;
 		focus = FOCUS_INFO;
 		lobbyIndex = LOBBY_NEW;
@@ -162,6 +163,7 @@ public class ChampionshipScreen extends Screen {
 	 * @param preselect card IDs to mark if still in the collection
 	 */
 	public void showPick(int[] preselect) {
+		AudioController.stopVictory();
 		mode = MODE_PICK;
 		selected.clear();
 		cursor = 0;
@@ -180,6 +182,7 @@ public class ChampionshipScreen extends Screen {
 		shownIds = (ids != null) ? ids.clone() : new int[0];
 		tradeIndex = 0;
 		previewOpen = false;
+		AudioController.playVictory();
 	}
 
 	/**
@@ -187,6 +190,7 @@ public class ChampionshipScreen extends Screen {
 	 * @param cardId the stolen ID
 	 */
 	public void showTradeLose(int cardId) {
+		AudioController.stopVictory();
 		mode = MODE_TRADE_LOSE;
 		stolenId = cardId;
 		previewOpen = false;
@@ -196,6 +200,7 @@ public class ChampionshipScreen extends Screen {
 	 * Championship victory.
 	 */
 	public void showWon() {
+		AudioController.stopVictory();
 		mode = MODE_WON;
 		startEndgameVideo();
 	}
@@ -245,6 +250,7 @@ public class ChampionshipScreen extends Screen {
 	 * Championship defeat.
 	 */
 	public void showLost() {
+		AudioController.stopVictory();
 		mode = MODE_LOST;
 	}
 
@@ -361,6 +367,8 @@ public class ChampionshipScreen extends Screen {
 		}
 		if (mode == MODE_TRADE_WIN) {
 			int hit = hitShownCard(x, y);
+			if (hit < 0 && Ui.hitPanelLabelCentered(I18n.championshipSkipCard(), Options.getHeight() * 0.79f, x, y))
+				hit = shownIds.length;
 			if (hit < 0)
 				return;
 			if (hit != tradeIndex) {
@@ -392,7 +400,7 @@ public class ChampionshipScreen extends Screen {
 				cursor = Math.max(0, cursor - cols);
 		} else if (mode == MODE_TRADE_WIN && shownIds.length > 0) {
 			if (change < 0)
-				tradeIndex = Math.min(shownIds.length - 1, tradeIndex + 1);
+				tradeIndex = Math.min(shownIds.length, tradeIndex + 1);
 			else if (change > 0)
 				tradeIndex = Math.max(0, tradeIndex - 1);
 		} else if (mode == MODE_LOBBY && focus == FOCUS_RULES) {
@@ -544,6 +552,9 @@ public class ChampionshipScreen extends Screen {
 		Ui.drawCentered(Options.getSmallFont(), I18n.championshipTradeWin(), height * 0.16f, Ui.HINT);
 		drawShownRow(g, height * 0.36f);
 		drawOwnedDetail(height);
+		boolean skipOn = (tradeIndex == shownIds.length);
+		Ui.drawCentered(Options.getSmallFont(), (skipOn ? "> " : "") + I18n.championshipSkipCard(),
+			height * 0.79f, skipOn ? Ui.TITLE : Ui.HINT);
 		if (previewOpen && tradeIndex >= 0 && tradeIndex < shownIds.length)
 			Ui.drawCardPreview(g, game.getDeck(), shownIds[tradeIndex]);
 		Ui.drawCentered(Options.getSmallFont(),
@@ -854,8 +865,20 @@ public class ChampionshipScreen extends Screen {
 				AudioController.playCursor();
 			}
 			break;
+		case Input.KEY_DOWN:
+			if (tradeIndex != shownIds.length) {
+				tradeIndex = shownIds.length;
+				AudioController.playCursor();
+			}
+			break;
+		case Input.KEY_UP:
+			if (tradeIndex == shownIds.length && shownIds.length > 0) {
+				tradeIndex = 0;
+				AudioController.playCursor();
+			}
+			break;
 		case Input.KEY_C:
-			if (shownIds.length > 0) {
+			if (shownIds.length > 0 && tradeIndex < shownIds.length) {
 				previewOpen = true;
 				AudioController.Effect.SELECT.play();
 			}
@@ -973,6 +996,11 @@ public class ChampionshipScreen extends Screen {
 	}
 
 	private void takeTrade() {
+		if (tradeIndex == shownIds.length) {
+			AudioController.Effect.SELECT.play();
+			game.championshipCardTaken(0);
+			return;
+		}
 		if (tradeIndex < 0 || tradeIndex >= shownIds.length) {
 			AudioController.Effect.INVALID.play();
 			return;

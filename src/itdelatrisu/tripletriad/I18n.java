@@ -33,6 +33,206 @@ public final class I18n {
 		return pick("Como - Jogar", "How to Play", "C\u00f3mo jugar");
 	}
 
+	public static String menuVersus() {
+		return pick("Versus", "Versus", "Versus");
+	}
+
+	public static String menuTrophies() {
+		return pick("Trof\u00e9us", "Trophies", "Trofeos");
+	}
+
+	// --- remove all cards
+	public static String removeAllTitle() {
+		return pick("Remover todas as cartas", "Remove all cards", "Quitar todas las cartas");
+	}
+
+	public static String removeAllInfo() {
+		return pick("Meu Deck", "My Deck", "Mi mazo");
+	}
+
+	public static String removeAllHelp() {
+		return pick("Escolha o que remover do Meu Deck", "Choose what to remove from My Deck", "Elige qu\u00e9 quitar de Mi mazo");
+	}
+
+	public static String removeCategory(int i) {
+		switch (i) {
+			case 1: return pick("Monstros (n\u00edveis 1-5)", "Monsters (levels 1-5)", "Monstruos (niveles 1-5)");
+			case 2: return pick("Chefes (n\u00edveis 6-7)", "Bosses (levels 6-7)", "Jefes (niveles 6-7)");
+			case 3: return pick("Guardian Forces (n\u00edveis 8-9)", "Guardian Forces (levels 8-9)", "Guardian Forces (niveles 8-9)");
+			case 4: return pick("Personagens (n\u00edvel 10)", "Characters (level 10)", "Personajes (nivel 10)");
+			default: return pick("Todas as cartas", "All cards", "Todas las cartas");
+		}
+	}
+
+	public static String removeAllConfirm(String category, int n) {
+		return pick("Remover " + n + " cartas: " + category + "?",
+			"Remove " + n + " cards: " + category + "?",
+			"\u00bfQuitar " + n + " cartas: " + category + "?");
+	}
+
+	public static String removeAllDone(int n) {
+		return pick(n + " cartas removidas.", n + " cards removed.", n + " cartas quitadas.");
+	}
+
+	public static String hintRemoveAll() {
+		return pick("Cima/baixo escolhe    Z/Enter remove    Esc volta",
+			"Up/down selects    Z/Enter removes    Esc back",
+			"Arriba/abajo elige    Z/Enter quita    Esc volver");
+	}
+
+	// --- profiles
+	public static String profileAvatar() {
+		return pick("Escolha o rosto", "Choose a face", "Elige un rostro");
+	}
+
+	public static String profileSelectTitle() {
+		return pick("Perfil", "Profile", "Perfil");
+	}
+
+	public static String profileSelectHelp() {
+		return pick("Escolha o perfil para jogar", "Choose the profile to play", "Elige el perfil para jugar");
+	}
+
+	public static String profileSelectNew() {
+		return pick("Criar perfil novo", "Create new profile", "Crear perfil nuevo");
+	}
+
+	public static String profileSelectActive() {
+		return pick("\u00daltimo usado", "Last used", "\u00daltimo usado");
+	}
+
+	public static String hintProfileSelect() {
+		return pick("Cima/baixo escolhe    Esq/Dir p\u00e1gina    Z/Enter confirma    Esc sai",
+			"Up/down selects    Left/Right page    Z/Enter confirms    Esc quits",
+			"Arriba/abajo elige    Izq/Der p\u00e1gina    Z/Enter confirma    Esc sale");
+	}
+
+	// --- trophies
+	public static String trophiesHelp() {
+		return pick("Contadores deste perfil (Versus n\u00e3o conta)", "This profile's counters (Versus does not count)", "Contadores de este perfil (Versus no cuenta)");
+	}
+
+	public static String trophyCups() {
+		return pick("Campeonatos vencidos", "Championships won", "Campeonatos ganados");
+	}
+
+	public static String trophyChampMatches() {
+		return pick("Partidas do campeonato (V / D)", "Championship matches (W / L)", "Partidas del campeonato (V / D)");
+	}
+
+	public static String trophyQuickWins() {
+		return pick("Jogo R\u00e1pido: vit\u00f3rias", "Quick Game: wins", "Partida r\u00e1pida: victorias");
+	}
+
+	public static String trophyQuickLosses() {
+		return pick("Jogo R\u00e1pido: derrotas", "Quick Game: losses", "Partida r\u00e1pida: derrotas");
+	}
+
+	public static String trophyQuickDraws() {
+		return pick("Jogo R\u00e1pido: empates", "Quick Game: draws", "Partida r\u00e1pida: empates");
+	}
+
+	public static String trophyQuickPlayed() {
+		return pick("Jogo R\u00e1pido: jogadas", "Quick Game: played", "Partida r\u00e1pida: jugadas");
+	}
+
+	public static String trophyCards() {
+		return pick("Cartas no Meu Deck", "Cards in My Deck", "Cartas en Mi mazo");
+	}
+
+	public static String trophyQuickShort(int n) {
+		return pick(n + " vit\u00f3rias r\u00e1pidas", n + " quick wins", n + " victorias r\u00e1pidas");
+	}
+
+	// --- versus
+	public static String versusPlayerA() {
+		return pick("Jogador A", "Player A", "Jugador A");
+	}
+
+	public static String versusPlayerB() {
+		return pick("Jogador B", "Player B", "Jugador B");
+	}
+
+	public static String versusChoose(int n) {
+		return pick("escolha 5 cartas (" + n + "/5)", "choose 5 cards (" + n + "/5)", "elige 5 cartas (" + n + "/5)");
+	}
+
+	public static String versusHelp() {
+		return pick("2 jogadores, regra Open. Nada \u00e9 ganho, perdido ou salvo.",
+			"2 players, Open rule. Nothing is won, lost or saved.",
+			"2 jugadores, regla Open. Nada se gana, pierde ni guarda.");
+	}
+
+	public static String versusNoCards() {
+		return pick("Meu Deck est\u00e1 vazio.", "My Deck is empty.", "Mi mazo est\u00e1 vac\u00edo.");
+	}
+
+	public static String hintVersusPick() {
+		return pick("Z adiciona    X tira    R aleat\u00f3rio    Enter confirma    Esc menu",
+			"Z adds    X removes    R random    Enter confirms    Esc menu",
+			"Z a\u00f1ade    X quita    R aleatorio    Enter confirma    Esc men\u00fa");
+	}
+
+	public static String versusTurn(boolean playerA) {
+		return pick("Vez do " + (playerA ? "Jogador A" : "Jogador B"),
+			(playerA ? "Player A" : "Player B") + "'s turn",
+			"Turno del " + (playerA ? "Jugador A" : "Jugador B"));
+	}
+
+	public static String versusWinner(boolean playerA) {
+		return pick((playerA ? "Jogador A" : "Jogador B") + " venceu!",
+			(playerA ? "Player A" : "Player B") + " wins!",
+			"\u00a1" + (playerA ? "Jugador A" : "Jugador B") + " gana!");
+	}
+
+	public static String versusDraw() {
+		return pick("Empate!", "Draw!", "\u00a1Empate!");
+	}
+
+	public static String versusBackToMenu() {
+		return pick("Z/Enter volta ao menu", "Z/Enter returns to the menu", "Z/Enter vuelve al men\u00fa");
+	}
+
+	// --- controls
+	public static String settingsControls() {
+		return pick("Controles", "Controls", "Controles");
+	}
+
+	public static String controllersCount(int n) {
+		return pick(n + " joystick(s) conectado(s)", n + " joystick(s) connected", n + " joystick(s) conectado(s)");
+	}
+
+	public static String controlsHelp() {
+		return pick("Z/Enter: tecla    Esq/Dir: coluna teclado/joystick", "Z/Enter: set    Left/Right: keyboard/joystick column", "Z/Enter: asignar    Izq/Der: columna teclado/joystick");
+	}
+
+	public static String controlsPress(boolean pad) {
+		return pad ? pick("Pressione o bot\u00e3o do joystick...", "Press the joystick button...", "Pulsa el bot\u00f3n del joystick...")
+			: pick("Pressione a tecla... (Esc cancela)", "Press the key... (Esc cancels)", "Pulsa la tecla... (Esc cancela)");
+	}
+
+	public static String controlsReset() {
+		return pick("Restaurar padr\u00e3o", "Restore defaults", "Restaurar valores");
+	}
+
+	public static String controlAction(Controls.Action a) {
+		switch (a) {
+			case CONFIRM: return pick("Confirmar", "Confirm", "Confirmar");
+			case CANCEL: return pick("Cancelar", "Cancel", "Cancelar");
+			case MENU: return pick("Menu / Iniciar", "Menu / Start", "Men\u00fa / Iniciar");
+			case DELETE: return pick("Apagar", "Delete", "Borrar");
+			case SKIP: return pick("Pular", "Skip", "Saltar");
+			case PAGE_LEFT: return pick("P\u00e1gina esquerda", "Page left", "P\u00e1gina izquierda");
+			default: return pick("P\u00e1gina direita", "Page right", "P\u00e1gina derecha");
+		}
+	}
+
+	public static String hintControls() {
+		return pick("Cima/baixo escolhe    Z/Enter remapeia    Esc volta",
+			"Up/down selects    Z/Enter remaps    Esc back",
+			"Arriba/abajo elige    Z/Enter reasigna    Esc volver");
+	}
+
 	public static String menuCheats() {
 		return pick("Cheats", "Cheats", "Trucos");
 	}
@@ -255,6 +455,10 @@ public final class I18n {
 			"Z selecciona    X quita    C amplia    R aleatorio    T ordena    S guarda    Enter jugar    Esc lobby");
 	}
 
+	public static String championshipSkipCard() {
+		return pick("N\u00e3o pegar nenhuma carta", "Don't take any card", "No tomar ninguna carta");
+	}
+
 	public static String championshipTradeWin() {
 		return pick("Voc\u00ea venceu. Escolha uma carta do advers\u00e1rio.",
 			"You won. Choose one of the opponent's cards.",
@@ -437,11 +641,11 @@ public final class I18n {
 	}
 
 	public static String hintProfile() {
-		return pick("Enter confirma    Esc sai", "Enter confirms    Esc quits", "Enter confirma    Esc sale");
+		return pick("Esq/Dir avatar    Enter confirma    Esc sai", "Left/Right avatar    Enter confirms    Esc quits", "Izq/Der avatar    Enter confirma    Esc sale");
 	}
 
 	public static String hintProfileEdit() {
-		return pick("Enter confirma    Esc voltar", "Enter confirms    Esc back", "Enter confirma    Esc volver");
+		return pick("Esq/Dir avatar    Enter confirma    Esc voltar", "Left/Right avatar    Enter confirms    Esc back", "Izq/Der avatar    Enter confirma    Esc volver");
 	}
 
 	public static String settingsPlayerName() {
@@ -799,6 +1003,18 @@ public final class I18n {
 		"#Salvar",
 		"No menu Salvar d\u00e1 para exportar ou importar o \u00e1lbum (Meu Deck) ou o checkpoint do Campeonato em um arquivo .ttsave pelo di\u00e1logo do sistema. Importar pede confirma\u00e7\u00e3o antes de substituir.",
 		"",
+		"#Versus",
+		"Dois jogadores no mesmo computador, com a regra Open. Os dois escolhem cartas do Meu Deck do perfil atual (pode repetir cartas): primeiro o Jogador A (direita), depois o B (esquerda). Joystick 1 joga com o A; joystick 2 ou o teclado jogam com o B (sem joystick, o teclado joga com os dois). Ningu\u00e9m ganha nem perde cartas e nada \u00e9 salvo.",
+		"",
+		"#Trof\u00e9us",
+		"Contadores do perfil: campeonatos vencidos, partidas do campeonato, vit\u00f3rias, derrotas e empates no Jogo R\u00e1pido. Versus n\u00e3o conta.",
+		"",
+		"#Controles e joystick",
+		"Direcional e anal\u00f3gico movem o cursor em todas as telas. Em Configura\u00e7\u00f5es > Controles d\u00e1 para trocar Confirmar, Cancelar, Menu, Apagar, Pular e P\u00e1gina esquerda/direita no teclado e no joystick, ou restaurar o padr\u00e3o.",
+		"",
+		"#Cheats",
+		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
+		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
 	};
@@ -837,6 +1053,18 @@ public final class I18n {
 		"#Save",
 		"The Save menu exports or imports the album (My Deck) or the Championship checkpoint as a .ttsave file through the system dialog. Import asks for confirmation before replacing.",
 		"",
+		"#Versus",
+		"Two players on the same computer, with the Open rule. Both pick cards from the current profile's My Deck (repeats allowed): Player A (right) first, then B (left). Joystick 1 plays as A; joystick 2 or the keyboard play as B (with no joystick, the keyboard plays both). No cards are won or lost and nothing is saved.",
+		"",
+		"#Trophies",
+		"Profile counters: championships won, championship matches, Quick Game wins, losses and draws. Versus does not count.",
+		"",
+		"#Controls and joystick",
+		"D-pad and stick move the cursor on every screen. Settings > Controls remaps Confirm, Cancel, Menu, Delete, Skip and Page left/right for keyboard and joystick, or restores the defaults.",
+		"",
+		"#Cheats",
+		"In the Cheats menu type a code and press Enter. cid = all cards | edea = Guardian Forces (levels 8-9) | balamb = characters (level 10) | monster = monsters (levels 1-7).",
+		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
 	};
@@ -874,6 +1102,18 @@ public final class I18n {
 		"",
 		"#Guardar",
 		"En el men\u00fa Guardar puedes exportar o importar el \u00e1lbum (Mi mazo) o el punto de control del Campeonato en un archivo .ttsave con el di\u00e1logo del sistema. Importar pide confirmaci\u00f3n antes de sustituir.",
+		"",
+		"#Versus",
+		"Dos jugadores en el mismo ordenador, con la regla Open. Ambos eligen cartas de Mi mazo del perfil actual (se pueden repetir): primero el Jugador A (derecha), luego el B (izquierda). El joystick 1 juega con A; el joystick 2 o el teclado juegan con B (sin joystick, el teclado juega con ambos). Nadie gana ni pierde cartas y nada se guarda.",
+		"",
+		"#Trofeos",
+		"Contadores del perfil: campeonatos ganados, partidas del campeonato, victorias, derrotas y empates en Partida r\u00e1pida. Versus no cuenta.",
+		"",
+		"#Controles y joystick",
+		"La cruceta y el stick mueven el cursor en todas las pantallas. En Ajustes > Controles puedes cambiar Confirmar, Cancelar, Men\u00fa, Borrar, Saltar y P\u00e1gina izquierda/derecha en teclado y joystick, o restaurar los valores.",
+		"",
+		"#Cheats",
+		"En el men\u00fa Trucos escribe un c\u00f3digo y pulsa Enter. cid = todas las cartas | edea = Guardian Forces (niveles 8-9) | balamb = personajes (nivel 10) | monster = monstruos (niveles 1-7).",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

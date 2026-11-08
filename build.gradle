@@ -31,6 +31,8 @@ dependencies {
 	implementation "com.badlogicgames.gdx:gdx-platform:$libgdx:natives-desktop"
 	implementation "com.badlogicgames.gdx:gdx-freetype:$libgdx"
 	implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdx:natives-desktop"
+	implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
+	implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
 }
 
 distributions {

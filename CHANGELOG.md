@@ -14,6 +14,13 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 #### Added
 
+- Vitória no Campeonato: na escolha da carta há a opção **Não pegar nenhuma carta** (evita duplicatas) e a música `res/victory.ogg` toca em loop nessa tela; ao sair, a música normal volta
+- Menu **Versus**: 2 jogadores locais com a regra Open forçada. Jogador A escolhe 5 cartas do Meu Deck do perfil atual (pode repetir), depois o B; turnos alternados, vencedor na tela e volta ao menu. Não dá nem tira cartas e não salva nada. Joystick 1 = A, joystick 2 ou teclado = B (sem joystick, teclado para os dois)
+- Meu Deck: **Remover todas as cartas** (R ou o rótulo no painel) abre uma tela estilo PS1 para remover tudo ou por categoria (monstros 1-5, chefes 6-7, GFs 8-9, personagens 10) com confirmação Sim/Não
+- Joystick (gdx-controllers 2.2.4): direcional e analógico navegam em todas as telas. Nova tela **Configurações > Controles** para remapear Confirmar, Cancelar, Menu, Apagar, Pular e Página esquerda/direita no teclado e no joystick ("pressione..."), salva no cfg, com Restaurar padrão
+- Seleção de perfil depois da abertura, em blocos estilo memory card (avatar, nome, cartas, troféus) com opção de criar perfil novo. 8 avatares em `res/avatars/` escolhidos no cadastro e na edição do perfil; perfis antigos usam o avatar 1
+- Menu **Troféus**: campeonatos vencidos, partidas do campeonato (V/D) e vitórias, derrotas, empates e jogadas no Jogo Rápido, persistentes no perfil. Versus não conta
+- Como jogar: seções Versus, Troféus, Controles e Cheats (cid, edea, balamb, monster)
 - Menu **Cheats**: uma linha de texto para digitar códigos (sem diferenciar maiúsculas). `cid` libera todas as cartas, `edea` as Guardian Forces (níveis 8-9), `balamb` os personagens (nível 10) e `monster` os monstros (níveis 1-7, incluindo os chefes dos níveis 6-7). Cada carta que falta entra uma vez no Meu Deck e o perfil é salvo; código errado mostra "Código inválido"
 - Abertura: ao abrir o jogo toca uma vez o vídeo `res/intro.mp4` (quadros em `res/intro/` + `res/intro.ogg`) antes do menu; S pula na hora e a dica "S para pular" aparece no rodapé. A música do menu só começa depois da abertura; se o vídeo falhar, vai direto pro menu
 - Save do Campeonato no estilo Memory Card do PS1 (tela Load/Cargar do FF8): cabeçalho "MEMORY CARD em uso: Slot 1" + Salvar/Carregar, caixa AJUDA, 15 blocos numerados em páginas de 3 com cursor de mão e setas, cartas da mão como retratos, Nv (vitórias), rodada, tempo de jogo, cartas e local (lugar do FF8 + partida). Bloco vazio mostra Livre/Vazio
@@ -229,6 +236,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 #### Added
 
+- Championship victory: the card pick has a **Don't take any card** option (avoids duplicates) and `res/victory.ogg` loops on that screen; leaving it brings back the normal music
+- **Versus** menu: 2 local players with the Open rule forced. Player A picks 5 cards from the current profile's My Deck (repeats allowed), then B; alternating turns, winner shown, back to the menu. No cards change hands and nothing is saved. Joystick 1 = A, joystick 2 or keyboard = B (no joystick: keyboard plays both)
+- My Deck: **Remove all cards** (R or the panel label) opens a PS1-style screen to remove everything or one category (monsters 1-5, bosses 6-7, GFs 8-9, characters 10) with a Yes/No confirmation
+- Joystick (gdx-controllers 2.2.4): D-pad and stick navigate every screen. New **Settings > Controls** screen remaps Confirm, Cancel, Menu, Delete, Skip and Page left/right for keyboard and joystick ("press..."), saved in the cfg, with Restore defaults
+- Profile selection after the intro as memory card blocks (avatar, name, cards, trophies) with a new-profile option. 8 avatars in `res/avatars/` chosen when creating/editing a profile; old profiles use avatar 1
+- **Trophies** menu: championships won, championship matches (W/L) and Quick Game wins, losses, draws and games played, stored in the profile. Versus does not count
+- How to play: Versus, Trophies, Controls and Cheats (cid, edea, balamb, monster) sections
 - **Cheats** menu: one text line to type codes (case-insensitive). `cid` unlocks every card, `edea` the Guardian Forces (levels 8-9), `balamb` the characters (level 10) and `monster` the monsters (levels 1-7, bosses at 6-7 included). Each missing card is added once to My Deck and the profile is saved; a wrong code shows "Invalid code"
 - Opening: the game plays `res/intro.mp4` once (frames in `res/intro/` + `res/intro.ogg`) before the menu; S skips it right away and a "S to skip" hint shows at the bottom. Menu music only starts after the intro; if the video fails, the menu opens directly
 - PS1 Memory Card style Championship save (FF8 Load screen): "MEMORY CARD in use: Slot 1" header + Save/Load, HELP box, 15 numbered blocks in pages of 3 with hand cursor and arrows, hand cards as portraits, LV (wins), round, play time, cards and location (FF8 place + match). Empty blocks show Free/Empty

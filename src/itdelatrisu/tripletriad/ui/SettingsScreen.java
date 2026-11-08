@@ -57,7 +57,9 @@ public class SettingsScreen extends Screen {
 	private static final int ROW_PROFILES = 5;
 
 	/** Number of rows. */
-	private static final int ROW_COUNT = 6;
+	private static final int ROW_CONTROLS = 6;
+
+	private static final int ROW_COUNT = 7;
 
 	/** Easy difficulty index. */
 	private static final int DIFF_EASY = 0;
@@ -208,6 +210,9 @@ public class SettingsScreen extends Screen {
 		} else if (selected == ROW_PROFILES) {
 			AudioController.Effect.SELECT.play();
 			game.showProfiles();
+		} else if (selected == ROW_CONTROLS) {
+			AudioController.Effect.SELECT.play();
+			game.showControls();
 		}
 	}
 
@@ -266,6 +271,8 @@ public class SettingsScreen extends Screen {
 			return I18n.settingsDifficulty();
 		if (row == ROW_NAME)
 			return I18n.settingsPlayerName();
+		if (row == ROW_CONTROLS)
+			return I18n.settingsControls();
 		return I18n.settingsProfiles();
 	}
 
@@ -282,6 +289,8 @@ public class SettingsScreen extends Screen {
 			Profile profile = game.getProfile();
 			return (profile != null && profile.isValid()) ? profile.getName() : "";
 		}
+		if (row == ROW_CONTROLS)
+			return I18n.controllersCount(itdelatrisu.tripletriad.Controls.controllerCount());
 		return I18n.profilesCount(ProfileStore.list().size());
 	}
 

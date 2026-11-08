@@ -37,6 +37,51 @@ public class Profile {
 	/** Completed championship runs. */
 	private int championshipWins;
 
+	/** Number of avatars in {@code res/avatars/}. */
+	public static final int AVATARS = 8;
+
+	/** Avatar index [1, AVATARS] (old profiles = 1). */
+	private int avatar = 1;
+
+	/** Trophy counters: Quick Game wins / losses / draws, championship matches won / lost. */
+	private int quickWins, quickLosses, quickDraws, champMatchWins, champMatchLosses;
+
+	/** @return avatar index [1, AVATARS] */
+	public int getAvatar() { return avatar; }
+
+	/** @param a avatar index (clamped to [1, AVATARS]) */
+	public void setAvatar(int a) { this.avatar = Math.max(1, Math.min(AVATARS, a)); }
+
+	public int getQuickWins() { return quickWins; }
+	public int getQuickLosses() { return quickLosses; }
+	public int getQuickDraws() { return quickDraws; }
+	public int getChampMatchWins() { return champMatchWins; }
+	public int getChampMatchLosses() { return champMatchLosses; }
+	public void setQuickWins(int n) { quickWins = Math.max(0, n); }
+	public void setQuickLosses(int n) { quickLosses = Math.max(0, n); }
+	public void setQuickDraws(int n) { quickDraws = Math.max(0, n); }
+	public void setChampMatchWins(int n) { champMatchWins = Math.max(0, n); }
+	public void setChampMatchLosses(int n) { champMatchLosses = Math.max(0, n); }
+
+	/**
+	 * Records a finished Quick Game.
+	 * @param result 1 win, -1 loss, 0 draw
+	 */
+	public void recordQuickGame(int result) {
+		if (result > 0) quickWins++;
+		else if (result < 0) quickLosses++;
+		else quickDraws++;
+	}
+
+	/**
+	 * Records a finished championship match.
+	 * @param won true if the player won
+	 */
+	public void recordChampionshipMatch(boolean won) {
+		if (won) champMatchWins++;
+		else champMatchLosses++;
+	}
+
 	/** Number of save blocks on the championship "memory card". */
 	public static final int SLOTS = 15;
 

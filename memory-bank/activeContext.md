@@ -12,6 +12,8 @@ Branch de trabalho típica: `master` na 1.2.0 (`v1.2.0`).
 
 - Mesma branch: menu Cheats (`ui.CheatsScreen`, `GameScreen.CHEATS`). Categorias pelo nível em `cards/deck.txt`: 1-7 monstros (6-7 chefes contam como monstros), 8-9 GFs, 10 personagens. Adiciona só cartas que faltam e salva o perfil
 
+- Mesma branch (lote 3): `Controls` traduz teclas remapeadas e botões/analógico do joystick para as teclas canônicas (Z, Esc, Enter, Del, S, Esq/Dir), então as telas não mudam; bindings `BIND_KEY_*`/`BIND_PAD_*` no cfg; `Controls.allows(playerA)` decide quem joga no Versus. Versus = flag `versus` em `TripleTriad` (B usa a mão `OPPONENT`, sem IA, Open forçado e restaurado em `endVersus`). Telas novas estilo PS1 usam `ui.Ps1` (frame/painel/linhas): `RemoveCardsScreen`, `ProfileSelectScreen`, `TrophiesScreen`, `ControlsScreen`, `VersusScreen`. Perfil ganhou `AVATAR` e `STAT_*`. Vitória: `AudioController.playVictory/stopVictory`
+
 ## Ao continuar
 
 - Não mexer em `CardResult` / regras de captura sem teste de Same/Plus/Combo/Elemental

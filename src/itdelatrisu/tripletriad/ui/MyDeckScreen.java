@@ -135,6 +135,7 @@ public class MyDeckScreen extends Screen {
 		} else if (!bag.isEmpty()) {
 			drawGrid(g, bag, view, height);
 			Ui.drawCursorCardPanel(g, game.getDeck(), cardIdAt(cursor), false);
+			Ui.drawPanelLabel(g, I18n.removeAllTitle(), Ui.panelActionY(), Ui.TITLE);
 		}
 
 		int previewBag = bagAt(previewIndex);
@@ -242,6 +243,10 @@ public class MyDeckScreen extends Screen {
 		case Input.KEY_R:
 			if (mode == MODE_PICK)
 				fillRandom();
+			else if (!album().isEmpty()) {
+				AudioController.Effect.SELECT.play();
+				game.showRemoveCards();
+			}
 			break;
 		case Input.KEY_T:
 			cycleSort();
@@ -285,6 +290,12 @@ public class MyDeckScreen extends Screen {
 				}
 				return;
 			}
+		}
+		if (mode == MODE_GALLERY && !album().isEmpty()
+				&& Ui.hitPanelLabel(I18n.removeAllTitle(), Ui.panelActionY(), x, y)) {
+			AudioController.Effect.SELECT.play();
+			game.showRemoveCards();
+			return;
 		}
 		if (Ui.hitCursorCard(x, y)) {
 			openPreview();

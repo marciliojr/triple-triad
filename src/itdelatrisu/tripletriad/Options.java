@@ -336,6 +336,8 @@ public class Options {
 					}
 					break;
 				default:
+					if (Controls.parseOption(name, value))
+						break;
 					try {
 						Rule rule = Rule.valueOf(name);
 						rule.setState(Boolean.parseBoolean(value));
@@ -410,6 +412,10 @@ public class Options {
 				writer.write(String.format("%s = %b", rule.toString(), rule.isActive()));
 				writer.newLine();
 			}
+			writer.newLine();
+			writer.write("# Controls (libGDX key codes / gamepad buttons, -1 = default)");
+			writer.newLine();
+			writer.write(Controls.formatOptions());
 			writer.close();
 		} catch (IOException e) {
 			Log.error(String.format("Failed to write to file '%s'.", OPTIONS_FILE.getAbsolutePath()), e);
