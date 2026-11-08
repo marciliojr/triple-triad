@@ -203,11 +203,11 @@ public final class I18n {
 	}
 
 	public static String controlsHelp() {
-		return Controls.dyn(pick("Z/Enter: tecla    Esq/Dir: coluna teclado/joystick", "Z/Enter: set    Left/Right: keyboard/joystick column", "Z/Enter: asignar    Izq/Der: columna teclado/joystick"));
+		return Controls.dyn(pick("Z/Enter: definir    Del: limpar    Esquerda/direita: coluna teclado/joystick", "Z/Enter: set    Del: clear    Left/right: keyboard/joystick column", "Z/Enter: asignar    Del: borrar    Izquierda/derecha: columna teclado/joystick"));
 	}
 
 	public static String controlsPress(boolean pad) {
-		return pad ? pick("Pressione o bot\u00e3o do joystick...", "Press the joystick button...", "Pulsa el bot\u00f3n del joystick...")
+		return pad ? pick("Pressione o bot\u00e3o do joystick... (uma tecla cancela)", "Press the joystick button... (any key cancels)", "Pulsa el bot\u00f3n del joystick... (una tecla cancela)")
 			: pick("Pressione a tecla... (Esc cancela)", "Press the key... (Esc cancels)", "Pulsa la tecla... (Esc cancela)");
 	}
 

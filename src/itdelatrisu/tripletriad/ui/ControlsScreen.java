@@ -31,14 +31,17 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Remaps actions for keyboard (Z/Enter on the row) and joystick (right on the
- * row, then Z/Enter): "press the key / button...". Last row restores defaults.
+ * Remaps every action for keyboard (left column) and joystick (right column):
+ * Confirm on a row, then "press the key / button...". Delete clears the
+ * binding of the selected column. The last row restores the defaults.
+ * The INFO box shows the detected controller and the footer a live button test.
  */
 public class ControlsScreen extends Screen {
 	private static final Action[] ACTIONS = Action.values();
 
 	private final TripleTriad game;
 	private int selected;
+	private int scroll;
 
 	/** 0 = keyboard column, 1 = joystick column. */
 	private int column;
@@ -53,63 +56,92 @@ public class ControlsScreen extends Screen {
 	@Override
 	public void enter() {
 		selected = 0;
+		scroll = 0;
 		column = 0;
 		waiting = false;
 	}
 
 	private int count() { return ACTIONS.length + 1; }
 
+	/** @return number of rows that fit above the live test line */
+	private int visible() {
+		float bottom = Options.getHeight() * 0.84f;
+		int n = (int) ((bottom - Ps1.contentTop()) / (Ps1.rowHeight() + Ps1.gap()));
+		return Math.max(3, Math.min(count(), n));
+	}
+
+	private void clampScroll() {
+		int v = visible();
+		if (selected < scroll)
+			scroll = selected;
+		if (selected >= scroll + v)
+			scroll = selected - v + 1;
+		scroll = Math.max(0, Math.min(scroll, count() - v));
+	}
+
+	private String info() {
+		String name = Controls.controllerName();
+		if (name != null)
+			return I18n.controllerDetected(name, Controls.isGeneric());
+		if (Controls.incompatibleMode())
+			return I18n.controllerIncompatible();
+		return I18n.controllerNone();
+	}
+
 	@Override
 	public void render(GameContainer container, Graphics g) {
-		String info = I18n.controllersCount(Controls.controllerCount());
-		Ps1.frame(g, info, I18n.settingsControls(), waiting ? I18n.controlsPress(column == 1) : I18n.controlsHelp());
+		clampScroll();
+		Ps1.frame(g, info(), I18n.settingsControls(), waiting ? I18n.controlsPress(column == 1) : I18n.controlsHelp());
 		UnicodeFont small = Options.getSmallFont();
 		float line = small.getLineHeight();
 		float keyCol = Ps1.rowX() + Ps1.rowW() * 0.55f;
-		float padCol = Ps1.rowX() + Ps1.rowW() * 0.80f;
-		for (int i = 0; i < ACTIONS.length; i++) {
-			Action a = ACTIONS[i];
+		float padCol = Ps1.rowX() + Ps1.rowW() * 0.78f;
+		int v = visible();
+		for (int r = 0; r < v; r++) {
+			int i = scroll + r;
+			if (i >= count())
+				break;
 			boolean on = (i == selected);
-			Ps1.row(g, i, I18n.controlAction(a), null, on, true);
-			float ty = Ps1.rowY(i) + (Ps1.rowHeight() - line) / 2f;
+			if (i == ACTIONS.length) {
+				Ps1.row(g, r, I18n.controlsReset(), null, on, true);
+				continue;
+			}
+			Action a = ACTIONS[i];
+			Ps1.row(g, r, I18n.controlAction(a), null, on, true);
+			float ty = Ps1.rowY(r) + (Ps1.rowHeight() - line) / 2f;
 			String k = (waiting && on && column == 0) ? "..." : Controls.keyName(Controls.getKey(a));
 			String p = (waiting && on && column == 1) ? "..." : Controls.padName(a);
 			small.drawString(keyCol, ty, k, (on && column == 0) ? Ui.TITLE : Color.white);
 			small.drawString(padCol, ty, p, (on && column == 1) ? Ui.TITLE : Color.white);
 		}
-		Ps1.row(g, ACTIONS.length, I18n.controlsReset(), null, selected == ACTIONS.length, true);
+		// live button test
+		String test = I18n.controllerTest(Controls.lastPadInput());
+		Ui.drawCentered(small, Ui.fit(small, test, Options.getWidth() * 0.9f), Options.getHeight() * 0.865f,
+			Controls.lastPadInput() != null ? Ui.TITLE : Ui.HINT);
 		Ps1.hint(I18n.hintControls());
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
-		if (waiting)
+		if (waiting || key == 0)
 			return;
-		switch (key) {
-		case Input.KEY_UP:
+		if (Controls.is(key, Action.UP)) {
 			selected = (selected + count() - 1) % count();
 			AudioController.playCursor();
-			break;
-		case Input.KEY_DOWN:
+		} else if (Controls.is(key, Action.DOWN)) {
 			selected = (selected + 1) % count();
 			AudioController.playCursor();
-			break;
-		case Input.KEY_LEFT:
-		case Input.KEY_RIGHT:
+		} else if (Controls.is(key, Action.LEFT) || Controls.is(key, Action.RIGHT)) {
 			column = 1 - column;
 			AudioController.playCursor();
-			break;
-		case Input.KEY_Z:
-		case Input.KEY_ENTER:
+		} else if (Controls.is(key, Action.CONFIRM) || Controls.is(key, Action.MENU)) {
 			activate();
-			break;
-		case Input.KEY_ESCAPE:
+		} else if (Controls.is(key, Action.DELETE)) {
+			clear();
+		} else if (Controls.is(key, Action.CANCEL)) {
 			AudioController.Effect.BACK.play();
 			Options.saveOptions();
 			game.showSettings();
-			break;
-		default:
-			break;
 		}
 	}
 
@@ -117,15 +149,36 @@ public class ControlsScreen extends Screen {
 	public void mousePressed(int button, int x, int y) {
 		if (waiting || button != Input.MOUSE_LEFT_BUTTON)
 			return;
-		int hit = Ps1.hitRow(x, y, count());
-		if (hit < 0)
+		int hit = Ps1.hitRow(x, y, visible());
+		if (hit < 0 || scroll + hit >= count())
 			return;
-		column = (x > Ps1.rowX() + Ps1.rowW() * 0.78f) ? 1 : 0;
+		hit += scroll;
+		column = (x > Ps1.rowX() + Ps1.rowW() * 0.76f) ? 1 : 0;
 		if (hit != selected) {
 			selected = hit;
 			AudioController.playCursor();
 		} else
 			activate();
+	}
+
+	@Override
+	public void mouseWheelMoved(int change) {
+		selected = Math.max(0, Math.min(count() - 1, selected + (change < 0 ? 1 : -1)));
+	}
+
+	/** Removes the binding of the selected column. */
+	private void clear() {
+		if (selected >= ACTIONS.length) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		Action a = ACTIONS[selected];
+		if (column == 0)
+			Controls.setKey(a, 0);
+		else
+			Controls.setPad(a, Controls.PAD_NONE);
+		Options.saveOptions();
+		AudioController.Effect.BACK.play();
 	}
 
 	private void activate() {
@@ -142,12 +195,12 @@ public class ControlsScreen extends Screen {
 			@Override
 			public void key(int keycode) {
 				waiting = false;
-				if (keycode == Input.KEY_ESCAPE && a != Action.CANCEL) {
+				if (column == 1 || (keycode == com.badlogic.gdx.Input.Keys.ESCAPE && a != Action.CANCEL)) {
+					// a key while waiting for a joystick button (or Esc) cancels
 					AudioController.Effect.BACK.play();
 					return;
 				}
-				if (column == 0)
-					Controls.setKey(a, keycode);
+				Controls.setKey(a, keycode);
 				Options.saveOptions();
 				AudioController.Effect.SELECT.play();
 			}
@@ -155,8 +208,11 @@ public class ControlsScreen extends Screen {
 			@Override
 			public void button(int b) {
 				waiting = false;
-				if (column == 1)
-					Controls.setPad(a, b);
+				if (column != 1) {
+					AudioController.Effect.BACK.play();
+					return;
+				}
+				Controls.setPad(a, b);
 				Options.saveOptions();
 				AudioController.Effect.SELECT.play();
 			}
