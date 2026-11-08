@@ -2,7 +2,7 @@
 
 [Português (Brasil)](#português-brasil) · [English](#english)
 
-**1.2.0** — troca do Campeonato mostra se você já tem a carta; cartas sem elemento sem quadrado vazio. Zip na [GitHub Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.0).
+**1.3.0** — abertura e vídeo final, Memory Card PS1 com 15 blocos, Versus local, joystick com todos os botões personalizáveis, Cheats, Troféus e perfis com avatar. Zip na [GitHub Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.0).
 
 ---
 
@@ -26,15 +26,16 @@ Regras: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad). 
 ./gradlew clean
 ```
 
-A [Release v1.2.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.0) traz o mesmo zip (`res/` + `cards/` + jar).
+A [Release v1.3.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.0) traz o mesmo zip (`res/` + `cards/` + jar).
 
 ### Fluxo
 
-1. **Perfil** — nome na primeira execução
-2. **Menu** — Jogo Rápido, Campeonato, Meu Deck, Salvar, Como Jogar, Configurações
-3. **Decks** — montar, editar, apagar ou escolher 5 cartas; ligar/desligar regras
-4. **Campeonato** — 8 rounds contra a IA
-5. **Partida** — Esc pede confirmação para sair
+1. **Abertura** — vídeo de intro (Pular intro pula)
+2. **Perfil** — nome e avatar na primeira execução; depois, escolha do perfil em blocos estilo memory card
+3. **Menu** — Jogo Rápido, Campeonato, Versus, Meu Deck, Salvar, Troféus, Cheats, Como Jogar, Configurações
+4. **Decks** — montar, editar, apagar ou escolher 5 cartas; ligar/desligar regras
+5. **Campeonato** — 8 rounds contra a IA
+6. **Partida** — Cancelar pede confirmação para sair
 
 ### Telas
 
@@ -46,32 +47,44 @@ A [Release v1.2.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.
 
 **Campeonato** — lobby: Novo jogo, Continuar, Apagar progresso (não zera o álbum). Pack se o álbum tiver menos de 5 cartas; senão pick. **T** ordena o grid no pick. **S** / Salvar (da 2ª luta em diante) grava a run; o aviso aparece no rodapé. Vitória adiciona a carta ao álbum e à bag; na escolha, cada carta do adversário mostra **Já possui** (com quantas cópias no Meu Deck) ou **Nova!**. Derrota tira só da run.
 
-**Configurações** — música, som do cursor, idioma (pt-BR, en, es), dificuldade da IA (Fácil/Normal/Difícil), nome e perfis.
+**Campeonato (1.3.0)** — save estilo Memory Card do PS1: 15 blocos (salvar, carregar, apagar), o save não some ao terminar a run. Ao vencer dá para **não pegar nenhuma carta**; a vitória toca música própria e zerar o Campeonato mostra o vídeo final em loop.
+
+**Versus** — 2 jogadores locais com a regra Open. Cada um escolhe 5 cartas do Meu Deck do perfil atual, sem repetir carta na própria mão (os dois podem escolher as mesmas). Joystick 1 = Jogador A, joystick 2 ou teclado = B. Não dá nem tira cartas.
+
+**Troféus** — campeonatos vencidos, partidas do campeonato e vitórias/derrotas/empates do Jogo Rápido, por perfil.
+
+**Cheats** — digite um código: `cid` (todas as cartas), `edea` (Guardian Forces, níveis 8-9), `balamb` (personagens, nível 10), `monster` (monstros, níveis 1-7). Cada carta que falta entra uma vez no Meu Deck.
+
+**Meu Deck → Remover todas as cartas** — tudo ou por categoria (monstros, chefes, GFs, personagens), com confirmação.
+
+**Configurações** — música, som do cursor, idioma (pt-BR, en, es), dificuldade da IA (Fácil/Normal/Difícil), nome, avatar, perfis e **Controles**.
 
 ### Controles
 
-Além do mouse:
+Teclado, mouse e joystick (gdx-controllers / SDL, com `gamecontrollerdb.txt`; sem SDL, `/dev/input/js*` como joystick genérico). **Todas as ações são personalizáveis** em Configurações > Controles (1 tecla + 1 botão cada; Del limpa um atalho; Restaurar padrão). A tela mostra o controle detectado e um teste de botões ao vivo. As legendas do rodapé e o Como Jogar mostram os atalhos atuais. Padrões:
 
-| Ação | Teclas |
-| --- | --- |
-| Movimento | setas |
-| Selecionar / confirmar | Z (Enter confirma a tela quando for distinto, ex.: jogar com 5) |
-| Ampliar carta | C (Esc/C/clique fecha o overlay) |
-| Deck aleatório (construtor / pick) | R |
-| Ordenar o grid (nível / valor / catálogo) | T |
-| Remover da mão | X ou Del (só os 5 slots) |
-| Remover do álbum | X ou Del, depois Não/Sim (default Não) |
-| Cancelar casa (partida) | X ou Backspace |
-| Rematch (Jogo Rápido) | F5 |
-| Lance automático | F1 |
-| Voltar / sair | Esc (na partida, Não/Sim; default Não) |
+| Ação | Teclado | Joystick |
+| --- | --- | --- |
+| Confirmar | Z | A |
+| Cancelar / voltar | Esc | B |
+| Selecionar (ordenar / editar) | T | Select |
+| Menu / iniciar | Enter | Start |
+| Pular intro | S | X |
+| Remover / apagar | Del | Y |
+| Zoom (ampliar carta) | C | L3 |
+| Página esquerda / direita | PgUp / PgDn | L1 / R1 |
+| Aleatório | R | R3 |
+| Salvar | S | X |
+| Revanche (Jogo Rápido) | F5 | Select |
+| Jogada automática | F1 | R3 |
+| Mover | setas | direcional / analógico |
 
-Lista de decks: **Z**/Enter joga, **C** amplia as minis, **E** edita, **X**/Del apaga. Configurações: Enter ou esquerda/direita altera; **Z** confirma.
+Campos de texto (nome do perfil, nome do deck, Cheats) abrem um **teclado virtual estilo PS1** quando a entrada vem do joystick. Controle 8BitDo: use o modo X-input (2dc8:3106); no modo HID (3109) o jogo avisa na tela de Controles.
 
 ### Persistência
 
-- `.triple-triad.cfg` — vídeo, volume, FPS, fonte, regras, música, som do cursor, idioma, perfil ativo, IA
-- `.triple-triad-profiles/` — um arquivo por jogador (decks, álbum, run do Campeonato, copas)
+- `.triple-triad.cfg` — vídeo, volume, FPS, fonte, regras, música, som do cursor, idioma, perfil ativo, IA, atalhos (`BIND_KEY_*` / `BIND_PAD_*`)
+- `.triple-triad-profiles/` — um arquivo por jogador (decks, álbum, 15 blocos do Memory Card, copas, avatar, troféus)
 - arquivos `.ttsave` — export manual do álbum ou do checkpoint do Campeonato (caminho escolhido no diálogo do sistema)
 - `.triple-triad.log` — erros
 
@@ -84,7 +97,7 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1):
 - Arte e som em `res/` e `cards/` (nada redesenhado)
 - Meta-jogo: perfil, menu, construtor, Meu Deck, Campeonato, Salvar, vários perfis, dificuldade da IA
 - Same / Plus / Combo / Elemental / Sudden Death e as IAs **permanecem os do original**
-- Versus não está no menu
+- Versus local (sem IA), joystick, Cheats e Troféus
 
 ### Créditos
 
@@ -118,15 +131,16 @@ Rules: [Triple Triad (wiki)](http://finalfantasy.wikia.com/wiki/Triple_Triad). V
 ./gradlew clean
 ```
 
-The [v1.2.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.2.0) ships the same zip (`res/` + `cards/` + jar).
+The [v1.3.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.0) ships the same zip (`res/` + `cards/` + jar).
 
 ### Flow
 
-1. **Profile** — name on first run
-2. **Menu** — Quick Game, Championship, My Deck, Save, How to Play, Settings
-3. **Decks** — build, edit, delete, or pick 5 cards; toggle rules
-4. **Championship** — 8 rounds vs the AI
-5. **Match** — Esc asks for confirmation to leave
+1. **Intro** — opening video (Skip intro skips it)
+2. **Profile** — name and avatar on first run; then profile selection in memory-card blocks
+3. **Menu** — Quick Game, Championship, Versus, My Deck, Save, Trophies, Cheats, How to Play, Settings
+4. **Decks** — build, edit, delete, or pick 5 cards; toggle rules
+5. **Championship** — 8 rounds vs the AI
+6. **Match** — Cancel asks for confirmation to leave
 
 ### Screens
 
@@ -138,32 +152,44 @@ The [v1.2.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 
 **Championship** — lobby: New game, Continue, Clear progress (does not wipe the album). Pack if the album has fewer than 5 cards; otherwise pick. **T** sorts the pick grid. **S** / Save (from match 2) writes the run; the notice appears in the footer. A win adds the card to the album and bag; on the pick, each opponent card shows **Owned** (with how many copies are in My Deck) or **New!**. A loss removes it only from the run.
 
-**Settings** — music, cursor sound, language (pt-BR, en, es), AI difficulty (Easy/Normal/Hard), name and profiles.
+**Championship (1.3.0)** — PS1 Memory Card style save: 15 blocks (save, load, delete); the save stays when the run ends. After a win you can **take no card**; victories play their own music and beating the Championship loops the ending video.
+
+**Versus** — 2 local players with the Open rule. Each picks 5 cards from the current profile's My Deck, with no repeated card in their own hand (both may pick the same cards). Joystick 1 = Player A, joystick 2 or keyboard = B. No cards are won or lost.
+
+**Trophies** — championships won, championship matches and Quick Game wins/losses/draws, per profile.
+
+**Cheats** — type a code: `cid` (all cards), `edea` (Guardian Forces, levels 8-9), `balamb` (characters, level 10), `monster` (monsters, levels 1-7). Each missing card enters My Deck once.
+
+**My Deck → Remove all cards** — everything or by category (monsters, bosses, GFs, characters), with confirmation.
+
+**Settings** — music, cursor sound, language (pt-BR, en, es), AI difficulty (Easy/Normal/Hard), name, avatar, profiles and **Controls**.
 
 ### Controls
 
-Besides the mouse:
+Keyboard, mouse and joystick (gdx-controllers / SDL with `gamecontrollerdb.txt`; without SDL, `/dev/input/js*` as a generic joystick). **Every action is customizable** in Settings > Controls (1 key + 1 button each; Del clears a binding; Restore defaults). The screen shows the detected controller and a live button test. Footer legends and How to Play show the current bindings. Defaults:
 
-| Action | Keys |
-| --- | --- |
-| Move | arrows |
-| Select / confirm | Z (Enter confirms the screen when that is a distinct action, e.g. play with 5) |
-| Enlarge card | C (Esc/C/click closes the overlay) |
-| Random deck (builder / pick) | R |
-| Sort the grid (level / value / catalog) | T |
-| Remove from hand | X or Del (the 5 slots only) |
-| Remove from album | X or Del, then No/Yes (default No) |
-| Cancel square (match) | X or Backspace |
-| Rematch (Quick Game) | F5 |
-| Auto play | F1 |
-| Back / quit | Esc (in a match, No/Yes; default No) |
+| Action | Keyboard | Joystick |
+| --- | --- | --- |
+| Confirm | Z | A |
+| Cancel / back | Esc | B |
+| Select (sort / edit) | T | Select |
+| Menu / start | Enter | Start |
+| Skip intro | S | X |
+| Remove / delete | Del | Y |
+| Zoom (enlarge card) | C | L3 |
+| Page left / right | PgUp / PgDn | L1 / R1 |
+| Random | R | R3 |
+| Save | S | X |
+| Rematch (Quick Game) | F5 | Select |
+| Auto play | F1 | R3 |
+| Move | arrows | D-pad / stick |
 
-Deck list: **Z**/Enter plays, **C** enlarges the minis, **E** edits, **X**/Del deletes. Settings: Enter or left/right changes a value; **Z** confirms.
+Text fields (profile name, deck name, Cheats) open a **PS1-style virtual keyboard** when input comes from the joystick. 8BitDo controllers: use X-input mode (2dc8:3106); in HID mode (3109) the Controls screen shows a warning.
 
 ### Persistence
 
-- `.triple-triad.cfg` — video, volume, FPS, font, rules, music, cursor sound, language, active profile, AI
-- `.triple-triad-profiles/` — one file per player (decks, album, Championship run, cups)
+- `.triple-triad.cfg` — video, volume, FPS, font, rules, music, cursor sound, language, active profile, AI, bindings (`BIND_KEY_*` / `BIND_PAD_*`)
+- `.triple-triad-profiles/` — one file per player (decks, album, 15 Memory Card blocks, cups, avatar, trophies)
 - `.ttsave` files — manual export of the album or Championship checkpoint (path chosen in the system dialog)
 - `.triple-triad.log` — errors
 
@@ -176,7 +202,7 @@ Compared with the original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1):
 - Art and sound in `res/` and `cards/` (nothing redrawn)
 - Meta-game: profile, menu, builder, My Deck, Championship, Save, multiple profiles, AI difficulty
 - Same / Plus / Combo / Elemental / Sudden Death and the AIs **remain the original ones**
-- Versus is not on the menu
+- Local Versus (no AI), joystick, Cheats and Trophies
 
 ### Credits
 
