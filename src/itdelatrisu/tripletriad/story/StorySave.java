@@ -22,8 +22,28 @@ import java.util.Random;
  * Cleared duels, standings inputs, rewards and the pending card choice stay here.
  */
 public final class StorySave {
-	/** On-disk format. Version 1 was the single STORY_CLEARED list. */
-	public static final int FORMAT = 2;
+	/**
+	 * On-disk format. Version 1 was the single STORY_CLEARED list.
+	 * Version 3 adds {@code CAMP.n.GENDER} (the chosen protagonist).
+	 */
+	public static final int FORMAT = 3;
+
+	/** Protagonist: aluno (male student). */
+	public static final String MALE = "M";
+
+	/** Protagonist: aluna (female student). */
+	public static final String FEMALE = "F";
+
+	/**
+	 * Protagonist of a campaign saved before the choice existed (no GENDER key).
+	 * Every line up to format 2 addressed the player as "o aluno" and no
+	 * protagonist portrait was shown, so those campaigns stay with the aluno.
+	 */
+	public static final String LEGACY_GENDER = MALE;
+
+	/** Portrait ids under {@code res/story/portraits/} ({@code <id>_normal.png}, {@code <id>_derrota.png}). */
+	public static final String PORTRAIT_MALE = "aluno_m";
+	public static final String PORTRAIT_FEMALE = "aluna";
 
 	/** Same capacity as the championship memory card. Never auto-deleted. */
 	public static final int MAX = 15;
@@ -40,6 +60,7 @@ public final class StorySave {
 
 	private String id = "";
 	private String student = "";
+	private String gender = LEGACY_GENDER;
 	private long createdAt;
 	private long savedAt;
 	private final ArrayList<String> cleared = new ArrayList<String>();
@@ -61,11 +82,21 @@ public final class StorySave {
 	 * @return a new campaign, or null if the name is empty
 	 */
 	public static StorySave create(String student) {
+		return create(student, LEGACY_GENDER);
+	}
+
+	/**
+	 * @param student the chosen name
+	 * @param gender {@link #MALE} or {@link #FEMALE}; anything else keeps {@link #LEGACY_GENDER}
+	 * @return a new campaign, or null if the name is empty
+	 */
+	public static StorySave create(String student, String gender) {
 		String clean = cleanName(student);
 		if (clean.isEmpty())
 			return null;
 		StorySave save = new StorySave();
 		save.student = clean;
+		save.setGender(gender);
 		save.createdAt = System.currentTimeMillis();
 		save.savedAt = save.createdAt;
 		save.id = "c" + Long.toString(save.createdAt, 36) + Integer.toString(new Random().nextInt(46656), 36);
@@ -101,6 +132,37 @@ public final class StorySave {
 		String clean = cleanName(value);
 		if (!clean.isEmpty())
 			student = clean;
+	}
+
+	/** @return {@link #MALE} or {@link #FEMALE} */
+	public String gender() { return gender; }
+
+	public boolean isFemale() { return FEMALE.equals(gender); }
+
+	/** Accepts M/F (any case) and aluno/aluna. Unknown values leave the current choice. */
+	public void setGender(String value) {
+		String parsed = parseGender(value);
+		if (parsed != null)
+			gender = parsed;
+	}
+
+	/** @return {@link #MALE}, {@link #FEMALE}, or null when the value is not a protagonist */
+	public static String parseGender(String value) {
+		if (value == null)
+			return null;
+		String v = value.trim().toLowerCase();
+		if (v.equals("m") || v.equals("aluno") || v.equals("male"))
+			return MALE;
+		if (v.equals("f") || v.equals("aluna") || v.equals("female"))
+			return FEMALE;
+		return null;
+	}
+
+	/** @return the portrait id of this campaign's protagonist */
+	public String portraitId() { return portraitFor(gender); }
+
+	public static String portraitFor(String gender) {
+		return FEMALE.equals(gender) ? PORTRAIT_FEMALE : PORTRAIT_MALE;
 	}
 
 	public long createdAt() { return createdAt; }

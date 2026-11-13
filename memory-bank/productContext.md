@@ -6,7 +6,7 @@ Fluxo: **Perfil → Menu → Jogo Rápido / Campeonato / História / Versus / Me
 
 O menu mostra o perfil ativo no canto superior esquerdo (avatar, nome, cartas do álbum e campeonatos vencidos) e as mesmas dez opções numa janela azul. Esquerda foca o painel; confirmar abre a seleção de perfil e, nesse caso, Esc volta ao menu. Na abertura, Esc na seleção continua saindo.
 
-História: o aluno escolhe o nome; o perfil pode ter várias campanhas. O álbum é compartilhado. Duelos, tabela e recompensas especiais são de cada campanha.
+História: o jogador escolhe aluno ou aluna e depois o nome; o perfil pode ter várias campanhas. O álbum é compartilhado. Duelos, tabela e recompensas especiais são de cada campanha.
 
 Persistência local (cwd = raiz do repo):
 

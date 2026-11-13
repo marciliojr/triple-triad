@@ -413,8 +413,35 @@ public final class I18n {
 		return pick("Nenhuma campanha neste perfil.", "No campaign on this profile.", "Ninguna campa\u00f1a en este perfil.");
 	}
 
-	public static String storyNamePrompt() {
-		return pick("Nome do aluno de Balamb", "Name of the Balamb student", "Nombre del alumno de Balamb");
+	/** @param female true when the campaign's protagonist is the aluna */
+	public static String storyNamePrompt(boolean female) {
+		return female
+			? pick("Nome da aluna de Balamb", "Name of the Balamb student", "Nombre de la alumna de Balamb")
+			: pick("Nome do aluno de Balamb", "Name of the Balamb student", "Nombre del alumno de Balamb");
+	}
+
+	public static String storyProtagonistTitle() {
+		return pick("Quem entra no torneio?", "Who enters the tournament?", "\u00bfQui\u00e9n entra al torneo?");
+	}
+
+	public static String storyProtagonistNote() {
+		return pick("Cadete de Balamb Garden. A escolha vale para esta campanha.",
+			"Balamb Garden cadet. The choice is for this campaign.",
+			"Cadete de Balamb Garden. La elecci\u00f3n vale para esta campa\u00f1a.");
+	}
+
+	public static String storyMale() {
+		return pick("Aluno", "Male student", "Alumno");
+	}
+
+	public static String storyFemale() {
+		return pick("Aluna", "Female student", "Alumna");
+	}
+
+	public static String hintStoryProtagonist() {
+		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    Esc volta",
+			"Left/right selects    Z/Enter confirms    Esc back",
+			"Izq/der elige    Z/Enter confirma    Esc volver"));
 	}
 
 	public static String storyFan() {
@@ -453,8 +480,11 @@ public final class I18n {
 			"Objetivo: " + role + " - " + opponent);
 	}
 
-	public static String storyChampion() {
-		return pick("Campeao mundial.", "World champion.", "Campeon mundial.");
+	/** @param female true when the campaign's protagonist is the aluna */
+	public static String storyChampion(boolean female) {
+		return female
+			? pick("Campe\u00e3 mundial.", "World champion.", "Campeona mundial.")
+			: pick("Campe\u00e3o mundial.", "World champion.", "Campe\u00f3n mundial.");
 	}
 
 	public static String storyPending() {
@@ -1313,7 +1343,7 @@ public final class I18n {
 		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
 		"",
 		"#Hist\u00f3ria",
-		"Historia original: voce e um aluno de Balamb no Torneio Mundial. Squall orienta e nao joga. O mesmo perfil guarda ate 15 campanhas. Cada vitoria deixa escolher uma carta da mao; a carta especial do encontro sai so na primeira vez. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
+		"Historia original: voce e um aluno ou uma aluna de Balamb (a escolha e feita ao criar a campanha) no Torneio Mundial. Squall orienta e nao joga. O mesmo perfil guarda ate 15 campanhas. Cada vitoria deixa escolher uma carta da mao; a carta especial do encontro sai so na primeira vez. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -1366,7 +1396,7 @@ public final class I18n {
 		"In the Cheats menu type a code and press Enter. cid = all cards | edea = Guardian Forces (levels 8-9) | balamb = characters (level 10) | monster = monsters (levels 1-7).",
 		"",
 		"#Story",
-		"An original story: you are a Balamb student in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns. Each win lets you choose one card from the hand; the meeting's special card is given only the first time. Leaving mid-match returns to the saved point without deleting the campaign.",
+		"An original story: you are a Balamb student (chosen when the campaign is created) in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns. Each win lets you choose one card from the hand; the meeting's special card is given only the first time. Leaving mid-match returns to the saved point without deleting the campaign.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -1419,7 +1449,7 @@ public final class I18n {
 		"En el men\u00fa Trucos escribe un c\u00f3digo y pulsa Enter. cid = todas las cartas | edea = Guardian Forces (niveles 8-9) | balamb = personajes (nivel 10) | monster = monstruos (niveles 1-7).",
 		"",
 		"#Historia",
-		"Historia original: eres un alumno de Balamb en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campa\u00f1as. Cada victoria deja elegir una carta de la mano; la carta especial del encuentro sale solo la primera vez. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campa\u00f1a.",
+		"Historia original: eres un alumno o una alumna de Balamb (se elige al crear la campa\u00f1a) en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campa\u00f1as. Cada victoria deja elegir una carta de la mano; la carta especial del encuentro sale solo la primera vez. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campa\u00f1a.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

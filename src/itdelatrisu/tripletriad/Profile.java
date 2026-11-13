@@ -444,9 +444,18 @@ public class Profile {
 	 * @return the campaign, or null if the name is empty or the list is full
 	 */
 	public StorySave addCampaign(String student) {
+		return addCampaign(student, StorySave.LEGACY_GENDER);
+	}
+
+	/**
+	 * Appends a campaign with the chosen protagonist.
+	 * @param gender {@link StorySave#MALE} or {@link StorySave#FEMALE}
+	 * @return the campaign, or null if the name is empty or the list is full
+	 */
+	public StorySave addCampaign(String student, String gender) {
 		if (campaigns.size() >= StorySave.MAX)
 			return null;
-		StorySave save = StorySave.create(student);
+		StorySave save = StorySave.create(student, gender);
 		if (save == null)
 			return null;
 		campaigns.add(save);

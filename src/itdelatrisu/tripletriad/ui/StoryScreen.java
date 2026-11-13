@@ -39,7 +39,7 @@ import itdelatrisu.tripletriad.story.StorySave;
  */
 public class StoryScreen extends Screen {
 	private enum Mode {
-		HUB, NAME, CAMPAIGNS, DELETE, STAGE, MAP, DUELS, TABLE, RULES, DOSSIER,
+		HUB, PROTAGONIST, NAME, CAMPAIGNS, DELETE, STAGE, MAP, DUELS, TABLE, RULES, DOSSIER,
 		SCENE, PICK, CONFIRM, SHOW
 	}
 
@@ -53,6 +53,12 @@ public class StoryScreen extends Screen {
 	private int yesNo;
 	private final StringBuilder name = new StringBuilder();
 	private String deleteId = "";
+
+	/** Protagonist being chosen for a new campaign: 0 aluno, 1 aluna. */
+	private int protagonist;
+
+	/** True while the scene follows a lost match: the protagonist shows the defeat face. */
+	private boolean sceneDefeat;
 
 	private StoryCampaign.Region region;
 	private StoryCampaign.Duel duel;
@@ -115,6 +121,7 @@ public class StoryScreen extends Screen {
 		}
 		StoryCampaign.Line beat = (result < 0) ? duel.lose : StoryCampaign.tie(duel);
 		play(join(new StoryCampaign.Line[] { beat }, duel.afterLose), StoryCampaign.After.LIST);
+		sceneDefeat = result < 0;
 	}
 
 	@Override
@@ -130,6 +137,7 @@ public class StoryScreen extends Screen {
 		drawBackground(g, width, height, backgroundFile());
 		switch (mode) {
 			case HUB: renderHub(g, height); break;
+			case PROTAGONIST: renderProtagonist(g, width, height); break;
 			case NAME: renderName(g, height); break;
 			case CAMPAIGNS: renderCampaigns(g, height); break;
 			case DELETE: renderYesNo(g, height, I18n.storyDeleteAsk(deleteName())); break;
@@ -154,6 +162,7 @@ public class StoryScreen extends Screen {
 	public void keyPressed(int key, char c) {
 		switch (mode) {
 			case HUB: keyHub(key); break;
+			case PROTAGONIST: keyProtagonist(key); break;
 			case NAME: keyName(key, c); break;
 			case CAMPAIGNS: keyCampaigns(key); break;
 			case DELETE: keyDelete(key); break;
@@ -177,6 +186,8 @@ public class StoryScreen extends Screen {
 			return;
 		if (mode == Mode.HUB)
 			clickHub(y);
+		else if (mode == Mode.PROTAGONIST)
+			clickProtagonist(x, y);
 		else if (mode == Mode.CAMPAIGNS)
 			clickList(y, game.getProfile() == null ? 0 : game.getProfile().campaignCount(), this::openListed);
 		else if (mode == Mode.STAGE)
@@ -200,7 +211,7 @@ public class StoryScreen extends Screen {
 			AudioController.playCursor();
 		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			if (index == 0)
-				beginName();
+				beginProtagonist();
 			else if (index == 1)
 				openCampaignList();
 			else
@@ -222,13 +233,71 @@ public class StoryScreen extends Screen {
 		keyHub(Input.KEY_Z);
 	}
 
-	private void beginName() {
+	/** New campaign, step 1: aluno or aluna. The name comes next. */
+	private void beginProtagonist() {
 		Profile profile = game.getProfile();
 		if (profile != null && profile.campaignCount() >= StorySave.MAX) {
 			AudioController.Effect.INVALID.play();
 			return;
 		}
+		protagonist = 0;
 		name.setLength(0);
+		mode = Mode.PROTAGONIST;
+		AudioController.Effect.SELECT.play();
+	}
+
+	private void keyProtagonist(int key) {
+		if (key == Input.KEY_LEFT || key == Input.KEY_RIGHT || key == Input.KEY_UP || key == Input.KEY_DOWN) {
+			protagonist = 1 - protagonist;
+			AudioController.playCursor();
+		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
+			beginName();
+		} else if (key == Input.KEY_ESCAPE) {
+			AudioController.Effect.BACK.play();
+			mode = Mode.HUB;
+		}
+	}
+
+	private void clickProtagonist(int x, int y) {
+		int hit = protagonistAt(x, y);
+		if (hit < 0)
+			return;
+		if (hit != protagonist) {
+			protagonist = hit;
+			AudioController.playCursor();
+			return;
+		}
+		keyProtagonist(Input.KEY_Z);
+	}
+
+	/** @return 0 aluno, 1 aluna, or -1 when the point is outside both frames */
+	private int protagonistAt(float x, float y) {
+		float size = protagonistSize();
+		float top = Options.getHeight() * 0.28f;
+		float labelH = Options.getSmallFont().getLineHeight() * 1.6f;
+		if (y < top - 8f || y > top + size + labelH)
+			return -1;
+		for (int i = 0; i < 2; i++) {
+			float left = protagonistCenter(i) - size / 2f;
+			if (x >= left - 8f && x <= left + size + 8f)
+				return i;
+		}
+		return -1;
+	}
+
+	private static float protagonistSize() {
+		return Math.min(Options.getHeight() * 0.34f, Options.getWidth() * 0.26f);
+	}
+
+	private static float protagonistCenter(int i) {
+		return Options.getWidth() * (i == 0 ? 0.34f : 0.66f);
+	}
+
+	private String chosenGender() {
+		return protagonist == 1 ? StorySave.FEMALE : StorySave.MALE;
+	}
+
+	private void beginName() {
 		vk.autoOpen();
 		mode = Mode.NAME;
 		AudioController.Effect.SELECT.play();
@@ -256,7 +325,7 @@ public class StoryScreen extends Screen {
 		if (key == Input.KEY_ESCAPE) {
 			vk.close();
 			AudioController.Effect.BACK.play();
-			mode = Mode.HUB;
+			mode = Mode.PROTAGONIST;
 			return;
 		}
 		if (key == Input.KEY_ENTER || key == Input.KEY_Z) {
@@ -273,7 +342,7 @@ public class StoryScreen extends Screen {
 		Profile profile = game.getProfile();
 		if (profile == null)
 			return;
-		StorySave save = profile.addCampaign(name.toString());
+		StorySave save = profile.addCampaign(name.toString(), chosenGender());
 		if (save == null) {
 			AudioController.Effect.INVALID.play();
 			return;
@@ -599,7 +668,8 @@ public class StoryScreen extends Screen {
 		if (!showingVideo && (key == Input.KEY_Z || key == Input.KEY_ENTER)) {
 			StorySave save = camp();
 			if (lineIndex >= 0 && lineIndex < lines.length) {
-				ArrayList<String> wrapped = wrap(Options.getSmallFont(), lines[lineIndex].text(save), textWidth());
+				ArrayList<String> wrapped = wrap(Options.getSmallFont(), lines[lineIndex].text(save),
+					sceneTextWidth(lines[lineIndex]));
 				int pages = Math.max(1, (wrapped.size() + 2) / 3);
 				if (page + 1 < pages) {
 					page++;
@@ -787,6 +857,7 @@ public class StoryScreen extends Screen {
 		lines = (script != null) ? script : new StoryCampaign.Line[0];
 		lineIndex = 0;
 		page = 0;
+		sceneDefeat = false;
 		after = next;
 		showingVideo = false;
 		mode = Mode.SCENE;
@@ -856,7 +927,8 @@ public class StoryScreen extends Screen {
 	}
 
 	private String backgroundFile() {
-		if (region != null && mode != Mode.HUB && mode != Mode.NAME && mode != Mode.CAMPAIGNS && mode != Mode.DELETE)
+		if (region != null && mode != Mode.HUB && mode != Mode.PROTAGONIST && mode != Mode.NAME
+				&& mode != Mode.CAMPAIGNS && mode != Mode.DELETE)
 			return region.background;
 		StorySave save = camp();
 		int i = StoryCampaign.currentRegion(save);
@@ -883,8 +955,46 @@ public class StoryScreen extends Screen {
 		HintBar.draw(I18n.hintStoryHub(), height * 0.92f);
 	}
 
+	private void renderProtagonist(Graphics g, int width, int height) {
+		Ui.drawCentered(Options.getFont(), I18n.storyProtagonistTitle(), height * 0.1f, Ui.TITLE);
+		Ui.drawCentered(Options.getSmallFont(), I18n.storyProtagonistNote(), height * 0.18f, Ui.HINT);
+		float size = protagonistSize();
+		float top = height * 0.28f;
+		UnicodeFont font = Options.getSmallFont();
+		String[] labels = { I18n.storyMale(), I18n.storyFemale() };
+		String[] genders = { StorySave.MALE, StorySave.FEMALE };
+		for (int i = 0; i < 2; i++) {
+			boolean on = i == protagonist;
+			float left = protagonistCenter(i) - size / 2f;
+			g.setColor(on ? Ui.TITLE : new Color(0.3f, 0.3f, 0.34f));
+			g.fillRect(left - 4f, top - 4f, size + 8f, size + 8f);
+			g.setColor(new Color(0.05f, 0.07f, 0.12f));
+			g.fillRect(left - 1f, top - 1f, size + 2f, size + 2f);
+			Image face = StoryAssets.portrait(StorySave.portraitFor(genders[i]), false);
+			if (face != null)
+				face.draw(left, top, size, size);
+			if (!on) {
+				g.setColor(new Color(0f, 0f, 0f, 0.5f));
+				g.fillRect(left, top, size, size);
+			}
+			float labelY = top + size + font.getLineHeight() * 0.5f;
+			float labelX = protagonistCenter(i) - font.getWidth(labels[i]) / 2f;
+			font.drawString(labelX, labelY, labels[i], on ? Ui.TITLE : Ui.HINT);
+			if (on) {
+				Image cursor = GameImage.CURSOR.getImage();
+				cursor.draw(labelX - cursor.getWidth() - 10f, labelY + (font.getLineHeight() - cursor.getHeight()) / 2f);
+			}
+		}
+		HintBar.draw(I18n.hintStoryProtagonist(), height * 0.92f);
+	}
+
 	private void renderName(Graphics g, int height) {
-		Ui.drawCentered(Options.getFont(), I18n.storyNamePrompt(), height * 0.16f, Ui.TITLE);
+		Image face = StoryAssets.portrait(StorySave.portraitFor(chosenGender()), false);
+		if (face != null) {
+			float size = height * 0.18f;
+			face.draw(Options.getWidth() * 0.05f, height * 0.06f, size, size);
+		}
+		Ui.drawCentered(Options.getFont(), I18n.storyNamePrompt(protagonist == 1), height * 0.16f, Ui.TITLE);
 		String shown = name.length() == 0 ? "_" : name.toString() + "_";
 		Ui.drawCentered(Options.getFont(), shown, height * 0.28f, Color.white);
 		Ui.drawCentered(Options.getSmallFont(), I18n.storyFan(), height * 0.38f, Ui.HINT);
@@ -908,7 +1018,8 @@ public class StoryScreen extends Screen {
 			String label = save.student() + "  " + here.name() + "  "
 				+ I18n.storyProgress(StoryCampaign.clearedCount(save), StoryCampaign.duelCount())
 				+ "  " + save.when();
-			drawChoice(font, i, index, Ui.fit(font, label, Options.getWidth() * 0.72f), start, step, null, Ui.HINT);
+			Image face = StoryAssets.portrait(save.portraitId(), false);
+			drawChoice(font, i, index, Ui.fit(font, label, Options.getWidth() * 0.72f), start, step, face, Ui.HINT);
 		}
 		HintBar.draw(I18n.hintStoryCampaigns(), height * 0.92f);
 	}
@@ -930,11 +1041,20 @@ public class StoryScreen extends Screen {
 			return;
 		}
 		StoryCampaign.Region here = StoryCampaign.REGIONS[StoryCampaign.currentRegion(save)];
+		Image face = StoryAssets.portrait(save.portraitId(), false);
+		if (face != null) {
+			float size = height * 0.16f;
+			float fx = Options.getWidth() * 0.05f;
+			float fy = height * 0.04f;
+			g.setColor(Ui.TITLE);
+			g.fillRect(fx - 2f, fy - 2f, size + 4f, size + 4f);
+			face.draw(fx, fy, size, size);
+		}
 		Ui.drawCentered(Options.getFont(), save.student(), height * 0.07f, Ui.TITLE);
 		Ui.drawCentered(Options.getSmallFont(), here.name(), height * 0.14f, Ui.HINT);
 		StoryCampaign.Duel next = StoryCampaign.nextDuel(save);
-		String goal = save.isComplete() ? I18n.storyChampion()
-			: (next == null ? I18n.storyChampion() : I18n.storyObjective(next.role(), next.name()));
+		String goal = save.isComplete() ? I18n.storyChampion(save.isFemale())
+			: (next == null ? I18n.storyChampion(save.isFemale()) : I18n.storyObjective(next.role(), next.name()));
 		Ui.drawCentered(Options.getSmallFont(), Ui.fit(Options.getSmallFont(), goal, Options.getWidth() * 0.86f),
 			height * 0.2f, Color.white);
 		Ui.drawCentered(Options.getSmallFont(),
@@ -1078,23 +1198,28 @@ public class StoryScreen extends Screen {
 			g.setColor(new Color(0.05f, 0.07f, 0.12f, 0.92f));
 			g.fillRect(boxX, boxY, boxW, boxH);
 		}
+		StorySave save = camp();
 		float face = boxH * 0.72f;
 		float faceX = boxX + width * 0.02f;
 		float faceY = boxY + (boxH - face) / 2f;
-		float textX = faceX;
+		float textX = sceneTextX(line);
 		if (line.narrator) {
 			drawNarrator(g, faceX, faceY, face);
-			textX = faceX + face + width * 0.02f;
 		} else {
-			Image portrait = StoryAssets.portrait(line.portrait, line.defeat);
-			if (portrait != null) {
+			Image portrait = StoryAssets.portrait(line.portraitFor(save), line.defeat || (line.isPlayer() && sceneDefeat));
+			if (portrait != null)
 				portrait.draw(faceX, faceY, face, face);
-				textX = faceX + face + width * 0.015f;
-			}
 		}
-		float textW = boxX + boxW - textX - width * 0.03f;
+		Image listener = listenerPortrait(line);
+		if (listener != null) {
+			float lx = boxX + boxW - width * 0.02f - face;
+			g.setColor(new Color(0.72f, 0.58f, 0.28f));
+			g.fillRect(lx - 2f, faceY - 2f, face + 4f, face + 4f);
+			listener.draw(lx, faceY, face, face);
+		}
+		float textW = sceneTextWidth(line);
 		UnicodeFont small = Options.getSmallFont();
-		String who = line.name();
+		String who = line.name(save);
 		if (who != null && !who.isEmpty())
 			small.drawString(textX, boxY + boxH * 0.1f, who, Ui.TITLE);
 		ArrayList<String> wrapped = wrap(small, line.text(camp()), textW);
@@ -1225,8 +1350,40 @@ public class StoryScreen extends Screen {
 		}
 	}
 
-	private float textWidth() {
-		return Options.getWidth() * 0.55f;
+	/**
+	 * The protagonist listens on the right of every box they don't speak in.
+	 * After a lost match the defeat face is used.
+	 */
+	private Image listenerPortrait(StoryCampaign.Line line) {
+		StorySave save = camp();
+		if (save == null || line == null || line.isPlayer())
+			return null;
+		return StoryAssets.portrait(save.portraitId(), sceneDefeat);
+	}
+
+	/** Left edge of the dialogue text; same math for drawing and paging. */
+	private float sceneTextX(StoryCampaign.Line line) {
+		float width = Options.getWidth();
+		float height = Options.getHeight();
+		float boxX = (width - width * 0.92f) / 2f;
+		float face = height * 0.28f * 0.72f;
+		float faceX = boxX + width * 0.02f;
+		if (line.narrator)
+			return faceX + face + width * 0.02f;
+		if (StoryAssets.portrait(line.portraitFor(camp()), line.defeat) != null)
+			return faceX + face + width * 0.015f;
+		return faceX;
+	}
+
+	private float sceneTextWidth(StoryCampaign.Line line) {
+		float width = Options.getWidth();
+		float height = Options.getHeight();
+		float boxW = width * 0.92f;
+		float boxX = (width - boxW) / 2f;
+		float right = boxX + boxW - width * 0.03f;
+		if (listenerPortrait(line) != null)
+			right = boxX + boxW - width * 0.02f - height * 0.28f * 0.72f - width * 0.02f;
+		return Math.max(width * 0.2f, right - sceneTextX(line));
 	}
 
 	private interface RowAction { void run(int row); }

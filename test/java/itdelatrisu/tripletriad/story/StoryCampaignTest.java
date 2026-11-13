@@ -217,6 +217,120 @@ public class StoryCampaignTest {
 		assertTrue(still.isFile());
 	}
 
+	@Test
+	public void protagonistChoiceSurvivesSaveRoundTrip() throws Exception {
+		Profile profile = named("Marcilio");
+		StorySave caio = profile.addCampaign("Caio", StorySave.MALE);
+		StorySave ana = profile.addCampaign("Ana", StorySave.FEMALE);
+		assertEquals(StorySave.MALE, caio.gender());
+		assertEquals("aluno_m", caio.portraitId());
+		assertTrue(ana.isFemale());
+		assertEquals("aluna", ana.portraitId());
+		File file = Files.createTempFile("story-gender", ".profile").toFile();
+		file.deleteOnExit();
+		ProfileStore.writeFile(file, profile);
+		String text = new String(Files.readAllBytes(file.toPath()), "UTF-8");
+		assertTrue(text.contains("CAMP.1.GENDER = M"));
+		assertTrue(text.contains("CAMP.2.GENDER = F"));
+		assertTrue(text.contains("STORY_FORMAT = 3"));
+
+		Profile loaded = ProfileStore.readFile(file);
+		assertEquals(StorySave.MALE, loaded.campaignAt(0).gender());
+		assertEquals(StorySave.FEMALE, loaded.campaignAt(1).gender());
+		assertEquals("Ana", loaded.campaignAt(1).student());
+	}
+
+	@Test
+	public void campaignSavedWithoutGenderStaysAluno() throws Exception {
+		Profile profile = named("Marcilio");
+		profile.addCampaign("Antiga", StorySave.FEMALE);
+		File file = Files.createTempFile("story-old", ".profile").toFile();
+		file.deleteOnExit();
+		ProfileStore.writeFile(file, profile);
+		StringBuilder old = new StringBuilder();
+		for (String line : Files.readAllLines(file.toPath())) {
+			if (line.startsWith("CAMP.1.GENDER"))
+				continue;
+			old.append(line.startsWith("STORY_FORMAT") ? "STORY_FORMAT = 2" : line).append('\n');
+		}
+		Files.write(file.toPath(), old.toString().getBytes("UTF-8"));
+
+		Profile loaded = ProfileStore.readFile(file);
+		assertNotNull(loaded);
+		StorySave save = loaded.activeStory();
+		assertEquals("Antiga", save.student());
+		assertEquals(StorySave.LEGACY_GENDER, save.gender());
+		assertEquals(StorySave.MALE, save.gender());
+		save.setGender("garbage");
+		assertEquals(StorySave.MALE, save.gender());
+		save.setGender("aluna");
+		assertTrue(save.isFemale());
+		assertEquals(StorySave.MALE, StorySave.create("X").gender());
+	}
+
+	@Test
+	public void genderedTextPicksOneSide() {
+		String pt = "{name}, e {o campeão|a campeã}. {Sonhador|Sonhadora}.";
+		assertEquals("{name}, e o campeão. Sonhador.", StoryCampaign.genderize(pt, false));
+		assertEquals("{name}, e a campeã. Sonhadora.", StoryCampaign.genderize(pt, true));
+		StorySave ana = StorySave.create("Ana", StorySave.FEMALE);
+		StorySave caio = StorySave.create("Caio", StorySave.MALE);
+		assertEquals("Ana, e a campeã. Sonhadora.", StoryCampaign.fill(pt, ana));
+		assertEquals("Caio, e o campeão. Sonhador.", StoryCampaign.fill(pt, caio));
+		assertEquals("Sem marca.", StoryCampaign.fill("Sem marca.", ana));
+	}
+
+	@Test
+	public void everyScriptLineResolvesForBothProtagonists() {
+		java.util.ArrayList<StoryCampaign.Line> all = new java.util.ArrayList<StoryCampaign.Line>();
+		addAll(all, StoryCampaign.STARTER);
+		addAll(all, StoryCampaign.ceremony());
+		for (int r = 0; r < StoryCampaign.REGIONS.length; r++) {
+			Region region = StoryCampaign.REGIONS[r];
+			addAll(all, region.arrival);
+			for (int i = 0; i < region.duels.length; i++) {
+				Duel d = region.duels[i];
+				addAll(all, d.bio);
+				addAll(all, d.open);
+				addAll(all, new StoryCampaign.Line[] { d.before, d.win, d.lose });
+				addAll(all, d.afterWin);
+				addAll(all, d.afterLose);
+			}
+		}
+		int gendered = 0;
+		for (StoryCampaign.Line line : all) {
+			String[] texts = { line.pt, line.en, line.es };
+			for (String text : texts) {
+				if (!text.equals(StoryCampaign.genderize(text, false)))
+					gendered++;
+				for (int f = 0; f < 2; f++) {
+					String out = StoryCampaign.genderize(text, f == 1);
+					assertFalse(out.contains("|"), text);
+					assertFalse(out.replace("{name}", "").contains("{"), text);
+				}
+			}
+		}
+		assertTrue(gendered >= 8, "gendered lines: " + gendered);
+	}
+
+	@Test
+	public void protagonistPortraitsAreInTheTree() {
+		String[] ids = { StorySave.PORTRAIT_MALE, StorySave.PORTRAIT_FEMALE };
+		for (int i = 0; i < ids.length; i++) {
+			assertTrue(Assets.file("story/portraits/" + ids[i] + "_normal.png").isFile(), ids[i]);
+			assertTrue(Assets.file("story/portraits/" + ids[i] + "_derrota.png").isFile(), ids[i]);
+		}
+	}
+
+	private static void addAll(java.util.List<StoryCampaign.Line> out, StoryCampaign.Line[] lines) {
+		if (lines == null)
+			return;
+		for (int i = 0; i < lines.length; i++) {
+			if (lines[i] != null)
+				out.add(lines[i]);
+		}
+	}
+
 	private static Profile named(String name) {
 		Profile profile = new Profile();
 		profile.setName(name);

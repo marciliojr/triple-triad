@@ -8,10 +8,12 @@
 
 ## Campanha
 
-- Menu **História**. O jogador é um aluno de Balamb (nome escolhido na hora). Squall só orienta. Nilo Vann é o locutor: crachá desenhado (`narrator`), sem retrato de outro personagem.
+- Menu **História**. O jogador é aluno ou aluna de Balamb: Nova campanha abre a escolha do protagonista (`Mode.PROTAGONIST`, retratos `aluno_m` / `aluna`) e depois o nome. A escolha fica em `CAMP.n.GENDER` (M/F); campanha antiga sem a chave abre como aluno (`StorySave.LEGACY_GENDER`). Texto de PT/ES usa `{masc|fem}` resolvido em `StoryCampaign.fill`. Squall só orienta. Nilo Vann é o locutor: crachá desenhado (`narrator`), sem retrato de outro personagem.
 - Até 15 campanhas em `StorySave` / chaves `CAMP.*`. O perfil guarda álbum, decks, blocos do Campeonato e troféus. A campanha guarda duelos, chegadas, especiais já dados e a escolha pendente. `STORY_CLEARED` antigo migra uma vez e continua gravado.
 - Regulamento: seletiva em chave (Garden); grupos com tabela real (Town top 2, Timber top 3, Deling top 2, Dollet top 2, FH e Esthar top 1). A mesa da Rainha em FH não dá ponto. Final: `queen_esthar` no Garden, Bahamut na primeira vitória. Derrota = revanche, sem eliminar.
 - Cada vitória: uma carta da mão jogada, confirmada. Especiais do catálogo ficam fora da mão (`StoryCampaign.isSpecial`).
+- Protagonista: `Mode.PROTAGONIST` em `StoryScreen` (esq/dir ou mouse, Z/Enter, Esc volta ao hub). Retrato em `StoryAssets.portrait(save.portraitId(), derrota)`: lista de campanhas (ícone), topo da etapa, tela do nome e à direita da caixa de diálogo (derrota depois de partida perdida, `sceneDefeat`). `Line` com retrato `@player` (`StoryCampaign.PLAYER_PORTRAIT`) faz o protagonista falar; nenhuma fala usa ainda.
+- Arte em jogo (`res/story/`): 7 fundos `mesa_*`, 40 retratos de adversários/NPCs, `aluno_m_normal/derrota` e `aluna_normal/derrota`, UI (`caixa_dialogo`, `no_*`, `rare_card_banner`). Ainda só em `story-assets/` (fora do jogo): `narrador_normal/derrota`, `mapa_mundi`, `arena_final`, `titulo_modo_historia`; `aluno_normal/derrota` são cópias antigas da aluna e não são usadas.
 - Vídeo se existir `res/story/<id>/frame_001.jpg` + `<id>.ogg`. Prontos: `intro_historia`, `chegada_balamb_town`, `chegada_timber` (video_3) e `chegada_deling` (video_4). Pendentes: `chegada_dollet`, `chegada_fh`, `chegada_esthar`, `final_historia`. Receita em `res/story/IMPORTACAO.txt`.
 
 ## Entregue na 1.3.0 (notas técnicas)

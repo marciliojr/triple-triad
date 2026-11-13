@@ -473,6 +473,8 @@ public class ProfileStore {
 				save.setId(value);
 			else if (field.equals("STUDENT"))
 				save.setStudent(value);
+			else if (field.equals("GENDER"))
+				save.setGender(value);
 			else if (field.equals("CREATED"))
 				save.setCreatedAt(Long.parseLong(value));
 			else if (field.equals("SAVED"))
@@ -596,6 +598,8 @@ public class ProfileStore {
 				writer.write(p + "ID = " + camp.id());
 				writer.newLine();
 				writer.write(p + "STUDENT = " + camp.student());
+				writer.newLine();
+				writer.write(p + "GENDER = " + camp.gender());
 				writer.newLine();
 				writer.write(p + "CREATED = " + camp.createdAt());
 				writer.newLine();
