@@ -16,6 +16,8 @@
 
 `Screen` define `enter` / `render` / `update` / `keyPressed` / `mousePressed` / `mouseWheelMoved`. `TripleTriad` despacha conforme `currentScreen`.
 
+Menu principal (`MenuScreen`): janela azul à direita e painel do perfil à esquerda. As teclas que chegam já são as canônicas (`Controls.translateKey` / joystick). Esquerda foca o painel; Z/Enter confirma. Abrir a troca a partir do menu usa `showProfileSelectFromMenu` (`profileSelectExits = false`, Esc volta). A abertura usa `showProfileSelect` com Esc saindo do jogo. O desenho não cria textura: `BOARD_MAT`, `CARD_BACK`, `CURSOR` e `Avatars`.
+
 Textos de UI passam por `I18n` + `Lang` (PT_BR, EN, ES). Nomes de regras em `Rule.getDisplayName()`.
 
 Campeonato: `ChampionshipRun` (round, mãos, bag da run, IA por round). Álbum em `Profile` (`COLLECTION`). Save da run: `RUN_ROUND`, `RUN_WINS`, `RUN_HAND`, `RUN_OPPONENT`, `RUN_BAG`. `championshipOpponentAI` em `TripleTriad` não grava no cfg. Aviso de save fica em `ChampionshipScreen` (`saveNoticeUntil`).

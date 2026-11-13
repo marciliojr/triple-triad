@@ -34,14 +34,27 @@ public final class Avatars {
 	/**
 	 * Draws an avatar scaled into a box (keeps 4:5 ratio, centered).
 	 * @param index 1-based avatar index
+	 * @return false when the portrait is missing
 	 */
-	public static void draw(int index, float x, float y, float w, float h) {
+	public static boolean draw(int index, float x, float y, float w, float h) {
+		return draw(index, x, y, w, h, 1f);
+	}
+
+	/**
+	 * Draws an avatar scaled into a box.
+	 * @param alpha draw opacity, restored to 1 afterwards
+	 * @return false when the portrait is missing
+	 */
+	public static boolean draw(int index, float x, float y, float w, float h, float alpha) {
 		Image img = get(index);
 		if (img == null)
-			return;
+			return false;
 		float scale = Math.min(w / img.getWidth(), h / img.getHeight());
 		float dw = img.getWidth() * scale, dh = img.getHeight() * scale;
+		img.setAlpha(alpha);
 		img.draw(x + (w - dw) / 2f, y + (h - dh) / 2f, dw, dh);
+		img.setAlpha(1f);
+		return true;
 	}
 
 	private static Image get(int index) {

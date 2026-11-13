@@ -32,7 +32,7 @@ A [Release v1.3.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.
 
 1. **Abertura** — vídeo de intro (Pular intro pula)
 2. **Perfil** — nome e avatar na primeira execução; depois, escolha do perfil em blocos estilo memory card
-3. **Menu** — Jogo Rápido, Campeonato, História, Versus, Meu Deck, Salvar, Troféus, Cheats, Como Jogar, Configurações
+3. **Menu** — Jogo Rápido, Campeonato, História, Versus, Meu Deck, Salvar, Troféus, Cheats, Como Jogar, Configurações. O perfil ativo (avatar, nome, cartas e campeonatos) fica no canto superior esquerdo; Esquerda abre a troca de perfil
 4. **Decks** — montar, editar, apagar ou escolher 5 cartas; ligar/desligar regras
 5. **Campeonato** — 8 rounds contra a IA
 6. **Partida** — Cancelar pede confirmação para sair
@@ -141,7 +141,7 @@ The [v1.3.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 
 1. **Intro** — opening video (Skip intro skips it)
 2. **Profile** — name and avatar on first run; then profile selection in memory-card blocks
-3. **Menu** — Quick Game, Championship, Story, Versus, My Deck, Save, Trophies, Cheats, How to Play, Settings
+3. **Menu** — Quick Game, Championship, Story, Versus, My Deck, Save, Trophies, Cheats, How to Play, Settings. The active profile (avatar, name, cards and championships) sits in the top-left; Left opens the profile switch
 4. **Decks** — build, edit, delete, or pick 5 cards; toggle rules
 5. **Championship** — 8 rounds vs the AI
 6. **Match** — Cancel asks for confirmation to leave

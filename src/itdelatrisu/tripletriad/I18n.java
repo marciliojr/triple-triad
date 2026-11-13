@@ -870,8 +870,19 @@ public final class I18n {
 		return ROUND_PLACES[i] + " - " + championshipRound(round);
 	}
 
+	/** Cards and championships won, shown under the name on the main menu. */
+	public static String menuProfileMeta(int cards, int cups) {
+		return pick(cards + " cartas - " + cups + " campeonatos",
+			cards + " cards - " + cups + " championships",
+			cards + " cartas - " + cups + " campeonatos");
+	}
+
 	public static String hintMenu() {
-		return Controls.dyn(pick("Z/Enter seleciona    Esc sai", "Z/Enter selects    Esc quits", "Z/Enter selecciona    Esc sale"));
+		String base = Controls.dyn(pick("Cima/baixo escolhe    Z/Enter seleciona    Esc sai",
+			"Up/down selects    Z/Enter selects    Esc quits",
+			"Arriba/abajo elige    Z/Enter selecciona    Esc sale"));
+		return base + "    " + Controls.label(Controls.Action.LEFT) + " "
+			+ pick("perfil", "profile", "perfil");
 	}
 
 	public static String hintEscBack() {
