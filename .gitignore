@@ -13,6 +13,9 @@
 .gradle/
 build/
 
+# Entrega local de arte; o jogo usa res/story/
+/story-assets/
+
 # IDEs
 .idea/
 *.iml
