@@ -312,6 +312,12 @@ public final class I18n {
 		return pick("Deseja sair do jogo?", "Quit the game?", "\u00bfDeseas salir del juego?");
 	}
 
+	public static String confirmReturnMenu() {
+		return pick("Voltar ao menu? O progresso ser\u00e1 salvo.",
+			"Return to the menu? Progress will be saved.",
+			"\u00bfVolver al men\u00fa? Se guardar\u00e1 el progreso.");
+	}
+
 	public static String hintExitConfirm() {
 		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    Esc cancela",
 			"Left/right selects    Z/Enter confirms    Esc cancels",
@@ -414,31 +420,33 @@ public final class I18n {
 	}
 
 	public static String hintStoryMap() {
-		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter entra    Esc volta",
-			"Up/down selects    Z/Enter enters    Esc back",
-			"Arriba/abajo elige    Z/Enter entra    Esc volver"));
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter entra    X volta    Esc menu",
+			"Up/down selects    Z/Enter enters    X back    Esc menu",
+			"Arriba/abajo elige    Z/Enter entra    X vuelve    Esc men\u00fa"));
 	}
 
 	public static String hintStoryList() {
-		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    Esc volta",
-			"Up/down selects    Z/Enter plays    Esc back",
-			"Arriba/abajo elige    Z/Enter juega    Esc volver"));
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter avan\u00e7a    X volta    Esc menu",
+			"Up/down selects    Z/Enter advances    X back    Esc menu",
+			"Arriba/abajo elige    Z/Enter avanza    X vuelve    Esc men\u00fa"));
 	}
 
 	public static String hintStoryTalk() {
-		return Controls.dyn(pick("Z/Enter avan\u00e7a    Esc pula",
-			"Z/Enter advances    Esc skips",
-			"Z/Enter avanza    Esc salta"));
+		return Controls.dyn(pick("Z/Enter avan\u00e7a    X pula a cena    Esc menu",
+			"Z/Enter advances    X skips the scene    Esc menu",
+			"Z/Enter avanza    X salta la escena    Esc men\u00fa"));
 	}
 
 	public static String hintStoryVideo() {
-		return Controls.dyn(pick("Z/S pula o v\u00eddeo    Esc pula a cena",
-			"Z/S skips the video    Esc skips the scene",
-			"Z/S salta el v\u00eddeo    Esc salta la escena"));
+		return Controls.dyn(pick("Z/S pula o v\u00eddeo    X pula a cena    Esc menu",
+			"Z/S skips the video    X skips the scene    Esc menu",
+			"Z/S salta el v\u00eddeo    X salta la escena    Esc men\u00fa"));
 	}
 
 	public static String hintStoryReward() {
-		return Controls.dyn(pick("Z/Enter continua", "Z/Enter continues", "Z/Enter contin\u00faa"));
+		return Controls.dyn(pick("Z/Enter continua    Esc menu",
+			"Z/Enter continues    Esc menu",
+			"Z/Enter contin\u00faa    Esc men\u00fa"));
 	}
 
 	public static String storyNew() {
@@ -493,9 +501,9 @@ public final class I18n {
 	}
 
 	public static String hintStoryProtagonist() {
-		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    Esc volta",
-			"Left/right selects    Z/Enter confirms    Esc back",
-			"Izq/der elige    Z/Enter confirma    Esc volver"));
+		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    X volta    Esc menu",
+			"Left/right selects    Z/Enter confirms    X back    Esc menu",
+			"Izq/der elige    Z/Enter confirma    X vuelve    Esc men\u00fa"));
 	}
 
 	public static String storyFan() {
@@ -513,6 +521,8 @@ public final class I18n {
 	public static String storyNo() { return pick("N\u00e3o", "No", "No"); }
 
 	public static String storyDuels() { return pick("Partidas", "Matches", "Partidas"); }
+
+	public static String storyCities() { return pick("Cidades", "Cities", "Ciudades"); }
 
 	public static String storyTable() { return pick("Tabela", "Standings", "Tabla"); }
 
@@ -584,27 +594,27 @@ public final class I18n {
 	}
 
 	public static String hintStoryCampaigns() {
-		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter abre    Del apaga    Esc volta",
-			"Up/down selects    Z/Enter opens    Del deletes    Esc back",
-			"Arriba/abajo elige    Z/Enter abre    Del borra    Esc volver"));
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter abre    Del apaga    X volta    Esc menu",
+			"Up/down selects    Z/Enter opens    Del deletes    X back    Esc menu",
+			"Arriba/abajo elige    Z/Enter abre    Del borra    X vuelve    Esc men\u00fa"));
 	}
 
 	public static String hintStoryStage() {
-		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter entra    S salva    Esc sai da campanha",
-			"Up/down selects    Z/Enter enters    S saves    Esc leaves the campaign",
-			"Arriba/abajo elige    Z/Enter entra    S guarda    Esc sale de la campa\u00f1a"));
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter entra    S salva    X sai da campanha    Esc menu",
+			"Up/down selects    Z/Enter enters    S saves    X leaves the campaign    Esc menu",
+			"Arriba/abajo elige    Z/Enter entra    S guarda    X sale de la campa\u00f1a    Esc men\u00fa"));
 	}
 
 	public static String hintStoryDuels() {
-		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    T hist\u00f3rico    S salva    Esc volta",
-			"Up/down selects    Z/Enter plays    T history    S saves    Esc back",
-			"Arriba/abajo elige    Z/Enter juega    T historial    S guarda    Esc volver"));
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    T hist\u00f3rico    S salva    X volta    Esc menu",
+			"Up/down selects    Z/Enter plays    T history    S saves    X back    Esc menu",
+			"Arriba/abajo elige    Z/Enter juega    T historial    S guarda    X vuelve    Esc men\u00fa"));
 	}
 
 	public static String hintStoryPick() {
-		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    C amplia    Esc volta",
-			"Left/right selects    Z/Enter confirms    C zooms    Esc back",
-			"Izq/der elige    Z/Enter confirma    C amplia    Esc volver"));
+		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    C amplia    X volta    Esc menu",
+			"Left/right selects    Z/Enter confirms    C zooms    X back    Esc menu",
+			"Izq/der elige    Z/Enter confirma    C amplia    X vuelve    Esc men\u00fa"));
 	}
 
 	public static String hintStoryYesNo() {
@@ -1397,7 +1407,7 @@ public final class I18n {
 		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
 		"",
 		"#Hist\u00f3ria",
-		"Hist\u00f3ria original: voc\u00ea \u00e9 um aluno ou uma aluna de Balamb (a escolha \u00e9 feita ao criar a campanha) no Torneio Mundial. Squall orienta e n\u00e3o joga. O mesmo perfil guarda at\u00e9 15 campanhas. Cada vit\u00f3ria deixa escolher uma carta da m\u00e3o; a carta especial do encontro sai s\u00f3 na primeira vez. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
+		"Hist\u00f3ria original: voc\u00ea \u00e9 um aluno ou uma aluna de Balamb (a escolha \u00e9 feita ao criar a campanha) no Torneio Mundial. Squall orienta e n\u00e3o joga. O mesmo perfil guarda at\u00e9 15 campanhas. Cada vit\u00f3ria deixa escolher uma carta da m\u00e3o; a carta especial do encontro sai s\u00f3 na primeira vez. As partidas s\u00e3o escolhidas em Cidades, no mapa-m\u00fandi. Esc nas telas da campanha pergunta se voc\u00ea quer voltar ao menu (o progresso \u00e9 salvo); X volta uma tela. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -1450,7 +1460,7 @@ public final class I18n {
 		"In the Cheats menu type a code and press Enter. cid = all cards | edea = Guardian Forces (levels 8-9) | balamb = characters (level 10) | monster = monsters (levels 1-7).",
 		"",
 		"#Story",
-		"An original story: you are a Balamb student (chosen when the campaign is created) in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns. Each win lets you choose one card from the hand; the meeting's special card is given only the first time. Leaving mid-match returns to the saved point without deleting the campaign.",
+		"An original story: you are a Balamb student (chosen when the campaign is created) in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns. Each win lets you choose one card from the hand; the meeting's special card is given only the first time. Matches are picked in Cities, on the world map. Esc on campaign screens asks if you want to return to the menu (progress is saved); X goes back one screen. Leaving mid-match returns to the saved point without deleting the campaign.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -1503,7 +1513,7 @@ public final class I18n {
 		"En el men\u00fa Trucos escribe un c\u00f3digo y pulsa Enter. cid = todas las cartas | edea = Guardian Forces (niveles 8-9) | balamb = personajes (nivel 10) | monster = monstruos (niveles 1-7).",
 		"",
 		"#Historia",
-		"Historia original: eres un alumno o una alumna de Balamb (se elige al crear la campa\u00f1a) en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campa\u00f1as. Cada victoria deja elegir una carta de la mano; la carta especial del encuentro sale solo la primera vez. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campa\u00f1a.",
+		"Historia original: eres un alumno o una alumna de Balamb (se elige al crear la campa\u00f1a) en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campa\u00f1as. Cada victoria deja elegir una carta de la mano; la carta especial del encuentro sale solo la primera vez. Las partidas se eligen en Ciudades, en el mapa mundial. Esc en las pantallas de la campa\u00f1a pregunta si quieres volver al men\u00fa (se guarda el progreso); X vuelve una pantalla. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campa\u00f1a.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

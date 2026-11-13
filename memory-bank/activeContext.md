@@ -38,6 +38,13 @@
 
 - Mesma branch (lote 3): `Controls` traduz teclas remapeadas e botões/analógico do joystick para as teclas canônicas (Z, Esc, Enter, Del, S, Esq/Dir), então as telas não mudam; bindings `BIND_KEY_*`/`BIND_PAD_*` no cfg; `Controls.allows(playerA)` decide quem joga no Versus. Versus = flag `versus` em `TripleTriad` (B usa a mão `OPPONENT`, sem IA, Open forçado e restaurado em `endVersus`). Telas novas estilo PS1 usam `ui.Ps1` (frame/painel/linhas): `RemoveCardsScreen`, `ProfileSelectScreen`, `TrophiesScreen`, `ControlsScreen`, `VersusScreen`. Perfil ganhou `AVATAR` e `STAT_*`. Vitória: `AudioController.playVictory/stopVictory`
 
+## Saída da História e menu da etapa
+
+- Esc nas telas da campanha (mapa, diálogo, vídeo, protagonista, lista de mesas, recompensa, etapa, hub) abre `ExitConfirm` com `Purpose.RETURN_MENU` ("Voltar ao menu? O progresso será salvo."). Sim grava o perfil (`save.touch()` + `saveProfile()`) e volta ao menu principal. Não/Esc/X fecha a janela. Diálogos locais (apagar campanha, confirmar carta, nome) continuam usando Esc para cancelar.
+- X volta uma tela (mapa/duelos/protagonista/campanhas -> etapa ou hub; no diálogo, X pula o resto da cena). Z/S continuam pulando o vídeo.
+- Menu da etapa: **Cidades** (mapa) é o caminho para escolher os jogos. **Partidas** foi removido por ser redundante. **Tabela** só aparece nas fases `Kind.GROUP`.
+- Falas do Squall e dos adversários: conversa de mesa (desafio, zombaria, derrota), regras reais daquela mesa e carta especial. Squall curto e seco; Fujin em maiúsculas; Raijin com "ya know" em EN; Squall sem terceira pessoa. `StoryTextTest` também recusa glifos fora de ASCII + `áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡`.
+
 ## Ao continuar
 
 - Não mexer em `CardResult` / regras de captura sem teste de Same/Plus/Combo/Elemental

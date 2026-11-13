@@ -55,4 +55,17 @@ public class ExitConfirmTest {
 		dialog.open();
 		assertEquals(ExitConfirm.Result.STAY, dialog.answer(ExitConfirm.NO));
 	}
+
+	@Test
+	public void returnMenuPurposeKeepsTheSameKeys() {
+		ExitConfirm dialog = new ExitConfirm();
+		dialog.open(ExitConfirm.Purpose.RETURN_MENU);
+		assertEquals(ExitConfirm.Purpose.RETURN_MENU, dialog.purpose());
+		assertEquals(ExitConfirm.NO, dialog.choice());
+		assertEquals(ExitConfirm.Result.MOVE, dialog.key(Input.KEY_RIGHT));
+		assertEquals(ExitConfirm.Result.EXIT, dialog.key(Input.KEY_ENTER));
+		assertFalse(dialog.isOpen());
+		dialog.open();
+		assertEquals(ExitConfirm.Purpose.QUIT_GAME, dialog.purpose());
+	}
 }
