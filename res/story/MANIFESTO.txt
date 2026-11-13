@@ -32,3 +32,9 @@ Fundo sem regiao propria
 Shumi nao tem fundo. O duelo usa mesa_fh.png, dentro de Fisherman's Horizon.
 
 O jogo usa rare_card_banner.png (sem texto) e escreve a frase no idioma atual. rare_card_banner_en.png fica so como referencia.
+
+Protagonista (escolha aluno/aluna ao criar a campanha)
+- portraits/aluno_m_normal.png, aluno_m_derrota.png: aluno (masculino), copia de story-assets/portraits/
+- portraits/aluna_normal.png, aluna_derrota.png: aluna (feminino), copia de story-assets/portraits/
+O jogo le o id pelo save da campanha (CAMP.n.GENDER = M ou F) e usa o padrao <id>_normal.png / <id>_derrota.png.
+story-assets/portraits/aluno_normal.png e aluno_derrota.png sao copias antigas da aluna e nao sao usadas.

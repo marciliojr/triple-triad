@@ -19,11 +19,15 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Save antigo `STORY_CLEARED` / `STORY_ARRIVALS` migra para a primeira campanha e permanece no arquivo. Gravação do perfil em arquivo temporário e troca atômica
 - Cada vitória oferece uma carta da mão jogada, com confirmação. A carta especial do encontro (Ifrit, Shiva, Bahamut e as demais do catálogo já mapeadas) entra só na primeira vitória e não aparece nessa mão
 - Regulamento jogável: seletiva em chave no Garden; grupos com tabela em Balamb, Timber, Deling, Dollet, FH e Esthar; final no Garden. Derrota não elimina. Vídeo pronto em `intro_historia`, `chegada_balamb_town`, `chegada_timber` e `chegada_deling`; as outras quatro cenas usam o fundo estático
+- Modo História: ao criar uma campanha, o jogador escolhe o protagonista, **Aluno** ou **Aluna**, numa tela com os dois retratos (esquerda/direita ou mouse, Z/Enter confirma, Esc volta). Depois vem o nome. O retrato escolhido aparece na lista de campanhas, no topo da etapa, na tela do nome e à direita da caixa de diálogo; depois de uma derrota ele usa a expressão de derrota. Retratos em `res/story/portraits/aluno_m_*.png` e `aluna_*.png`
+- Textos em PT e ES que tratam do jogador concordam com a escolha (aluno/aluna, campeão/campeã, o primeiro/a primeira, sonhador/sonhadora), pela marca `{masculino|feminino}` no roteiro. Em EN o texto continua neutro
 
 #### Changed
 
 - Menu principal redesenhado no estilo das janelas do FFVIII. O perfil ativo fica no canto superior esquerdo, com o avatar escolhido, o nome (contorno, fonte menor e reticências se for longo) e a linha real de cartas e campeonatos. Sem o arquivo do retrato, entra um busto neutro. As mesmas dez opções ficam numa janela azul de borda clara, com cursor de mão, faixa na opção selecionada e um fade curto ao abrir. O fundo continua o tabuleiro, escurecido, com um parallax lento e versos de carta. A HintBar segue no rodapé
 - Esquerda (o atalho já remapeado) foca esse painel; confirmar abre a troca de perfil e, dali, Esc volta ao menu. Na abertura, Esc na seleção de perfil continua saindo do jogo. Não há textura nova: avatar, cursor, verso e tabuleiro já existiam
+- Save da campanha no formato 3: nova chave `CAMP.n.GENDER = M|F`. Campanhas gravadas antes (sem a chave) abrem como **Aluno**, porque todo o texto anterior tratava o jogador como "o aluno" e nenhum retrato de protagonista era exibido. Arquivos antigos continuam abrindo; o resto do perfil não muda
+- A paginação da caixa de diálogo usa a mesma largura de texto do desenho
 
 ### [1.3.0] - 2026-11-08
 
@@ -266,11 +270,15 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - An old `STORY_CLEARED` / `STORY_ARRIVALS` save migrates into the first campaign and stays in the file. The profile is written to a temp file and replaced atomically
 - Each win offers one card from the hand that was played, with a confirmation. The meeting's special card (Ifrit, Shiva, Bahamut and the other mapped catalog ids) is given only on the first win and is not in that hand
 - Playable rules: Garden ladder qualifier; real tables at Balamb, Timber, Deling, Dollet, FH and Esthar; final at Garden. A loss does not eliminate you. Video is ready for `intro_historia`, `chegada_balamb_town`, `chegada_timber` and `chegada_deling`; the other four scenes use the still background
+- Story mode: when a campaign is created the player chooses the protagonist, **Male student** (aluno) or **Female student** (aluna), on a screen with both portraits (left/right or mouse, Z/Enter confirms, Esc goes back). The name comes next. The chosen portrait shows in the campaign list, at the top of the stage menu, on the name screen and on the right of the dialogue box; after a loss it uses the defeat face. Portraits live in `res/story/portraits/aluno_m_*.png` and `aluna_*.png`
+- PT and ES lines that refer to the player agree with that choice (aluno/aluna, campeão/campeã, el primero/la primera, soñador/soñadora) through a `{masculine|feminine}` mark in the script. EN stays neutral
 
 #### Changed
 
 - Main menu redrawn in the FFVIII window style. The active profile sits in the top-left, with the chosen avatar, the name (outline, smaller font and an ellipsis when it is long) and the real card and championship line. A missing portrait becomes a neutral bust. The same ten options sit in a blue window with a light border, a hand cursor, a bar on the selected row and a short fade when the screen opens. The background is still the board, darkened, with a slow parallax and card backs. The HintBar stays in the footer
 - Left (the binding already in use) focuses that panel; confirm opens profile selection and, from there, Esc returns to the menu. On startup, Esc on profile selection still quits. No new texture: avatar, cursor, card back and board were already loaded
+- Campaign save format 3: new key `CAMP.n.GENDER = M|F`. Campaigns saved before (without the key) open as the **male student**, since every earlier line called the player "o aluno" and no protagonist portrait was shown. Old files still load; the rest of the profile is unchanged
+- Dialogue box paging now uses the same text width as the drawing
 
 ### [1.3.0] - 2026-11-08
 

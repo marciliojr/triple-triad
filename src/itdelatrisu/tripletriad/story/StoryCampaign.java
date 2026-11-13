@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import itdelatrisu.tripletriad.Deck;
 import itdelatrisu.tripletriad.I18n;
@@ -81,6 +83,23 @@ public final class StoryCampaign {
 		}
 
 		public String name() { return I18n.text(namePt, nameEn, nameEs); }
+
+		/** @return the speaker name; the student's own name on a protagonist line */
+		public String name(StorySave save) {
+			if (isPlayer())
+				return (save == null || save.student().isEmpty()) ? "..." : save.student();
+			return name();
+		}
+
+		/** @return true when the campaign's protagonist speaks this line */
+		public boolean isPlayer() { return PLAYER_PORTRAIT.equals(portrait); }
+
+		/** @return the portrait id to draw, resolving the protagonist for this campaign */
+		public String portraitFor(StorySave save) {
+			if (!isPlayer())
+				return portrait;
+			return save == null ? StorySave.portraitFor(StorySave.LEGACY_GENDER) : save.portraitId();
+		}
 
 		public String text(StorySave save) { return fill(I18n.text(pt, en, es), save); }
 	}
@@ -210,6 +229,15 @@ public final class StoryCampaign {
 
 	public static final String PLAYER = "you";
 
+	/** Portrait id in a {@link Line} that stands for the campaign's protagonist (aluno or aluna). */
+	public static final String PLAYER_PORTRAIT = "@player";
+
+	/**
+	 * Gendered text: {@code {masculine|feminine}}, e.g. {@code "o {campeao|campea}"}.
+	 * {@code {name}} has no bar, so it never matches.
+	 */
+	private static final Pattern GENDERED = Pattern.compile("\\{([^{}|]*)\\|([^{}|]*)\\}");
+
 	public static final Region[] REGIONS = StoryScript.build();
 
 	public static final Line[] STARTER = StoryScript.starter();
@@ -242,7 +270,25 @@ public final class StoryCampaign {
 		if (text == null)
 			return "";
 		String name = (save == null || save.student().isEmpty()) ? "..." : save.student();
-		return text.replace("{name}", name);
+		boolean female = save != null && save.isFemale();
+		return genderize(text, female).replace("{name}", name);
+	}
+
+	/**
+	 * Picks one side of every {@code {masculine|feminine}} group.
+	 * @param female true for the aluna, false for the aluno
+	 */
+	public static String genderize(String text, boolean female) {
+		if (text == null)
+			return "";
+		if (text.indexOf('|') < 0)
+			return text;
+		Matcher m = GENDERED.matcher(text);
+		StringBuffer out = new StringBuffer();
+		while (m.find())
+			m.appendReplacement(out, Matcher.quoteReplacement(female ? m.group(2) : m.group(1)));
+		m.appendTail(out);
+		return out.toString();
 	}
 
 	public static Duel findDuel(String id) {

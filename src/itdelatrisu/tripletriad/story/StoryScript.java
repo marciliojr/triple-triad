@@ -35,9 +35,9 @@ final class StoryScript {
 
 	static Line[] ceremony() {
 		return new Line[] {
-			N("{name}. O titulo fica com o aluno de Balamb. Campeao mundial de Triple Triad.",
+			N("{name}. O titulo fica com {o aluno|a aluna} de Balamb. {Campeão|Campeã} mundial de Triple Triad.",
 				"{name}. The title stays with the Balamb student. World Triple Triad champion.",
-				"{name}. El titulo se queda con el alumno de Balamb. Campeon mundial de Triple Triad."),
+				"{name}. El titulo se queda con {el alumno|la alumna} de Balamb. {Campeón|Campeona} mundial de Triple Triad."),
 			Q("Voce jogou. Eu so vi. O nome na ficha era o seu desde o primeiro dia.",
 				"You played. I only watched. The name on the sheet was yours from day one.",
 				"Jugaste tu. Yo solo mire. El nombre en la ficha era el tuyo desde el primer dia."),
@@ -49,9 +49,9 @@ final class StoryScript {
 				"...Nao acostuma, {name}. Ano que vem a cadeira do meio e minha.",
 				"...Don't get used to it, {name}. Next year the middle chair is mine.",
 				"...No te acostumbres, {name}. El ano que viene la silla del medio es mia."),
-			N("Encerro o Torneio Mundial. {name}, de Balamb Garden, e o campeao.",
+			N("Encerro o Torneio Mundial. {name}, de Balamb Garden, e {o campeão|a campeã}.",
 				"That closes the World Tournament. {name}, of Balamb Garden, is the champion.",
-				"Cierro el Torneo Mundial. {name}, de Balamb Garden, es el campeon.")
+				"Cierro el Torneo Mundial. {name}, de Balamb Garden, es {el campeón|la campeona}.")
 		};
 	}
 
@@ -963,7 +963,7 @@ final class StoryScript {
 			new String[][] {{"seifer", "cientista"}, {"seifer", "odine"}, {"odine", "cientista"}},
 			"Esthar - Semifinal", "Esthar - Semifinal", "Esthar - Semifinal",
 			new Line[] {
-				N("{name} terminou em primeiro nas quartas de FH. A semi deste lado e em Esthar.", "{name} finished first in the FH quarters. This side's semi is in Esthar.", "{name} terminó primero en los cuartos de FH. La semi de este lado es en Esthar."),
+				N("{name} terminou em primeiro nas quartas de FH. A semi deste lado e em Esthar.", "{name} finished first in the FH quarters. This side's semi is in Esthar.", "{name} terminó {primero|primera} en los cuartos de FH. La semi de este lado es en Esthar."),
 				N("A cidade sedia porque o laboratorio tem sala, luz e publico. Nao porque haja uma crise. O torneio e o assunto.", "The city hosts it because the lab has a room, light and a crowd. Not because there's a crisis. The tournament is the subject.", "La ciudad la sede porque el laboratorio tiene sala, luz y público. No porque haya una crisis. El torneo es el asunto."),
 				Q("O Seifer subiu a escada dele desde o Garden. Esta neste grupo. A Rainha joga o outro. Eu nao finjo ter a tabela de la.", "Seifer climbed his own ladder from Garden. He's in this group. The Queen plays the other one. I won't pretend I have that table.", "Seifer subió su escalera desde el Garden. Está en este grupo. La Reina juega el otro. Yo no finjo tener la tabla de allá."),
 				N("Grupo da semifinal: {name}, Ivo Lenn, Odine e Seifer. Vitoria vale 3. So o primeiro vai a grande final.", "Semifinal group: {name}, Ivo Lenn, Odine and Seifer. A win is worth 3. Only first goes to the grand final.", "Grupo de la semifinal: {name}, Ivo Lenn, Odine y Seifer. La victoria vale 3. Solo el primero va a la gran final."),
@@ -1054,12 +1054,12 @@ final class StoryScript {
 					},
 					new Line[] {
 						N("Esthar. Ultima mesa da semifinal. Seifer contra {name}.", "Esthar. Last table of the semifinal. Seifer against {name}.", "Esthar. Última mesa de la semifinal. Seifer contra {name}."),
-						N("Regras completas. Tres pontos. Se a tabela fechar com {name} em primeiro, a grande final e no Garden. A carta dele so na primeira vitoria.", "Full rules. Three points. If the table closes with {name} in first, the grand final is at Garden. His card only on the first win.", "Reglas completas. Tres puntos. Si la tabla cierra con {name} primero, la gran final es en el Garden. Su carta solo en la primera victoria.")
+						N("Regras completas. Tres pontos. Se a tabela fechar com {name} em primeiro, a grande final e no Garden. A carta dele so na primeira vitoria.", "Full rules. Three points. If the table closes with {name} in first, the grand final is at Garden. His card only on the first win.", "Reglas completas. Tres puntos. Si la tabla cierra con {name} {primero|primera}, la gran final es en el Garden. Su carta solo en la primera victoria.")
 					},
 					say("seifer", "Seifer", "Seifer", "Seifer",
-						"{name}. Sonhador ate aqui. Ultima do grupo, todas as regras. Minha carta so sai se eu cair.",
+						"{name}. {Sonhador|Sonhadora} ate aqui. Ultima do grupo, todas as regras. Minha carta so sai se eu cair.",
 						"{name}. Dreamer, all the way here. Last one in the group, every rule on. My card only leaves if I go down.",
-						"{name}. Sonador, hasta aqui. La ultima del grupo, con todas las reglas. Mi carta solo sale si yo caigo."),
+						"{name}. {Sonador|Sonadora}, hasta aqui. La ultima del grupo, con todas las reglas. Mi carta solo sale si yo caigo."),
 					say("seifer", "Seifer", "Seifer", "Seifer",
 						"...Leva. Nao se acostuma. Se a tabela te puser na final, eu vou estar na arquibancada. Calado, nao.",
 						"...Take it. Don't get used to it. If the table puts you in the final, I'll be in the stands. Not quietly.",
@@ -1069,7 +1069,7 @@ final class StoryScript {
 						"Still dreaming? Get up. The semi doesn't have an easy version.",
 						"¿Sigues sonando? Levantate. La semi no tiene version facil."),
 					new Line[] {
-						N("Semi deste lado encerrada. Se {name} for o primeiro, a grande final e em Balamb Garden.", "This side's semi is closed. If {name} is first, the grand final is at Balamb Garden.", "La semi de este lado está cerrada. Si {name} es el primero, la gran final es en Balamb Garden."),
+						N("Semi deste lado encerrada. Se {name} for {o primeiro|a primeira}, a grande final e em Balamb Garden.", "This side's semi is closed. If {name} is first, the grand final is at Balamb Garden.", "La semi de este lado está cerrada. Si {name} es {el primero|la primera}, la gran final es en Balamb Garden."),
 						N("A Rainha venceu o outro grupo. Isso eu vi na ata, e so digo o resultado: a final e contra ela. A tabela de la nao esta nesta sala.", "The Queen won the other group. I saw that in the record, and I'll only say the result: the final is against her. That table isn't in this room.", "La Reina ganó el otro grupo. Eso lo vi en el acta, y solo digo el resultado: la final es contra ella. La tabla de allá no está en esta sala."),
 						Q("De volta ao Garden. Desta vez o salao e o seu, nao o meu.", "Back to Garden. This time the hall is yours, not mine.", "De vuelta al Garden. Esta vez el salón es tuyo, no el mío.")
 					},
@@ -1083,7 +1083,7 @@ final class StoryScript {
 		return region("final", "final_historia", "mesa_balamb_garden.png", Kind.FINAL, 0, null,
 			"Garden - Grande final", "Garden - Final", "Garden - Gran final",
 			new Line[] {
-				Q("{name}. Voce voltou campeao de fase, nao de discurso. A final e uma mesa.", "{name}. You came back a phase champion, not a speech. The final is one table.", "{name}. Volviste campeón de fase, no de discurso. La final es una mesa."),
+				Q("{name}. Voce voltou {campeão|campeã} de fase, nao de discurso. A final e uma mesa.", "{name}. You came back a phase champion, not a speech. The final is one table.", "{name}. Volviste {campeón|campeona} de fase, no de discurso. La final es una mesa."),
 				N("O Garden sedia a grande final porque a inscricao comecou neste corredor. O circulo fecha aqui.", "Garden hosts the grand final because registration started in this hall. The circle closes here.", "El Garden sede la gran final porque la inscripción empezó en este pasillo. El círculo se cierra aquí."),
 				N("Uma partida. Derrota nao entrega o titulo: a revanche e na mesma final, na hora. O titulo so muda com a sua vitoria.", "One match. A loss doesn't hand over the title: the rematch is the same final, on the spot. The title changes only with your win.", "Una partida. La derrota no entrega el título: la revancha es en la misma final, al momento. El título solo cambia con tu victoria."),
 				N("Do outro grupo, a ata diz que a Rainha venceu. Eu nao finjo o chaveamento que nao esta nesta sala. A adversaria, esta, esta.", "From the other group, the record says the Queen won. I won't fake a bracket that isn't in this room. The opponent, though, is here.", "Del otro grupo, el acta dice que la Reina ganó. Yo no finjo un cuadro que no está en esta sala. La adversaria, esa, sí está."),
