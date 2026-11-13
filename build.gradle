@@ -24,6 +24,11 @@ sourceSets {
 			srcDirs = ['resources']
 		}
 	}
+	test {
+		java {
+			srcDirs = ['test/java']
+		}
+	}
 }
 
 def libgdx = project.property('gdxVersion')
@@ -36,6 +41,12 @@ dependencies {
 	implementation "com.badlogicgames.gdx:gdx-freetype-platform:$libgdx:natives-desktop"
 	implementation "com.badlogicgames.gdx-controllers:gdx-controllers-core:$gdxControllersVersion"
 	implementation "com.badlogicgames.gdx-controllers:gdx-controllers-desktop:$gdxControllersVersion"
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
 }
 
 distributions {

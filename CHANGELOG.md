@@ -18,7 +18,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Até 15 campanhas por perfil (`CAMP.*`), com nome do aluno, etapa, duelos, especiais já entregues e recompensa pendente. O álbum, os decks, os blocos do Campeonato e os troféus continuam do perfil. Apagar uma campanha pede confirmação e não apaga cartas
 - Save antigo `STORY_CLEARED` / `STORY_ARRIVALS` migra para a primeira campanha e permanece no arquivo. Gravação do perfil em arquivo temporário e troca atômica
 - Cada vitória oferece uma carta da mão jogada, com confirmação. A carta especial do encontro (Ifrit, Shiva, Bahamut e as demais do catálogo já mapeadas) entra só na primeira vitória e não aparece nessa mão
-- Regulamento jogável: seletiva em chave no Garden; grupos com tabela em Balamb, Timber, Deling, Dollet, FH e Esthar; final no Garden. Derrota não elimina. Vídeo pronto em `intro_historia` e `chegada_balamb_town`; as outras seis chegadas usam o fundo estático
+- Regulamento jogável: seletiva em chave no Garden; grupos com tabela em Balamb, Timber, Deling, Dollet, FH e Esthar; final no Garden. Derrota não elimina. Vídeo pronto em `intro_historia`, `chegada_balamb_town`, `chegada_timber` e `chegada_deling`; as outras quatro cenas usam o fundo estático
 
 #### Changed
 
@@ -265,7 +265,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Up to 15 campaigns per profile (`CAMP.*`), with the student name, stage, duels, specials already given and a pending reward. The album, decks, Championship blocks and trophies stay on the profile. Deleting a campaign asks for confirmation and does not remove cards
 - An old `STORY_CLEARED` / `STORY_ARRIVALS` save migrates into the first campaign and stays in the file. The profile is written to a temp file and replaced atomically
 - Each win offers one card from the hand that was played, with a confirmation. The meeting's special card (Ifrit, Shiva, Bahamut and the other mapped catalog ids) is given only on the first win and is not in that hand
-- Playable rules: Garden ladder qualifier; real tables at Balamb, Timber, Deling, Dollet, FH and Esthar; final at Garden. A loss does not eliminate you. Video is ready for `intro_historia` and `chegada_balamb_town`; the other six arrivals use the still background
+- Playable rules: Garden ladder qualifier; real tables at Balamb, Timber, Deling, Dollet, FH and Esthar; final at Garden. A loss does not eliminate you. Video is ready for `intro_historia`, `chegada_balamb_town`, `chegada_timber` and `chegada_deling`; the other four scenes use the still background
 
 #### Changed
 

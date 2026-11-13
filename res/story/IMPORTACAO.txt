@@ -6,8 +6,8 @@ res/story/<id>/frame_001.jpg. Se nao existir, mostra o fundo PNG e o dialogo.
 Ids
 - intro_historia          Balamb Garden
 - chegada_balamb_town     porto de Balamb Town
-- chegada_timber
-- chegada_deling
+- chegada_timber          Timber (pronto, video_3)
+- chegada_deling          Deling (pronto, video_4)
 - chegada_dollet
 - chegada_fh
 - chegada_esthar
