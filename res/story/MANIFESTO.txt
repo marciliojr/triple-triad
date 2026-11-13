@@ -13,10 +13,10 @@ Manifestos de origem preservados em backgrounds/MANIFESTO.txt, portraits/MANIFES
 Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais res/story/<id>.ogg)
 - intro_historia
 - chegada_balamb_town
+- chegada_timber (video_3)
+- chegada_deling (video_4)
 
 Videos ausentes (a campanha ja aponta para estes ids; sem os quadros, usa o fundo estatico e o dialogo)
-- chegada_timber
-- chegada_deling
 - chegada_dollet
 - chegada_fh
 - chegada_esthar
@@ -38,3 +38,22 @@ Protagonista (escolha aluno/aluna ao criar a campanha)
 - portraits/aluna_normal.png, aluna_derrota.png: aluna (feminino), copia de story-assets/portraits/
 O jogo le o id pelo save da campanha (CAMP.n.GENDER = M ou F) e usa o padrao <id>_normal.png / <id>_derrota.png.
 story-assets/portraits/aluno_normal.png e aluno_derrota.png sao copias antigas da aluna e nao sao usadas.
+
+Arte extra (13/11/2026, copias de story-assets/, detalhes em story-assets/*/MANIFESTO_extras_v3.txt)
+- portraits/narrador_normal.png, narrador_derrota.png (128x128): Nilo Vann, o locutor. Todas as falas do narrador
+  (StoryCampaign.NARRATOR_PORTRAIT = "narrador"). Derrota na cena depois de uma partida perdida.
+  Sem o PNG, o jogo volta ao cracha desenhado.
+- portraits/npc_cadete_derrota, npc_soldado_galbadia_derrota, npc_soldado_dollet_derrota, npc_pescador_derrota,
+  npc_cientista_esthar_derrota, npc_pub_dollet_derrota (128x128). A expressao normal continua em npc_<nome>.png.
+  O adversario (NPC ou personagem) usa _derrota quando o jogador vence: fala de vitoria, falas dele no afterWin
+  e o dossie (T) de quem ja foi vencido.
+- backgrounds/titulo_modo_historia.png (640x360): fundo do hub do Modo Historia e das telas de protagonista, nome,
+  lista e apagar campanha. O logo "Card Club / A Jornada SeeD" e escrito pelo jogo (I18n) no canto superior esquerdo.
+- backgrounds/mapa_mundi.png (640x360): tela Cidades. O jogo desenha as paradas, a rota pontilhada, o icone
+  ui/no_bloqueado|no_disponivel|no_vencido e o nome. Pontos (640x360) em story/StoryMap.java:
+  Garden 314,192 | Balamb Town 336,212 | Grande final 294,212 (os tres na ilha de Balamb, ~314,200)
+  Timber 247,116 | Deling 94,91 | Dollet 69,247 | FH 398,175 | Esthar 541,125
+- backgrounds/arena_final.png (640x360): fundo da regiao "final" (grande final no Garden) e da cerimonia.
+- backgrounds/revelacao_cc_king.png (640x360): cena em tela cheia na apresentacao da final da seletiva contra a
+  Quistis (CC King): falas "open" e "before" do duelo king. Texto e retrato no terco esquerdo, que a arte deixa escuro.
+mesa_balamb_garden.png continua nas outras etapas do Garden (seletiva).

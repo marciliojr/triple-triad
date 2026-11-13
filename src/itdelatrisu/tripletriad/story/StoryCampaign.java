@@ -61,16 +61,27 @@ public final class StoryCampaign {
 		Ruleset(Rule... on) { this.on = on; }
 	}
 
-	/** One spoken box. Narrator lines draw the original badge, not a face. */
+	/**
+	 * One spoken box. Narrator lines use Nilo Vann's portrait ({@link #NARRATOR_PORTRAIT}),
+	 * with the drawn badge as fallback. {@code defeat} asks for the speaker's
+	 * {@code _derrota} face. {@code scene} (a file in {@code story/backgrounds/}) turns the
+	 * box into a full-screen still with the text in the left third.
+	 */
 	public static final class Line {
 		public final boolean narrator;
 		public final String portrait;
 		public final boolean defeat;
 		public final String namePt, nameEn, nameEs;
 		public final String pt, en, es;
+		public final String scene;
 
 		public Line(boolean narrator, String portrait, boolean defeat,
 				String namePt, String nameEn, String nameEs, String pt, String en, String es) {
+			this(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, null);
+		}
+
+		public Line(boolean narrator, String portrait, boolean defeat,
+				String namePt, String nameEn, String nameEs, String pt, String en, String es, String scene) {
 			this.narrator = narrator;
 			this.portrait = portrait;
 			this.defeat = defeat;
@@ -80,7 +91,22 @@ public final class StoryCampaign {
 			this.pt = pt;
 			this.en = en;
 			this.es = es;
+			this.scene = (scene == null || scene.isEmpty()) ? null : scene;
 		}
+
+		/** @return the same line with the speaker's defeat face on or off */
+		public Line withDefeat(boolean lost) {
+			if (lost == defeat)
+				return this;
+			return new Line(narrator, portrait, lost, namePt, nameEn, nameEs, pt, en, es, scene);
+		}
+
+		/** @return the same line shown over a full-screen still */
+		public Line withScene(String file) {
+			return new Line(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, file);
+		}
+
+		public boolean hasScene() { return scene != null; }
 
 		public String name() { return I18n.text(namePt, nameEn, nameEs); }
 
@@ -228,6 +254,15 @@ public final class StoryCampaign {
 	};
 
 	public static final String PLAYER = "you";
+
+	/** Portrait id of Nilo Vann, the tournament caller ({@code narrador_normal/derrota.png}). */
+	public static final String NARRATOR_PORTRAIT = "narrador";
+
+	/** Full-screen still for the CC King reveal (Quistis), text in the left third. */
+	public static final String KING_REVEAL = "revelacao_cc_king.png";
+
+	/** Background of the grand final in the Garden. */
+	public static final String FINAL_ARENA = "arena_final.png";
 
 	/** Portrait id in a {@link Line} that stands for the campaign's protagonist (aluno or aluna). */
 	public static final String PLAYER_PORTRAIT = "@player";

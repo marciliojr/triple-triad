@@ -384,6 +384,25 @@ public final class I18n {
 		return pick("Hist\u00f3ria", "Story", "Historia");
 	}
 
+	/** First line of the Story Mode logo ("Card Club - A Jornada SeeD"). */
+	public static String storyLogoTitle() {
+		return pick("Card Club", "Card Club", "Card Club");
+	}
+
+	/** Second line of the logo; the font has no en dash, so the title is split. */
+	public static String storyLogoSubtitle() {
+		return pick("A Jornada SeeD", "The SeeD Journey", "La Traves\u00eda SeeD");
+	}
+
+	/** State of a stop on the world map. */
+	public static String storyMapState(boolean unlocked, boolean cleared) {
+		if (!unlocked)
+			return pick("Bloqueada", "Locked", "Bloqueada");
+		if (cleared)
+			return pick("Etapa vencida", "Stage cleared", "Etapa superada");
+		return pick("Dispon\u00edvel", "Available", "Disponible");
+	}
+
 	public static String storyArrival(boolean video) {
 		return video
 			? pick("Chegada", "Arrival", "Llegada")

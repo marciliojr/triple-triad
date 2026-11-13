@@ -261,14 +261,14 @@ final class StoryScript {
 						N("Entrou para que a última palavra do Garden seja de quem aguenta explicar uma derrota.", "She entered so the Garden's last word would belong to someone who can explain a loss.", "Entró para que la última palabra del Garden sea de quien sabe explicar una derrota."),
 						N("O Ifrit é o prêmio fixo desta final. Não está na mão comum. Só sai na primeira vitória.", "Ifrit is this final's fixed prize. It isn't in the regular hand. It only comes with the first win.", "Ifrit es el premio fijo de esta final. No está en la mano común. Solo sale en la primera victoria.")
 					},
-					new Line[] {
+					reveal(new Line[] {
 						N("Final da seletiva de Balamb Garden! Quistis contra {name}!", "Balamb Garden qualifier final! Quistis against {name}!", "¡Final de la selectiva de Balamb Garden! ¡Quistis contra {name}!"),
 						N("Plus e Combo. Ela conduz a mesa. Em jogo: a vaga no Torneio Mundial e, na primeira vitória, o Ifrit.", "Plus and Combo. She runs the table. At stake: a spot in the World Tournament and, on the first win, Ifrit.", "Plus y Combo. Ella dirige la mesa. En juego: la plaza en el Torneo Mundial y, en la primera victoria, Ifrit.")
-					},
-					say("cc_king", "Quistis", "Quistis", "Quistis",
+					}),
+					reveal(say("cc_king", "Quistis", "Quistis", "Quistis",
 						"{name}. Se a partida for sua, o Ifrit vai junto. Eu continuo dando aula à tarde.",
 						"{name}. If the match is yours, Ifrit goes with it. I still teach in the afternoon.",
-						"{name}. Si la partida es tuya, Ifrit se va contigo. Yo sigo dando clase por la tarde."),
+						"{name}. Si la partida es tuya, Ifrit se va contigo. Yo sigo dando clase por la tarde.")),
 					say("cc_king", "Quistis", "Quistis", "Quistis",
 						"O Ifrit é seu. No porto de Balamb começa a fase de grupos. Não confunda isso com o fim.",
 						"Ifrit is yours. The group stage starts at Balamb harbor. Don't mistake this for the end.",
@@ -1080,7 +1080,7 @@ final class StoryScript {
 	}
 
 	private static Region fin() {
-		return region("final", "final_historia", "mesa_balamb_garden.png", Kind.FINAL, 0, null,
+		return region("final", "final_historia", StoryCampaign.FINAL_ARENA, Kind.FINAL, 0, null,
 			"Garden - Grande final", "Garden - Grand Final", "Garden - Gran final",
 			new Line[] {
 				Q("{name}. Você voltou {campeão|campeã} de fase pelos resultados, não pelo discurso. A final é uma mesa só.", "{name}. You came back a stage champion on results, not speeches. The final is a single table.", "{name}. Volviste {campeón|campeona} de fase por resultados, no por discursos. La final es una sola mesa."),
@@ -1132,7 +1132,7 @@ final class StoryScript {
 	}
 
 	private static Line N(String pt, String en, String es) {
-		return new Line(true, "narrator", false, "Nilo Vann", "Nilo Vann", "Nilo Vann", pt, en, es);
+		return new Line(true, StoryCampaign.NARRATOR_PORTRAIT, false, "Nilo Vann", "Nilo Vann", "Nilo Vann", pt, en, es);
 	}
 
 	private static Line Q(String pt, String en, String es) {
@@ -1147,6 +1147,38 @@ final class StoryScript {
 		return new Line(false, portrait, true, npt, nen, nes, pt, en, es);
 	}
 
+	/** CC King reveal: the lines play over {@link StoryCampaign#KING_REVEAL}. */
+	private static Line reveal(Line line) {
+		return line.withScene(StoryCampaign.KING_REVEAL);
+	}
+
+	private static Line[] reveal(Line[] lines) {
+		Line[] out = new Line[lines.length];
+		for (int i = 0; i < lines.length; i++)
+			out[i] = reveal(lines[i]);
+		return out;
+	}
+
+	/**
+	 * The opponent shows the defeat face only when the student wins:
+	 * {@code win} and the opponent's own lines in {@code afterWin} use {@code _derrota};
+	 * {@code lose} and {@code afterLose} keep the normal face.
+	 */
+	static Line beaten(Line line, String portrait, boolean lost) {
+		if (line == null || line.narrator || portrait == null || !portrait.equals(line.portrait))
+			return line;
+		return line.withDefeat(lost);
+	}
+
+	private static Line[] beaten(Line[] lines, String portrait, boolean lost) {
+		if (lines == null)
+			return null;
+		Line[] out = new Line[lines.length];
+		for (int i = 0; i < lines.length; i++)
+			out[i] = beaten(lines[i], portrait, lost);
+		return out;
+	}
+
 	private static Region region(String id, String video, String background, Kind kind, int cutoff, String[][] npc,
 			String npt, String nen, String nes, Line[] arrival, Duel[] duels) {
 		return new Region(id, video, background, kind, cutoff, npc, npt, nen, nes, arrival, duels);
@@ -1157,6 +1189,8 @@ final class StoryScript {
 			String rolePt, String roleEn, String roleEs, String stylePt, String styleEn, String styleEs,
 			Line[] bio, Line[] open, Line before, Line win, Line lose, Line[] afterWin, Line[] afterLose) {
 		return new Duel(id, portrait, npt, nen, nes, min, max, ai, rules, reward, inTable,
-			rolePt, roleEn, roleEs, stylePt, styleEn, styleEs, bio, open, before, win, lose, afterWin, afterLose);
+			rolePt, roleEn, roleEs, stylePt, styleEn, styleEs, bio, open, before,
+			beaten(win, portrait, true), beaten(lose, portrait, false),
+			beaten(afterWin, portrait, true), beaten(afterLose, portrait, false));
 	}
 }

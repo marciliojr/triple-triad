@@ -51,6 +51,9 @@ public final class StoryAssets {
 		return Assets.file("story/" + videoId + ".ogg").isFile();
 	}
 
+	/** Story Mode title/hub art; the logo text is drawn by the game (I18n). */
+	public static final String TITLE_BACKGROUND = "titulo_modo_historia.png";
+
 	/** @return the image, or null if the file is missing or unreadable */
 	public static Image image(String path) {
 		if (path == null || MISSING.contains(path))
