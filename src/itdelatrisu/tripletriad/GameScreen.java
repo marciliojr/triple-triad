@@ -41,5 +41,6 @@ public enum GameScreen {
 	MEMORY_CARD,
 	CHAMPIONSHIP,
 	STORY,
+	ABOUT,
 	MATCH
 }

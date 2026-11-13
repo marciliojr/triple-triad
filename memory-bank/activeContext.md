@@ -4,7 +4,17 @@
 
 ## Menu principal
 
-`ui.MenuScreen` desenha o perfil ativo no canto superior esquerdo e as dez opções numa janela azul de borda clara. O nome usa contorno, cai para a fonte pequena e trunca com reticências. A linha de baixo é `I18n.menuProfileMeta` (tamanho do álbum e `championshipWins`). Sem o PNG do avatar, um busto neutro ocupa a moldura. Fundo: `GameImage.BOARD_MAT` escurecido, com parallax e versos já carregados — nenhuma textura nova. Esquerda (código canônico, depois do remap) foca o painel; confirmar chama `showProfileSelectFromMenu`. Esc nessa seleção volta ao menu (`profileSelectExits = false`). Na abertura, `introFinished` deixa `profileSelectExits` verdadeiro e Esc continua saindo.
+`ui.MenuScreen` desenha o perfil ativo no canto superior esquerdo e as doze opções numa janela azul (as duas últimas: Sobre `ITEM_ABOUT=10` e Sair do jogo `ITEM_EXIT=11`) de borda clara. O nome usa contorno, cai para a fonte pequena e trunca com reticências. A linha de baixo é `I18n.menuProfileMeta` (tamanho do álbum e `championshipWins`). Sem o PNG do avatar, um busto neutro ocupa a moldura. Fundo: `GameImage.BOARD_MAT` escurecido, com parallax e versos já carregados — nenhuma textura nova. Esquerda (código canônico, depois do remap) foca o painel; confirmar chama `showProfileSelectFromMenu`. Esc nessa seleção volta ao menu (`profileSelectExits = false`). Na abertura, `introFinished` deixa `profileSelectExits` verdadeiro e Esc ali pede para sair.
+
+## Sair do jogo e Sobre
+
+- `ui.ExitConfirm` (lógica pura, testada): Não (0, padrão) / Sim (1); setas trocam, Z/Enter confirma, Esc/X fica, clique responde direto. `TripleTriad.requestExit()` abre a janela (ignorado em MATCH); todo caminho de Esc que antes chamava `container.exit()` (MENU, PROFILE_SELECT com `profileSelectExits`, PROFILE com `quitsOnEscape`) chama `requestExit()`. A janela é desenhada por cima da tela ativa e intercepta teclado, mouse e roda. Fechar a janela do SO (closeRequested) ainda sai direto.
+- `ui.AboutScreen` (`GameScreen.ABOUT`) mostra `About.paragraphs(Lang)`: original Jeffrey Han / itdelatrisu (primeiro commit f7e18e2, 2014-07-23; 0.1.1 em 2014-08-01), fork Marcilio Junior / marciliojr, adições, GPLv3, aviso Square Enix. Versão vem de `/version.properties` (Gradle `processResources` expande `${version}`; fallback "dev"). Ao mudar adições relevantes, atualizar `About.java` nos três idiomas (`AboutTest` exige o mesmo número de parágrafos).
+- `MenuScreen.drawWindow` é público para outras janelas FFVIII reutilizarem.
+
+## Texto da História
+
+- `StoryTextTest` falha se PT/ES perderem acentos comuns (regex), se `{a|b}` estiver malformado, se EN usar marca de gênero, ou se fala > 260, bio > 200, estilo > 90 caracteres. Fujin fala em maiúsculas; Raijin em EN usa "ya know"; Squall não fala de si na terceira pessoa.
 
 ## Campanha
 

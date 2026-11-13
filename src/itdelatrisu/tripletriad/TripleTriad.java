@@ -23,6 +23,8 @@ import itdelatrisu.tripletriad.ai.BalancedAI;
 import itdelatrisu.tripletriad.ai.DefensiveAI;
 import itdelatrisu.tripletriad.ai.OffensiveAI;
 import itdelatrisu.tripletriad.ai.RandomAI;
+import itdelatrisu.tripletriad.ui.AboutScreen;
+import itdelatrisu.tripletriad.ui.ExitConfirm;
 import itdelatrisu.tripletriad.ui.HintBar;
 import itdelatrisu.tripletriad.ui.ChampionshipScreen;
 import itdelatrisu.tripletriad.ui.CheatsScreen;
@@ -182,6 +184,12 @@ public class TripleTriad extends BasicGame {
 	private MemoryCardScreen memoryCardScreen;
 	private StoryScreen storyScreen;
 
+	/** About screen (fork credits, license). */
+	private AboutScreen aboutScreen;
+
+	/** "Quit the game?" overlay; replaces the old instant quit on Esc. */
+	private final ExitConfirm exitConfirm = new ExitConfirm();
+
 	/** True while a story duel is on the board. */
 	private boolean storyActive;
 
@@ -276,6 +284,7 @@ public class TripleTriad extends BasicGame {
 		Controls.init(this);
 		this.memoryCardScreen = new MemoryCardScreen(this);
 		this.storyScreen = new StoryScreen(this);
+		this.aboutScreen = new AboutScreen(this);
 
 		loadActiveProfile();
 		currentScreen = GameScreen.INTRO;
@@ -396,6 +405,7 @@ public class TripleTriad extends BasicGame {
 			throws SlickException {
 		if (currentScreen != GameScreen.MATCH) {
 			getActiveScreen().render(container, g);
+			exitConfirm.render(g);
 			return;
 		}
 
@@ -704,6 +714,10 @@ public class TripleTriad extends BasicGame {
 
 	@Override
 	public void keyPressed(int key, char c) {
+		if (exitConfirm.isOpen()) {
+			handleExitConfirm(exitConfirm.key(key));
+			return;
+		}
 		if (currentScreen != GameScreen.MATCH) {
 			if (key == Input.KEY_ESCAPE && currentScreen == GameScreen.PROFILE_SELECT && !profileSelectExits) {
 				AudioController.Effect.BACK.play();
@@ -713,8 +727,8 @@ public class TripleTriad extends BasicGame {
 			if (key == Input.KEY_ESCAPE &&
 				(currentScreen == GameScreen.MENU || currentScreen == GameScreen.PROFILE_SELECT
 					|| (currentScreen == GameScreen.PROFILE && profileScreen.quitsOnEscape()))) {
-				Options.saveOptions();
-				container.exit();
+				AudioController.Effect.BACK.play();
+				requestExit();
 				return;
 			}
 			getActiveScreen().keyPressed(key, c);
@@ -841,6 +855,11 @@ public class TripleTriad extends BasicGame {
 	public void mousePressed(int button, int x, int y) {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
+
+		if (exitConfirm.isOpen()) {
+			handleExitConfirm(exitConfirm.click(x, y));
+			return;
+		}
 
 		if (currentScreen != GameScreen.MATCH) {
 			getActiveScreen().mousePressed(button, x, y);
@@ -1148,6 +1167,8 @@ public class TripleTriad extends BasicGame {
 
 	@Override
 	public void mouseWheelMoved(int change) {
+		if (exitConfirm.isOpen())
+			return;
 		if (currentScreen != GameScreen.MATCH)
 			getActiveScreen().mouseWheelMoved(change);
 	}
@@ -1175,6 +1196,7 @@ public class TripleTriad extends BasicGame {
 			case MEMORY_CARD: return memoryCardScreen;
 			case CHAMPIONSHIP: return championshipScreen;
 			case STORY: return storyScreen;
+			case ABOUT: return aboutScreen;
 			case MENU:
 			default: return menuScreen;
 		}
@@ -1388,6 +1410,46 @@ public class TripleTriad extends BasicGame {
 		currentOpponentDeckIds = null;
 		currentScreen = GameScreen.MENU;
 		menuScreen.enter();
+	}
+
+	/**
+	 * Shows the About screen (fork credits, additions, license).
+	 */
+	public void showAbout() {
+		currentScreen = GameScreen.ABOUT;
+		aboutScreen.enter();
+	}
+
+	/**
+	 * Opens the "Quit the game?" confirmation (default No).
+	 * Used by Esc where it used to quit and by the menu's Quit entry.
+	 */
+	public void requestExit() {
+		if (currentScreen == GameScreen.MATCH)
+			return;
+		exitConfirm.open();
+	}
+
+	/** @return true while the quit confirmation is showing */
+	public boolean isExitConfirmOpen() { return exitConfirm.isOpen(); }
+
+	/** Plays the sound for a confirmation result and quits on Yes. */
+	private void handleExitConfirm(ExitConfirm.Result result) {
+		switch (result) {
+		case MOVE:
+			AudioController.playCursor();
+			break;
+		case STAY:
+			AudioController.Effect.BACK.play();
+			break;
+		case EXIT:
+			AudioController.Effect.SELECT.play();
+			Options.saveOptions();
+			container.exit();
+			break;
+		default:
+			break;
+		}
 	}
 
 	/**

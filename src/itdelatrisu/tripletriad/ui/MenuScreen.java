@@ -36,12 +36,18 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * Main menu: profile panel and the same ten entries, drawn as FFVIII windows.
+ * Main menu: profile panel and twelve entries (ending in About and Quit), drawn as FFVIII windows.
  * Keys here are the canonical codes {@code Controls} already translated.
  */
 public class MenuScreen extends Screen {
 	/** Number of menu entries. */
-	private static final int ITEM_COUNT = 10;
+	static final int ITEM_COUNT = 12;
+
+	/** Index of the About entry. */
+	static final int ITEM_ABOUT = 10;
+
+	/** Index of the Quit entry (last). */
+	static final int ITEM_EXIT = 11;
 
 	/** How long the open slide takes, in milliseconds. */
 	private static final float OPEN_MS = 320f;
@@ -179,6 +185,8 @@ public class MenuScreen extends Screen {
 			case 7: game.showHowToPlay(); break;
 			case 8: game.showSettings(); break;
 			case 9: game.showCheats(); break;
+			case ITEM_ABOUT: game.showAbout(); break;
+			case ITEM_EXIT: game.requestExit(); break;
 			default: break;
 		}
 	}
@@ -195,6 +203,8 @@ public class MenuScreen extends Screen {
 			case 7: return I18n.menuHowTo();
 			case 8: return I18n.menuSettings();
 			case 9: return I18n.menuCheats();
+			case ITEM_ABOUT: return I18n.menuAbout();
+			case ITEM_EXIT: return I18n.menuExit();
 			default: return "";
 		}
 	}
@@ -343,6 +353,14 @@ public class MenuScreen extends Screen {
 
 	/** Dark blue window with a light border, in the FFVIII menu style. */
 	private void window(Graphics g, float x, float y, float w, float h, boolean hot, float alpha) {
+		drawWindow(g, x, y, w, h, hot, alpha);
+	}
+
+	/**
+	 * Dark blue window with a light border, in the FFVIII menu style.
+	 * Shared with the quit confirmation and the About screen.
+	 */
+	public static void drawWindow(Graphics g, float x, float y, float w, float h, boolean hot, float alpha) {
 		com.badlogic.gdx.graphics.Color top = new com.badlogic.gdx.graphics.Color(0.20f, 0.34f, 0.66f, 0.94f * alpha);
 		com.badlogic.gdx.graphics.Color bottom = new com.badlogic.gdx.graphics.Color(0.04f, 0.08f, 0.24f, 0.96f * alpha);
 		ShapeRenderer sr = Gfx.shapes(ShapeType.Filled);
