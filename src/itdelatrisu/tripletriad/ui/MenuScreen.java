@@ -36,7 +36,7 @@ import itdelatrisu.tripletriad.gfx.UnicodeFont;
  */
 public class MenuScreen extends Screen {
 	/** Number of menu entries. */
-	private static final int ITEM_COUNT = 9;
+	private static final int ITEM_COUNT = 10;
 
 	/** Game instance. */
 	private final TripleTriad game;
@@ -127,7 +127,7 @@ public class MenuScreen extends Screen {
 		activate(index);
 	}
 
-	/** Vertical step between entries (shrinks to fit 9 items). */
+	/** Vertical step between entries (shrinks to fit the menu). */
 	private static float lineStep() {
 		UnicodeFont font = Options.getFont();
 		return Math.min(font.getLineHeight() * 1.12f, (Options.getHeight() * 0.86f - Options.getHeight() * 0.24f) / ITEM_COUNT);
@@ -141,13 +141,14 @@ public class MenuScreen extends Screen {
 		switch (index) {
 			case 0: game.showDeckSelect(); break;
 			case 1: game.showChampionship(); break;
-			case 2: game.showVersus(); break;
-			case 3: game.showMyDeck(); break;
-			case 4: game.showTrophies(); break;
-			case 5: game.showSave(); break;
-			case 6: game.showHowToPlay(); break;
-			case 7: game.showSettings(); break;
-			case 8: game.showCheats(); break;
+			case 2: game.showStory(); break;
+			case 3: game.showVersus(); break;
+			case 4: game.showMyDeck(); break;
+			case 5: game.showTrophies(); break;
+			case 6: game.showSave(); break;
+			case 7: game.showHowToPlay(); break;
+			case 8: game.showSettings(); break;
+			case 9: game.showCheats(); break;
 			default: break;
 		}
 	}
@@ -156,13 +157,14 @@ public class MenuScreen extends Screen {
 		switch (index) {
 			case 0: return I18n.menuQuick();
 			case 1: return I18n.menuChampionship();
-			case 2: return I18n.menuVersus();
-			case 3: return I18n.menuMyDeck();
-			case 4: return I18n.menuTrophies();
-			case 5: return I18n.menuSave();
-			case 6: return I18n.menuHowTo();
-			case 7: return I18n.menuSettings();
-			case 8: return I18n.menuCheats();
+			case 2: return I18n.menuStory();
+			case 3: return I18n.menuVersus();
+			case 4: return I18n.menuMyDeck();
+			case 5: return I18n.menuTrophies();
+			case 6: return I18n.menuSave();
+			case 7: return I18n.menuHowTo();
+			case 8: return I18n.menuSettings();
+			case 9: return I18n.menuCheats();
 			default: return "";
 		}
 	}

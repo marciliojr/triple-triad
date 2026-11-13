@@ -1,0 +1,22 @@
+Triple Triad — fundos gerados por IA com GenerateImage.
+7 PNG RGB 640x360 (16:9). Originais maiores preservados em originals/.
+Referências públicas FFVIII: Jegged.com. Interpretações artísticas não oficiais; direitos do universo e referências pertencem aos titulares.
+
+mesa_balamb_garden.png | origem IA | PNG 640x360
+mesa_balamb_town.png | origem IA | PNG 640x360
+mesa_timber.png | origem IA | PNG 640x360
+mesa_deling.png | origem IA | PNG 640x360
+mesa_dollet.png | origem IA | PNG 640x360
+mesa_fh.png | origem IA | PNG 640x360
+mesa_esthar.png | origem IA | PNG 640x360
+
+Fontes visuais:
+{
+  "garden": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-00014-Balamb-Garden-Hall-Squall-Quistis.webp",
+  "town": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-00078-Balamb-Town-Harbor.webp",
+  "timber": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-00235-Timber-Train-Tracks.webp",
+  "deling": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-00329-Deling-City-Intro-Cinematic.webp",
+  "dollet": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-00264-Dollet-Pub-Second-Floor.webp",
+  "fh": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-00622-Fishermans-Horizon-Sun-Panel.webp",
+  "esthar": "https://jegged.com/img/Games/Final-Fantasy-VIII/Walkthrough/FFVIII-01004-Esthar-Area-2.webp"
+}

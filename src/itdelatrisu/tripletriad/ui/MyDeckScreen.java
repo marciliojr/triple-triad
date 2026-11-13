@@ -50,6 +50,9 @@ public class MyDeckScreen extends Screen {
 	/** Gallery vs pick-for-quick. */
 	private int mode = MODE_GALLERY;
 
+	/** Pick opened from the story campaign (same grid, different return). */
+	private boolean storyPick;
+
 	/** Grid cursor. */
 	private int cursor;
 
@@ -89,6 +92,7 @@ public class MyDeckScreen extends Screen {
 	 */
 	public void enterGallery() {
 		mode = MODE_GALLERY;
+		storyPick = false;
 		cursor = 0;
 		scrollRow = 0;
 		previewIndex = -1;
@@ -101,11 +105,22 @@ public class MyDeckScreen extends Screen {
 	 */
 	public void enterPick() {
 		mode = MODE_PICK;
+		storyPick = false;
 		cursor = 0;
 		scrollRow = 0;
 		previewIndex = -1;
 		selected.clear();
 		clearDeleteConfirm();
+	}
+
+	/**
+	 * Opens the same pick-5 grid for a story duel.
+	 * @param preselect card IDs to mark if they are still in the album
+	 */
+	public void enterStoryPick(int[] preselect) {
+		enterPick();
+		storyPick = true;
+		preselectHand(preselect);
 	}
 
 	@Override
@@ -117,7 +132,10 @@ public class MyDeckScreen extends Screen {
 		ArrayList<Integer> bag = album();
 
 		ArrayList<Integer> view = albumView();
-		Ui.drawCentered(font, I18n.menuMyDeck(), height * 0.04f, Ui.TITLE);
+		String title = I18n.menuMyDeck();
+		if (mode == MODE_PICK && storyPick && !game.storyOpponentName().isEmpty())
+			title = game.storyOpponentName();
+		Ui.drawCentered(font, title, height * 0.04f, Ui.TITLE);
 		if (mode == MODE_PICK)
 			Ui.drawCentered(small, I18n.cardCount(selected.size()) + "    " + I18n.sortLine(),
 				height * 0.10f, Ui.HINT);
@@ -197,8 +215,12 @@ public class MyDeckScreen extends Screen {
 		switch (key) {
 		case Input.KEY_ESCAPE:
 			AudioController.Effect.BACK.play();
-			if (mode == MODE_PICK)
-				game.showDeckSelect();
+			if (mode == MODE_PICK) {
+				if (storyPick)
+					game.returnToStory();
+				else
+					game.showDeckSelect();
+			}
 			else
 				game.showMenu();
 			break;
@@ -513,7 +535,28 @@ public class MyDeckScreen extends Screen {
 		for (int i = 0; i < selected.size(); i++)
 			ids[i] = bag.get(selected.get(i).intValue()).intValue();
 		AudioController.Effect.SELECT.play();
-		game.startQuickMatch(ids);
+		if (storyPick)
+			game.storyHandChosen(ids);
+		else
+			game.startQuickMatch(ids);
+	}
+
+	/** Marks album copies that match a previous hand. */
+	private void preselectHand(int[] ids) {
+		if (ids == null || ids.length == 0)
+			return;
+		ArrayList<Integer> bag = album();
+		boolean[] used = new boolean[bag.size()];
+		for (int p = 0; p < ids.length && selected.size() < SavedDeck.SIZE; p++) {
+			int want = ids[p];
+			for (int i = 0; i < bag.size(); i++) {
+				if (!used[i] && bag.get(i).intValue() == want) {
+					used[i] = true;
+					selected.add(Integer.valueOf(i));
+					break;
+				}
+			}
+		}
 	}
 
 	private void drawGrid(Graphics g, ArrayList<Integer> bag, ArrayList<Integer> view, int height) {

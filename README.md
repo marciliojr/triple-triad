@@ -32,7 +32,7 @@ A [Release v1.3.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.
 
 1. **Abertura** — vídeo de intro (Pular intro pula)
 2. **Perfil** — nome e avatar na primeira execução; depois, escolha do perfil em blocos estilo memory card
-3. **Menu** — Jogo Rápido, Campeonato, Versus, Meu Deck, Salvar, Troféus, Cheats, Como Jogar, Configurações
+3. **Menu** — Jogo Rápido, Campeonato, História, Versus, Meu Deck, Salvar, Troféus, Cheats, Como Jogar, Configurações
 4. **Decks** — montar, editar, apagar ou escolher 5 cartas; ligar/desligar regras
 5. **Campeonato** — 8 rounds contra a IA
 6. **Partida** — Cancelar pede confirmação para sair
@@ -44,6 +44,10 @@ A [Release v1.3.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.
 **Jogo Rápido** — Meu Deck (pick 5), deck aleatório da lista, construtor ou deck salvo. No construtor e no pick: 5 slots com nome/elemento, grade à esquerda, painel da carta do cursor à direita. **R** preenche 5 aleatórias. **T** ordena o grid. **X** só tira da mão.
 
 **Salvar** — exportar ou importar o álbum (Meu Deck) ou o checkpoint do Campeonato em um arquivo `.ttsave` pelo diálogo do sistema. Importar pede Não/Sim (default Não) antes de substituir.
+
+**História** — campanha original no mundo de FFVIII. O jogador é um aluno de Balamb (não é o Squall) e escolhe o nome no teclado ou no teclado virtual. Squall orienta. Nilo Vann, o locutor, aparece num crachá desenhado na tela (não reutiliza outro rosto) e apresenta cada partida. Um perfil guarda até 15 campanhas; criar ou apagar uma não mexe no álbum nem nas outras. Cada vitória deixa escolher uma carta da mão jogada. A carta especial do encontro sai só na primeira vitória, separada dessa escolha. Derrota não elimina: a revanche é na mesma mesa. Fases de pontos mostram a tabela de verdade (vitória = 3; derrota não entra até a revanche). Sair no meio da partida volta ao último ponto salvo.
+
+O caminho é seletiva no Garden, classificatória em Balamb Town, grupos em Timber, fase principal em Deling, rodada decisiva em Dollet, quartas em Fisherman's Horizon, semifinal em Esthar e grande final de volta ao Garden. Há vídeo em `intro_historia` e `chegada_balamb_town`. As outras chegadas usam o fundo da cidade até os clipes existirem (`res/story/IMPORTACAO.txt`).
 
 **Campeonato** — lobby: Novo jogo, Continuar, Apagar progresso (não zera o álbum). Pack se o álbum tiver menos de 5 cartas; senão pick. **T** ordena o grid no pick. **S** / Salvar (da 2ª luta em diante) grava a run; o aviso aparece no rodapé. Vitória adiciona a carta ao álbum e à bag; na escolha, cada carta do adversário mostra **Já possui** (com quantas cópias no Meu Deck) ou **Nova!**. Derrota tira só da run.
 
@@ -95,7 +99,7 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1):
 - Build **Gradle**; alvo **Java 21**; dependências no Maven Central
 - Apresentação **libGDX** 1.14.2 (LWJGL 3); camada `itdelatrisu.tripletriad.gfx`
 - Arte e som em `res/` e `cards/` (nada redesenhado)
-- Meta-jogo: perfil, menu, construtor, Meu Deck, Campeonato, Salvar, vários perfis, dificuldade da IA
+- Meta-jogo: perfil, menu, construtor, Meu Deck, Campeonato, História, Salvar, vários perfis, dificuldade da IA
 - Same / Plus / Combo / Elemental / Sudden Death e as IAs **permanecem os do original**
 - Versus local (sem IA), joystick, Cheats e Troféus
 
@@ -137,7 +141,7 @@ The [v1.3.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 
 1. **Intro** — opening video (Skip intro skips it)
 2. **Profile** — name and avatar on first run; then profile selection in memory-card blocks
-3. **Menu** — Quick Game, Championship, Versus, My Deck, Save, Trophies, Cheats, How to Play, Settings
+3. **Menu** — Quick Game, Championship, Story, Versus, My Deck, Save, Trophies, Cheats, How to Play, Settings
 4. **Decks** — build, edit, delete, or pick 5 cards; toggle rules
 5. **Championship** — 8 rounds vs the AI
 6. **Match** — Cancel asks for confirmation to leave
@@ -149,6 +153,10 @@ The [v1.3.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 **Quick Game** — My Deck (pick 5), random deck from the list, builder, or a saved deck. In the builder and picker: five named slots, grid on the left, cursor card on the right. **R** fills five random cards. **T** sorts the grid. **X** only removes from the hand.
 
 **Save** — export or import the album (My Deck) or the Championship checkpoint as a `.ttsave` file through the system dialog. Import asks No/Yes (default No) before replacing.
+
+**Story** — an original campaign in the world of FFVIII. The player is a Balamb student (not Squall) and chooses the name on the keyboard or the virtual keyboard. Squall advises. Nilo Vann, the announcer, appears as a badge drawn on screen (he does not reuse another face) and introduces each match. One profile holds up to 15 campaigns; creating or deleting one does not touch the album or the others. Each win lets you choose one card from the hand that was played. The meeting's special card is given only on the first win, apart from that choice. A loss does not eliminate you: the rematch is the same table. Points phases show a real table (win = 3; a loss stays off until the rematch). Leaving mid-match returns to the last saved point.
+
+The path is the Garden qualifier, Balamb Town qualifying, Timber groups, Deling main phase, Dollet decisive round, Fisherman's Horizon quarters, Esthar semifinal and the grand final back at Garden. Video exists for `intro_historia` and `chegada_balamb_town`. The other arrivals use the city background until the clips exist (`res/story/IMPORTACAO.txt`).
 
 **Championship** — lobby: New game, Continue, Clear progress (does not wipe the album). Pack if the album has fewer than 5 cards; otherwise pick. **T** sorts the pick grid. **S** / Save (from match 2) writes the run; the notice appears in the footer. A win adds the card to the album and bag; on the pick, each opponent card shows **Owned** (with how many copies are in My Deck) or **New!**. A loss removes it only from the run.
 
@@ -200,7 +208,7 @@ Compared with the original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1):
 - **Gradle** build; **Java 21** target; Maven Central dependencies
 - **libGDX** 1.14.2 (LWJGL 3); layer `itdelatrisu.tripletriad.gfx`
 - Art and sound in `res/` and `cards/` (nothing redrawn)
-- Meta-game: profile, menu, builder, My Deck, Championship, Save, multiple profiles, AI difficulty
+- Meta-game: profile, menu, builder, My Deck, Championship, Story, Save, multiple profiles, AI difficulty
 - Same / Plus / Combo / Elemental / Sudden Death and the AIs **remain the original ones**
 - Local Versus (no AI), joystick, Cheats and Trophies
 

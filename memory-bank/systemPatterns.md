@@ -39,4 +39,5 @@ Constantes `gfx.Input` = códigos libGDX. Mapa da UI: **Z** seleciona, **X**/Del
 ## Save do Campeonato (1.3.0)
 
 - Memory Card de 15 blocos (`ChampionshipSlot`), checkpoint entre partidas (rodada, vitórias, mãos, bag, regras, tempo). Só o jogador apaga um bloco; `.ttsave` exporta o último salvo e importa no primeiro livre
-- Vídeos: `gfx.VideoLoop` toca quadros JPEG `res/<nome>/frame_NNN.jpg` + `res/<nome>.ogg` (loop ou uma vez)
+- Vídeos: `gfx.VideoLoop` toca quadros JPEG `res/<nome>/frame_NNN.jpg` + `res/<nome>.ogg` (loop ou uma vez). A campanha usa `res/story/<id>/` (`intro_historia`, `chegada_balamb_town` e os seis ids ainda sem arquivo). Sem `frame_001.jpg`, a cena cai no fundo PNG e no diálogo. Importação em `res/story/IMPORTACAO.txt`
+- História: `StoryCampaign` (roteiro e tabela), `StorySave` (uma campanha) e `StoryScreen`. Formato 2 no perfil: `STORY_FORMAT`, `STORY_MIGRATED`, `STORY_ACTIVE`, `CAMP.N.*`. `ProfileStore` grava em `.tmp` e troca o arquivo. Recompensa de vitória não usa All/Diff/Direct; isso continua só no Campeonato

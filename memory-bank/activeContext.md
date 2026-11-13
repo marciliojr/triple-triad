@@ -1,8 +1,14 @@
 # Active context
 
-Último marco: **1.3.0** — intro/endgame em vídeo, Memory Card PS1, Versus, joystick com ações remapeáveis + teclado virtual, Cheats, Troféus, avatares, legendas `HintBar`.
+Último marco: **1.3.0** na `master`, com o modo História integrado em seguida (ainda sem número de release).
 
-Branch de trabalho típica: `master` na 1.3.0 (`v1.3.0`).
+## Campanha
+
+- Menu **História**. O jogador é um aluno de Balamb (nome escolhido na hora). Squall só orienta. Nilo Vann é o locutor: crachá desenhado (`narrator`), sem retrato de outro personagem.
+- Até 15 campanhas em `StorySave` / chaves `CAMP.*`. O perfil guarda álbum, decks, blocos do Campeonato e troféus. A campanha guarda duelos, chegadas, especiais já dados e a escolha pendente. `STORY_CLEARED` antigo migra uma vez e continua gravado.
+- Regulamento: seletiva em chave (Garden); grupos com tabela real (Town top 2, Timber top 3, Deling top 2, Dollet top 2, FH e Esthar top 1). A mesa da Rainha em FH não dá ponto. Final: `queen_esthar` no Garden, Bahamut na primeira vitória. Derrota = revanche, sem eliminar.
+- Cada vitória: uma carta da mão jogada, confirmada. Especiais do catálogo ficam fora da mão (`StoryCampaign.isSpecial`).
+- Vídeo se existir `res/story/<id>/frame_001.jpg` + `<id>.ogg`. Prontos: `intro_historia` e `chegada_balamb_town`. Pendentes: `chegada_timber`, `chegada_deling`, `chegada_dollet`, `chegada_fh`, `chegada_esthar`, `final_historia`. Receita em `res/story/IMPORTACAO.txt`.
 
 ## Entregue na 1.3.0 (notas técnicas)
 
