@@ -2,6 +2,10 @@
 
 Último marco: **1.3.0** na `master`, com o modo História integrado em seguida (ainda sem número de release).
 
+## Menu principal
+
+`ui.MenuScreen` desenha o perfil ativo no canto superior esquerdo e as dez opções numa janela azul de borda clara. O nome usa contorno, cai para a fonte pequena e trunca com reticências. A linha de baixo é `I18n.menuProfileMeta` (tamanho do álbum e `championshipWins`). Sem o PNG do avatar, um busto neutro ocupa a moldura. Fundo: `GameImage.BOARD_MAT` escurecido, com parallax e versos já carregados — nenhuma textura nova. Esquerda (código canônico, depois do remap) foca o painel; confirmar chama `showProfileSelectFromMenu`. Esc nessa seleção volta ao menu (`profileSelectExits = false`). Na abertura, `introFinished` deixa `profileSelectExits` verdadeiro e Esc continua saindo.
+
 ## Campanha
 
 - Menu **História**. O jogador é um aluno de Balamb (nome escolhido na hora). Squall só orienta. Nilo Vann é o locutor: crachá desenhado (`narrator`), sem retrato de outro personagem.

@@ -4,6 +4,8 @@ O jogador cria um perfil, monta decks de 5 cartas do catálogo (`cards/deck.txt`
 
 Fluxo: **Perfil → Menu → Jogo Rápido / Campeonato / História / Versus / Meu Deck / Salvar / Troféus / Cheats / Como Jogar / Configurações**.
 
+O menu mostra o perfil ativo no canto superior esquerdo (avatar, nome, cartas do álbum e campeonatos vencidos) e as mesmas dez opções numa janela azul. Esquerda foca o painel; confirmar abre a seleção de perfil e, nesse caso, Esc volta ao menu. Na abertura, Esc na seleção continua saindo.
+
 História: o aluno escolhe o nome; o perfil pode ter várias campanhas. O álbum é compartilhado. Duelos, tabela e recompensas especiais são de cada campanha.
 
 Persistência local (cwd = raiz do repo):

@@ -161,6 +161,9 @@ public class TripleTriad extends BasicGame {
 
 	private RemoveCardsScreen removeCardsScreen;
 	private ProfileSelectScreen profileSelectScreen;
+
+	/** Esc on the profile select quits. False when that screen was opened from the menu. */
+	private boolean profileSelectExits = true;
 	private TrophiesScreen trophiesScreen;
 	private VersusScreen versusScreen;
 	private ControlsScreen controlsScreen;
@@ -286,6 +289,7 @@ public class TripleTriad extends BasicGame {
 	 */
 	public void introFinished() {
 		AudioController.applyMusic();
+		profileSelectExits = true;
 		if (profile != null && profile.isValid())
 			showProfileSelect();
 		else
@@ -296,6 +300,15 @@ public class TripleTriad extends BasicGame {
 	public void showProfileSelect() {
 		currentScreen = GameScreen.PROFILE_SELECT;
 		profileSelectScreen.enter();
+	}
+
+	/**
+	 * Opens the profile selection from the main menu.
+	 * Esc returns to the menu instead of quitting.
+	 */
+	public void showProfileSelectFromMenu() {
+		profileSelectExits = false;
+		showProfileSelect();
 	}
 
 	/** Create-profile editor opened from the profile selection. */
@@ -692,6 +705,11 @@ public class TripleTriad extends BasicGame {
 	@Override
 	public void keyPressed(int key, char c) {
 		if (currentScreen != GameScreen.MATCH) {
+			if (key == Input.KEY_ESCAPE && currentScreen == GameScreen.PROFILE_SELECT && !profileSelectExits) {
+				AudioController.Effect.BACK.play();
+				showMenu();
+				return;
+			}
 			if (key == Input.KEY_ESCAPE &&
 				(currentScreen == GameScreen.MENU || currentScreen == GameScreen.PROFILE_SELECT
 					|| (currentScreen == GameScreen.PROFILE && profileScreen.quitsOnEscape()))) {
