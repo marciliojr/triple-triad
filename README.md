@@ -32,7 +32,7 @@ A [Release v1.3.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.
 
 1. **Abertura** — vídeo de intro (Pular intro pula)
 2. **Perfil** — nome e avatar na primeira execução; depois, escolha do perfil em blocos estilo memory card
-3. **Menu** — Jogo Rápido, Campeonato, História, Versus, Meu Deck, Salvar, Troféus, Cheats, Como Jogar, Configurações. O perfil ativo (avatar, nome, cartas e campeonatos) fica no canto superior esquerdo; Esquerda abre a troca de perfil
+3. **Menu** — Jogo Rápido, Campeonato, História, Versus, Meu Deck, Troféus, Salvar, Como Jogar, Configurações, Cheats, Sobre, Sair do jogo. O perfil ativo (avatar, nome, cartas e campeonatos) fica no canto superior esquerdo; Esquerda abre a troca de perfil. Esc ou **Sair do jogo** pergunta "Deseja sair do jogo?" (Não / Sim, Não selecionado); nas outras telas Esc volta
 4. **Decks** — montar, editar, apagar ou escolher 5 cartas; ligar/desligar regras
 5. **Campeonato** — 8 rounds contra a IA
 6. **Partida** — Cancelar pede confirmação para sair
@@ -42,6 +42,8 @@ A [Release v1.3.0](https://github.com/marciliojr/triple-triad/releases/tag/v1.3.
 **Meu Deck** — álbum permanente (duplicatas ok). Ao navegar, o painel direito mostra a carta média com id, nome e elemento. **C** (ou clique na carta média) abre o overlay em tamanho de partida. **T** cicla a ordem do grid (catálogo, nível, valor). **X**/Del pede Não/Sim antes de apagar uma cópia.
 
 **Jogo Rápido** — Meu Deck (pick 5), deck aleatório da lista, construtor ou deck salvo. No construtor e no pick: 5 slots com nome/elemento, grade à esquerda, painel da carta do cursor à direita. **R** preenche 5 aleatórias. **T** ordena o grid. **X** só tira da mão.
+
+**Sobre** — créditos: fork do projeto original de Jeffrey Han (itdelatrisu), desenvolvido e ampliado por Marcilio Junior (marciliojr), principais adições, licença GPLv3, versão e aviso de projeto de fã (FFVIII e Triple Triad são da Square Enix). Esc volta ao menu.
 
 **Salvar** — exportar ou importar o álbum (Meu Deck) ou o checkpoint do Campeonato em um arquivo `.ttsave` pelo diálogo do sistema. Importar pede Não/Sim (default Não) antes de substituir.
 
@@ -141,7 +143,7 @@ The [v1.3.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 
 1. **Intro** — opening video (Skip intro skips it)
 2. **Profile** — name and avatar on first run; then profile selection in memory-card blocks
-3. **Menu** — Quick Game, Championship, Story, Versus, My Deck, Save, Trophies, Cheats, How to Play, Settings. The active profile (avatar, name, cards and championships) sits in the top-left; Left opens the profile switch
+3. **Menu** — Quick Game, Championship, Story, Versus, My Deck, Trophies, Save, How to Play, Settings, Cheats, About, Quit game. The active profile (avatar, name, cards and championships) sits in the top-left; Left opens the profile switch. Esc or **Quit game** asks "Quit the game?" (No / Yes, No preselected); on other screens Esc goes back
 4. **Decks** — build, edit, delete, or pick 5 cards; toggle rules
 5. **Championship** — 8 rounds vs the AI
 6. **Match** — Cancel asks for confirmation to leave
@@ -151,6 +153,8 @@ The [v1.3.0 Release](https://github.com/marciliojr/triple-triad/releases/tag/v1.
 **My Deck** — permanent album (duplicates allowed). While browsing, the right panel shows a medium card with id, name, and element. **C** (or clicking the medium card) opens the match-size overlay. **T** cycles the grid order (catalog, level, value). **X**/Del asks No/Yes before deleting a copy.
 
 **Quick Game** — My Deck (pick 5), random deck from the list, builder, or a saved deck. In the builder and picker: five named slots, grid on the left, cursor card on the right. **R** fills five random cards. **T** sorts the grid. **X** only removes from the hand.
+
+**About** — credits: fork of Jeffrey Han's original project (itdelatrisu), developed and expanded by Marcilio Junior (marciliojr), main additions, GPLv3 license, version and a fan project notice (FFVIII and Triple Triad belong to Square Enix). Esc returns to the menu.
 
 **Save** — export or import the album (My Deck) or the Championship checkpoint as a `.ttsave` file through the system dialog. Import asks No/Yes (default No) before replacing.
 

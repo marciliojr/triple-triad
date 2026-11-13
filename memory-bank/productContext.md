@@ -4,7 +4,7 @@ O jogador cria um perfil, monta decks de 5 cartas do catálogo (`cards/deck.txt`
 
 Fluxo: **Perfil → Menu → Jogo Rápido / Campeonato / História / Versus / Meu Deck / Salvar / Troféus / Cheats / Como Jogar / Configurações**.
 
-O menu mostra o perfil ativo no canto superior esquerdo (avatar, nome, cartas do álbum e campeonatos vencidos) e as mesmas dez opções numa janela azul. Esquerda foca o painel; confirmar abre a seleção de perfil e, nesse caso, Esc volta ao menu. Na abertura, Esc na seleção continua saindo.
+O menu mostra o perfil ativo no canto superior esquerdo (avatar, nome, cartas do álbum e campeonatos vencidos) e doze opções numa janela azul, terminando em Sobre e Sair do jogo. Esquerda foca o painel; confirmar abre a seleção de perfil e, nesse caso, Esc volta ao menu. Na abertura, Esc na seleção pede confirmação para sair. Esc no menu ou a opção Sair do jogo abrem "Deseja sair do jogo?" (Não/Sim, padrão Não).
 
 História: o jogador escolhe aluno ou aluna e depois o nome; o perfil pode ter várias campanhas. O álbum é compartilhado. Duelos, tabela e recompensas especiais são de cada campanha.
 

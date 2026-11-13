@@ -12,11 +12,11 @@
 
 ## Telas
 
-`GameScreen`: PROFILE, PROFILES, MENU, DECK_SELECT, DECK_BUILDER, HOW_TO_PLAY, SETTINGS, MY_DECK, SAVE, CHAMPIONSHIP, MATCH.
+`GameScreen`: PROFILE, PROFILES, MENU, DECK_SELECT, DECK_BUILDER, HOW_TO_PLAY, SETTINGS, MY_DECK, SAVE, CHAMPIONSHIP, MATCH (e as telas novas: STORY, ABOUT, CHEATS, TROPHIES etc.; a lista completa está no enum).
 
 `Screen` define `enter` / `render` / `update` / `keyPressed` / `mousePressed` / `mouseWheelMoved`. `TripleTriad` despacha conforme `currentScreen`.
 
-Menu principal (`MenuScreen`): janela azul à direita e painel do perfil à esquerda. As teclas que chegam já são as canônicas (`Controls.translateKey` / joystick). Esquerda foca o painel; Z/Enter confirma. Abrir a troca a partir do menu usa `showProfileSelectFromMenu` (`profileSelectExits = false`, Esc volta). A abertura usa `showProfileSelect` com Esc saindo do jogo. O desenho não cria textura: `BOARD_MAT`, `CARD_BACK`, `CURSOR` e `Avatars`.
+Menu principal (`MenuScreen`): janela azul à direita e painel do perfil à esquerda. As teclas que chegam já são as canônicas (`Controls.translateKey` / joystick). Esquerda foca o painel; Z/Enter confirma. Abrir a troca a partir do menu usa `showProfileSelectFromMenu` (`profileSelectExits = false`, Esc volta). A abertura usa `showProfileSelect`; ali Esc chama `requestExit()`. Sair do jogo nunca chama `container.exit()` direto a partir de tecla: passa por `ExitConfirm` (overlay global desenhado e consultado em `TripleTriad` antes da tela ativa). O desenho não cria textura: `BOARD_MAT`, `CARD_BACK`, `CURSOR` e `Avatars`.
 
 Textos de UI passam por `I18n` + `Lang` (PT_BR, EN, ES). Nomes de regras em `Rule.getDisplayName()`.
 

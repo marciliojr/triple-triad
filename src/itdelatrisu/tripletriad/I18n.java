@@ -299,6 +299,41 @@ public final class I18n {
 		return pick("Cheats", "Cheats", "Trucos");
 	}
 
+	public static String menuAbout() {
+		return pick("Sobre", "About", "Acerca de");
+	}
+
+	public static String menuExit() {
+		return pick("Sair do jogo", "Quit game", "Salir del juego");
+	}
+
+	// --- quit confirmation
+	public static String confirmExitGame() {
+		return pick("Deseja sair do jogo?", "Quit the game?", "\u00bfDeseas salir del juego?");
+	}
+
+	public static String hintExitConfirm() {
+		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    Esc cancela",
+			"Left/right selects    Z/Enter confirms    Esc cancels",
+			"Izq/der elige    Z/Enter confirma    Esc cancela"));
+	}
+
+	// --- about
+	public static String aboutInfo() {
+		return pick("Cr\u00e9ditos e licen\u00e7a", "Credits and license", "Cr\u00e9ditos y licencia");
+	}
+
+	public static String aboutHelp() {
+		return pick("Um fork ampliado do Triple Triad de Jeffrey Han", "An expanded fork of Jeffrey Han's Triple Triad",
+			"Un fork ampliado del Triple Triad de Jeffrey Han");
+	}
+
+	public static String hintAbout() {
+		return Controls.dyn(pick("Cima/baixo rola    Esq/Dir p\u00e1gina    Esc volta",
+			"Up/down scrolls    Left/Right page    Esc back",
+			"Arriba/abajo desplaza    Izq/Der p\u00e1gina    Esc volver"));
+	}
+
 	public static String cheatsInfo() {
 		return pick("Digite um c\u00f3digo", "Type a code", "Escribe un c\u00f3digo");
 	}
@@ -404,9 +439,9 @@ public final class I18n {
 	}
 
 	public static String storyFull() {
-		return pick("Limite de 15 campanhas. Nenhuma e apagada sozinha.",
+		return pick("Limite de 15 campanhas. Nenhuma \u00e9 apagada sozinha.",
 			"Limit of 15 campaigns. None is deleted on its own.",
-			"Limite de 15 campa\u00f1as. Ninguna se borra sola.");
+			"L\u00edmite de 15 campa\u00f1as. Ninguna se borra sola.");
 	}
 
 	public static String storyEmpty() {
@@ -445,7 +480,7 @@ public final class I18n {
 	}
 
 	public static String storyFan() {
-		return pick("Historia original no mundo de FFVIII. Squall nao joga.",
+		return pick("Hist\u00f3ria original no mundo de FFVIII. Squall n\u00e3o joga.",
 			"An original story in the world of FFVIII. Squall does not play.",
 			"Historia original en el mundo de FFVIII. Squall no juega.");
 	}
@@ -453,10 +488,10 @@ public final class I18n {
 	public static String storyDeleteAsk(String student) {
 		return pick("Apagar a campanha de " + student + "?",
 			"Delete " + student + "'s campaign?",
-			"\u00bfBorrar la campana de " + student + "?");
+			"\u00bfBorrar la campa\u00f1a de " + student + "?");
 	}
 
-	public static String storyNo() { return pick("Nao", "No", "No"); }
+	public static String storyNo() { return pick("N\u00e3o", "No", "No"); }
 
 	public static String storyDuels() { return pick("Partidas", "Matches", "Partidas"); }
 
@@ -488,13 +523,13 @@ public final class I18n {
 	}
 
 	public static String storyPending() {
-		return pick("Recompensa da vitoria ainda aberta.",
-			"The win reward is still open.",
-			"La recompensa de la victoria sigue abierta.");
+		return pick("Recompensa da vit\u00f3ria ainda pendente.",
+			"The win reward is still pending.",
+			"La recompensa de la victoria sigue pendiente.");
 	}
 
 	public static String storyChoose() {
-		return pick("Escolha 1 carta da mao jogada.",
+		return pick("Escolha 1 carta da m\u00e3o jogada.",
 			"Choose 1 card from the hand that was played.",
 			"Elige 1 carta de la mano jugada.");
 	}
@@ -512,21 +547,21 @@ public final class I18n {
 	}
 
 	public static String storyCutoff(int cutoff) {
-		return pick("Classificam os " + cutoff + " primeiros. Vitoria = 3. Derrota nao entra.",
+		return pick("Classificam os " + cutoff + " primeiros. Vit\u00f3ria = 3. Derrota n\u00e3o entra.",
 			"The top " + cutoff + " qualify. Win = 3. A loss stays off the table.",
 			"Clasifican los " + cutoff + " primeros. Victoria = 3. La derrota no entra.");
 	}
 
 	public static String storySeedNote() {
-		return pick("A cabeca de chave contra a Rainha nao entra nesta tabela.",
-			"The seed match against the Queen is not on this table.",
-			"La cabeza de llave contra la Reina no entra en esta tabla.");
+		return pick("A partida de cabe\u00e7a de chave contra a Rainha n\u00e3o entra nesta tabela.",
+			"The seeding match against the Queen is not in these standings.",
+			"La partida de cabeza de serie contra la Reina no entra en esta tabla.");
 	}
 
 	public static String hintStoryHub() {
 		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter confirma    Esc volta ao menu",
 			"Up/down selects    Z/Enter confirms    Esc back to menu",
-			"Arriba/abajo elige    Z/Enter confirma    Esc volver al menu"));
+			"Arriba/abajo elige    Z/Enter confirma    Esc volver al men\u00fa"));
 	}
 
 	public static String hintStoryCampaigns() {
@@ -542,7 +577,7 @@ public final class I18n {
 	}
 
 	public static String hintStoryDuels() {
-		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    T historico    S salva    Esc volta",
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    T hist\u00f3rico    S salva    Esc volta",
 			"Up/down selects    Z/Enter plays    T history    S saves    Esc back",
 			"Arriba/abajo elige    Z/Enter juega    T historial    S guarda    Esc volver"));
 	}
@@ -561,23 +596,23 @@ public final class I18n {
 
 	public static String[] storyRules() {
 		return new String[] {
-			pick("Seletiva do Garden: chave continua. Vitoria enfrenta o proximo. Derrota repete a mesma chave e nao elimina.",
-				"Garden qualifier: a ladder. A win faces the next seed. A loss replays the same tie and does not eliminate you.",
-				"Selectiva del Garden: llave continua. La victoria enfrenta al siguiente. La derrota repite la misma llave y no elimina."),
-			pick("Fases de pontos: vitoria vale 3. A derrota fica de fora ate a revanche substituir o resultado. Os outros jogos do grupo ja estao na tabela.",
-				"Points phases: a win is worth 3. A loss stays off until the rematch replaces it. The group's other matches are already on the table.",
-				"Fases de puntos: la victoria vale 3. La derrota queda fuera hasta que la revancha sustituya el resultado. Los otros partidos del grupo ya estan en la tabla."),
-			pick("Cortes: Balamb, Deling e Dollet, os 2 primeiros. Timber, os 3 primeiros. Quartas em FH e semi em Esthar, so o 1o.",
-				"Cutoffs: Balamb, Deling and Dollet, top 2. Timber, top 3. FH quarters and the Esthar semi, 1st only.",
-				"Cortes: Balamb, Deling y Dollet, los 2 primeros. Timber, los 3 primeros. Cuartos en FH y semi en Esthar, solo el 1o."),
-			pick("Em FH, a mesa contra a Rainha e cabeca de chave. Nao da ponto e nao elimina nenhum dos dois.",
-				"At FH, the match against the Queen is a seed match. It scores nothing and eliminates neither player.",
-				"En FH, la mesa contra la Reina es cabeza de llave. No da punto y no elimina a ninguno."),
-			pick("A grande final e uma mesa no Garden. Derrota da revanche na hora. O titulo so muda com a vitoria.",
-				"The grand final is one table at Garden. A loss is an immediate rematch. The title changes only with a win.",
-				"La gran final es una mesa en el Garden. La derrota da revancha al momento. El titulo solo cambia con la victoria."),
-			pick("Cada vitoria: uma carta da mao jogada. A carta especial do encontro sai so na primeira vez, separada, e nunca nessa mao.",
-				"Every win: one card from the hand that was played. The meeting's special card leaves only the first time, apart, and never in that hand.",
+			pick("Seletiva do Garden: chave cont\u00ednua. Quem vence enfrenta o pr\u00f3ximo. Quem perde repete o confronto e n\u00e3o \u00e9 eliminado.",
+				"Garden qualifier: a ladder. A win moves you to the next seed. A loss replays the same tie and doesn't eliminate you.",
+				"Selectiva del Garden: llave continua. Quien gana enfrenta al siguiente. Quien pierde repite el cruce y no queda eliminado."),
+			pick("Fases de pontos: vit\u00f3ria vale 3. A derrota fica de fora at\u00e9 a revanche substituir o resultado. Os outros jogos do grupo j\u00e1 est\u00e3o na tabela.",
+				"Points stages: a win is worth 3. A loss stays off the board until the rematch replaces it. The group's other matches are already in the standings.",
+				"Fases de puntos: la victoria vale 3. La derrota queda fuera hasta que la revancha sustituya el resultado. Los otros partidos del grupo ya est\u00e1n en la tabla."),
+			pick("Cortes: Balamb, Deling e Dollet, os 2 primeiros. Timber, os 3 primeiros. Quartas em FH e semifinal em Esthar, s\u00f3 o 1\u00ba.",
+				"Cutoffs: Balamb, Deling and Dollet, top 2. Timber, top 3. FH quarterfinal and Esthar semifinal, 1st only.",
+				"Cortes: Balamb, Deling y Dollet, los 2 primeros. Timber, los 3 primeros. Cuartos en FH y semifinal en Esthar, solo el 1.\u00ba"),
+			pick("Em FH, a mesa contra a Rainha \u00e9 de cabe\u00e7a de chave. N\u00e3o vale ponto e n\u00e3o elimina ningu\u00e9m.",
+				"At FH, the match against the Queen is a seeding match. It scores nothing and eliminates no one.",
+				"En FH, la mesa contra la Reina es de cabeza de serie. No da puntos y no elimina a nadie."),
+			pick("A grande final \u00e9 uma mesa no Garden. Derrota d\u00e1 revanche na hora. O t\u00edtulo s\u00f3 muda de m\u00e3os com a vit\u00f3ria.",
+				"The grand final is one table at the Garden. A loss means an instant rematch. The title only changes hands with a win.",
+				"La gran final es una mesa en el Garden. La derrota da revancha al momento. El t\u00edtulo solo cambia de manos con la victoria."),
+			pick("Cada vit\u00f3ria: uma carta da m\u00e3o jogada. A carta especial do encontro sai s\u00f3 na primeira vez, \u00e0 parte, e nunca nessa m\u00e3o.",
+				"Every win: one card from the hand that was played. The encounter's special card is given only the first time, separately, and never in that hand.",
 				"Cada victoria: una carta de la mano jugada. La carta especial del encuentro sale solo la primera vez, aparte, y nunca en esa mano.")
 		};
 	}
@@ -1343,7 +1378,7 @@ public final class I18n {
 		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
 		"",
 		"#Hist\u00f3ria",
-		"Historia original: voce e um aluno ou uma aluna de Balamb (a escolha e feita ao criar a campanha) no Torneio Mundial. Squall orienta e nao joga. O mesmo perfil guarda ate 15 campanhas. Cada vitoria deixa escolher uma carta da mao; a carta especial do encontro sai so na primeira vez. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
+		"Hist\u00f3ria original: voc\u00ea \u00e9 um aluno ou uma aluna de Balamb (a escolha \u00e9 feita ao criar a campanha) no Torneio Mundial. Squall orienta e n\u00e3o joga. O mesmo perfil guarda at\u00e9 15 campanhas. Cada vit\u00f3ria deixa escolher uma carta da m\u00e3o; a carta especial do encontro sai s\u00f3 na primeira vez. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."

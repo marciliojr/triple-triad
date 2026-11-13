@@ -62,6 +62,15 @@ distributions {
 	}
 }
 
+// version shown on the About screen (resources/version.properties)
+def appVersion = project.version.toString()
+tasks.named('processResources', ProcessResources) {
+	inputs.property('version', appVersion)
+	filesMatching('version.properties') {
+		expand(version: appVersion)
+	}
+}
+
 tasks.withType(JavaCompile).configureEach {
 	options.encoding = 'UTF-8'
 }
