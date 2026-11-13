@@ -85,6 +85,34 @@ public class StoryTextTest {
 		}
 	}
 
+	@Test
+	public void fontGlyphsAreSupported() {
+		// OpenSans is loaded with ASCII + this extra set in Options. Anything else is a tofu box.
+		String extra = "áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡";
+		List<String> bad = new ArrayList<String>();
+		for (Line line : allLines()) {
+			checkFont(line.pt, "PT", extra, bad);
+			checkFont(line.en, "EN", extra, bad);
+			checkFont(line.es, "ES", extra, bad);
+		}
+		assertTrue(bad.isEmpty(), bad.size() + " line(s) with unsupported glyphs:\n" + String.join("\n", bad));
+	}
+
+	private static void checkFont(String text, String label, String extra, List<String> bad) {
+		for (int i = 0; i < text.length(); ) {
+			int cp = text.codePointAt(i);
+			i += Character.charCount(cp);
+			if (cp == '\n' || cp == '\r' || cp == '\t')
+				continue;
+			if (cp >= 0x20 && cp <= 0x7E)
+				continue;
+			if (extra.indexOf(cp) >= 0)
+				continue;
+			bad.add(label + " U+" + Integer.toHexString(cp).toUpperCase() + " '" + new String(Character.toChars(cp)) + "': " + text);
+			return;
+		}
+	}
+
 	private static void check(Pattern p, String text, String label, List<String> bad) {
 		Matcher m = p.matcher(text);
 		if (m.find())

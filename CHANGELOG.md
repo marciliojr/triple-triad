@@ -32,7 +32,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Modo História: a grande final no Garden usa o fundo `arena_final.png`, também na cerimônia de campeão(ã)
 - Modo História: a apresentação da final da seletiva contra a Quistis (CC King) passa sobre a cena em tela cheia `revelacao_cc_king.png`, com o locutor e a Quistis falando num painel no terço esquerdo
 - Testes: `StoryArtTest` (fundos de todas as etapas e telas em 640x360, retratos de todo falante, narrador e derrotas dos NPCs em 128x128, ícones de nó, coordenadas do mapa e acerto do clique, cena da revelação, derrota só para o adversário vencido)
-- Testes: `ExitConfirmTest`, `AboutTest` e `StoryTextTest` (acentos de PT/ES, marcas `{masc|fem}` bem formadas, EN só com `{name}`, limites de tamanho de fala, bio e estilo)
+- Testes: `ExitConfirmTest`, `AboutTest` e `StoryTextTest` (acentos de PT/ES, marcas `{masc|fem}` bem formadas, EN só com `{name}`, limites de tamanho de fala, bio e estilo, e glifos que a fonte do jogo realmente desenha)
 
 #### Changed
 
@@ -43,6 +43,9 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Modo História: a expressão de derrota do adversário agora aparece quando o jogador vence (fala de vitória e falas dele logo depois). Antes, o roteiro mostrava o rosto de derrota do adversário quando ele ganhava
 - Revisão completa dos diálogos do modo História em PT, ES e EN: acentos e gramática de PT/ES restaurados, termos de FFVIII (Forest Owls, Grupo do Porto / Harbor Group / Grupo del Puerto, cabeza de serie, eliminatorias), vozes dos personagens (Fujin em maiúsculas, Raijin com "ya know" em EN, Squall sem falar de si na terceira pessoa, Nilo Vann como locutor), traduções alinhadas entre os três idiomas, listas de regras da fase final com Same Wall e textos de interface da História (regras, avisos, dicas) corrigidos
 - Menu principal com doze opções: Jogo Rápido, Campeonato, História, Versus, Meu Deck, Troféus, Salvar, Como Jogar, Configurações, Cheats, Sobre e Sair do jogo
+- Modo História: no menu da etapa, **Partidas** saiu porque repetia o que **Cidades** já faz. Os duelos agora se escolhem só no mapa-múndi (Cidades). A **Tabela** de pontos continua nas fases de grupo
+- Modo História: Esc nas telas da campanha (mapa, diálogo, vídeo, escolha do protagonista, lista de mesas, recompensa) abre "Voltar ao menu? O progresso será salvo." (Não / Sim, Não já selecionado), a mesma janela de confirmação do sair do jogo. X volta uma tela; no diálogo, X pula o resto da cena; Z/S continuam pulando o vídeo. Sair da campanha no menu da etapa (ou X) continua levando ao hub, com o progresso gravado
+- Falas do Squall e dos adversários reescritas como conversa de mesa de Triple Triad: desafio antes do duelo, zombaria quando vencem e reação quando perdem, com as regras daquela mesa (Open, Same, Plus, Combo, Elemental, Same Wall, Morte súbita) e as cartas raras em jogo. Squall fala curto e seco. Nilo Vann e o arco da CC King (Quistis) seguem coerentes, em PT, EN e ES
 
 ### [1.3.0] - 2026-11-08
 
@@ -298,7 +301,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Story mode: the grand final in the Garden uses the `arena_final.png` background, also in the champion ceremony
 - Story mode: the presentation of the qualifier final against Quistis (CC King) plays over the full-screen still `revelacao_cc_king.png`, with the announcer and Quistis speaking in a panel in the left third
 - Tests: `StoryArtTest` (backgrounds for every stage and screen at 640x360, a portrait for every speaker, narrator and NPC defeat faces at 128x128, node icons, map coordinates and click hit, reveal scene, defeat face only for the beaten opponent)
-- Tests: `ExitConfirmTest`, `AboutTest` and `StoryTextTest` (PT/ES accents, well-formed `{masc|fem}` marks, EN uses only `{name}`, length limits for lines, bios and play style)
+- Tests: `ExitConfirmTest`, `AboutTest` and `StoryTextTest` (PT/ES accents, well-formed `{masc|fem}` marks, EN uses only `{name}`, length limits for lines, bios and play style, and glyphs the game font can actually draw)
 
 #### Changed
 
@@ -309,6 +312,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Story mode: the opponent's defeat face now shows when the player wins (the win line and the opponent's own lines right after). Before, the script showed the opponent's defeat face when they won
 - Full review of Story mode dialogue in PT, ES and EN: PT/ES accents and grammar restored, FFVIII terms (Forest Owls, Harbor Group / Grupo do Porto / Grupo del Puerto, cabeza de serie, eliminatorias), character voices (Fujin in capitals, Raijin's "ya know" in EN, Squall no longer talks about himself in the third person, Nilo Vann as announcer), translations aligned across the three languages, final-stage rule lists now include Same Wall, and Story UI text (rules, notices, hints) fixed
 - Main menu with twelve entries: Quick Game, Championship, Story, Versus, My Deck, Trophies, Save, How to Play, Settings, Cheats, About and Quit game
+- Story mode: **Matches** was removed from the stage menu because it duplicated **Cities**. Duels are now picked only on the world map (Cities). The points **Standings** table remains in group stages
+- Story mode: Esc on campaign screens (map, dialogue, video, protagonist select, duel list, reward) opens "Return to the menu? Progress will be saved." (No / Yes, No preselected), the same confirmation window used to quit the game. X goes back one screen; in dialogue, X skips the rest of the scene; Z/S still skip the video. Leave campaign on the stage menu (or X) still returns to the hub, with progress saved
+- Squall's and the opponents' lines were rewritten as Triple Triad table talk: a pre-duel challenge, a taunt when they win and a reaction when they lose, naming that table's rules (Open, Same, Plus, Combo, Elemental, Same Wall, Sudden Death) and the rare cards in play. Squall stays short and dry. Nilo Vann and the CC King (Quistis) arc stay coherent, in PT, EN and ES
 
 ### [1.3.0] - 2026-11-08
 

@@ -48,6 +48,7 @@ public class StoryScreen extends Screen {
 
 	private final TripleTriad game;
 	private final VirtualKeyboard vk = new VirtualKeyboard();
+	private final ExitConfirm leaveMenu = new ExitConfirm();
 
 	private Mode mode = Mode.HUB;
 	private int index;
@@ -86,6 +87,7 @@ public class StoryScreen extends Screen {
 	public void enter() {
 		disposeVideo();
 		vk.close();
+		leaveMenu.close();
 		index = 0;
 		mode = Mode.HUB;
 	}
@@ -154,13 +156,18 @@ public class StoryScreen extends Screen {
 			case SHOW: renderShow(g, width, height); break;
 			default: break;
 		}
-		if (System.currentTimeMillis() < savedUntil)
+		if (System.currentTimeMillis() < savedUntil && !leaveMenu.isOpen())
 			Ui.drawCentered(Options.getSmallFont(), I18n.storySaved(),
 				HintBar.lastTop() - Options.getSmallFont().getLineHeight() * 1.3f, Ui.TITLE);
+		leaveMenu.render(g);
 	}
 
 	@Override
 	public void keyPressed(int key, char c) {
+		if (leaveMenu.isOpen()) {
+			handleLeaveMenu(leaveMenu.key(key));
+			return;
+		}
 		switch (mode) {
 			case HUB: keyHub(key); break;
 			case PROTAGONIST: keyProtagonist(key); break;
@@ -185,6 +192,10 @@ public class StoryScreen extends Screen {
 	public void mousePressed(int button, int x, int y) {
 		if (button != Input.MOUSE_LEFT_BUTTON)
 			return;
+		if (leaveMenu.isOpen()) {
+			handleLeaveMenu(leaveMenu.click(x, y));
+			return;
+		}
 		if (mode == Mode.HUB)
 			clickHub(y);
 		else if (mode == Mode.PROTAGONIST)
@@ -218,7 +229,7 @@ public class StoryScreen extends Screen {
 			else
 				leaveToMenu();
 		} else if (key == Input.KEY_ESCAPE) {
-			leaveToMenu();
+			requestLeaveMenu();
 		}
 	}
 
@@ -253,9 +264,11 @@ public class StoryScreen extends Screen {
 			AudioController.playCursor();
 		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			beginName();
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			AudioController.Effect.BACK.play();
 			mode = Mode.HUB;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
@@ -388,9 +401,11 @@ public class StoryScreen extends Screen {
 			yesNo = 0;
 			mode = Mode.DELETE;
 			AudioController.Effect.BACK.play();
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			AudioController.Effect.BACK.play();
 			mode = Mode.HUB;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
@@ -475,8 +490,10 @@ public class StoryScreen extends Screen {
 			activateStage(index);
 		} else if (key == Input.KEY_S) {
 			manualSave();
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			leaveCampaign();
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
@@ -487,29 +504,26 @@ public class StoryScreen extends Screen {
 			return;
 		}
 		region = StoryCampaign.REGIONS[StoryCampaign.currentRegion(save)];
+		String[] items = stageItems();
+		if (row < 0 || row >= items.length)
+			return;
+		String chosen = items[row];
 		AudioController.Effect.SELECT.play();
-		if (row == 0) {
-			openDuels();
-		} else if (row == 1) {
+		if (chosen.equals(I18n.storyCities())) {
 			index = StoryCampaign.currentRegion(save);
 			mode = Mode.MAP;
-		} else if (row == 2) {
-			if (region.kind == StoryCampaign.Kind.GROUP) {
-				mode = Mode.TABLE;
-			} else {
-				openDuels();
-			}
-		} else if (row == 3) {
+		} else if (chosen.equals(I18n.storyTable())) {
+			mode = Mode.TABLE;
+		} else if (chosen.equals(I18n.storyRulesTitle())) {
 			rulesPage = 0;
 			mode = Mode.RULES;
-		} else if (row == 4) {
+		} else if (chosen.equals(I18n.storyArrival(true)) || chosen.equals(I18n.storyArrival(false))) {
 			play(region.arrival, StoryCampaign.After.STAGE);
-		} else if (row == 5) {
+		} else if (chosen.equals(I18n.storySave())) {
 			manualSave();
-		} else if (row == 6) {
+		} else if (chosen.equals(I18n.storyLeave())) {
 			leaveCampaign();
-		} else {
-			manualSave();
+		} else if (chosen.equals(I18n.storyBackMenu())) {
 			leaveToMenu();
 		}
 	}
@@ -517,17 +531,16 @@ public class StoryScreen extends Screen {
 	private String[] stageItems() {
 		StorySave save = camp();
 		StoryCampaign.Region here = StoryCampaign.REGIONS[StoryCampaign.currentRegion(save)];
-		String board = here.kind == StoryCampaign.Kind.GROUP ? I18n.storyTable() : I18n.storyLadder();
-		return new String[] {
-			I18n.storyDuels(),
-			I18n.text("Cidades", "Cities", "Ciudades"),
-			board,
-			I18n.storyRulesTitle(),
-			I18n.storyArrival(StoryAssets.hasVideo(here.video)),
-			I18n.storySave(),
-			I18n.storyLeave(),
-			I18n.storyBackMenu()
-		};
+		ArrayList<String> items = new ArrayList<String>();
+		items.add(I18n.storyCities());
+		if (here.kind == StoryCampaign.Kind.GROUP)
+			items.add(I18n.storyTable());
+		items.add(I18n.storyRulesTitle());
+		items.add(I18n.storyArrival(StoryAssets.hasVideo(here.video)));
+		items.add(I18n.storySave());
+		items.add(I18n.storyLeave());
+		items.add(I18n.storyBackMenu());
+		return items.toArray(new String[0]);
 	}
 
 	private void keyMap(int key) {
@@ -538,9 +551,11 @@ public class StoryScreen extends Screen {
 			AudioController.playCursor();
 		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			openRegion(index);
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			AudioController.Effect.BACK.play();
 			mode = Mode.STAGE;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
@@ -609,9 +624,11 @@ public class StoryScreen extends Screen {
 			AudioController.Effect.SELECT.play();
 		} else if (key == Input.KEY_S) {
 			manualSave();
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			AudioController.Effect.BACK.play();
 			mode = Mode.STAGE;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
@@ -638,9 +655,11 @@ public class StoryScreen extends Screen {
 		} else if (key == Input.KEY_UP || key == Input.KEY_LEFT) {
 			rulesPage = Math.max(0, rulesPage - 1);
 			AudioController.playCursor();
-		} else if (key == Input.KEY_ESCAPE || key == Input.KEY_Z || key == Input.KEY_ENTER) {
+		} else if (key == Input.KEY_X || key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			AudioController.Effect.BACK.play();
 			mode = Mode.STAGE;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
@@ -656,23 +675,31 @@ public class StoryScreen extends Screen {
 			} else {
 				AudioController.playCursor();
 			}
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			AudioController.Effect.BACK.play();
 			mode = Mode.DUELS;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
 	private void keyBack(int key, Mode back) {
 		if (key == Input.KEY_S && back == Mode.STAGE)
 			manualSave();
-		if (key == Input.KEY_ESCAPE || key == Input.KEY_Z || key == Input.KEY_ENTER) {
+		if (key == Input.KEY_X || key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			AudioController.Effect.BACK.play();
 			mode = back;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
 		}
 	}
 
 	private void keyScene(int key) {
 		if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+			return;
+		}
+		if (key == Input.KEY_X) {
 			AudioController.Effect.BACK.play();
 			finishScene();
 			return;
@@ -731,10 +758,13 @@ public class StoryScreen extends Screen {
 			preview = false;
 			mode = Mode.CONFIRM;
 			AudioController.Effect.SELECT.play();
-		} else if (key == Input.KEY_ESCAPE) {
+		} else if (key == Input.KEY_X) {
 			preview = false;
 			AudioController.Effect.BACK.play();
 			mode = Mode.DUELS;
+		} else if (key == Input.KEY_ESCAPE) {
+			preview = false;
+			requestLeaveMenu();
 		}
 	}
 
@@ -778,7 +808,11 @@ public class StoryScreen extends Screen {
 	}
 
 	private void keyShow(int key) {
-		if (key == Input.KEY_Z || key == Input.KEY_ENTER || key == Input.KEY_ESCAPE) {
+		if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+			return;
+		}
+		if (key == Input.KEY_Z || key == Input.KEY_ENTER || key == Input.KEY_X) {
 			AudioController.Effect.SELECT.play();
 			StorySave save = camp();
 			if (duel != null && StoryCampaign.FINAL_DUEL.equals(duel.id) && save != null && !save.isComplete()) {
@@ -929,8 +963,36 @@ public class StoryScreen extends Screen {
 	}
 
 	private void leaveToMenu() {
+		StorySave save = camp();
+		if (save != null)
+			save.touch();
+		game.saveProfile();
+		markSaved();
+		leaveMenu.close();
 		AudioController.Effect.BACK.play();
 		game.showMenu();
+	}
+
+	/** Esc in Story Mode: confirm return to the main menu, saving progress. */
+	private void requestLeaveMenu() {
+		AudioController.Effect.BACK.play();
+		leaveMenu.open(ExitConfirm.Purpose.RETURN_MENU);
+	}
+
+	private void handleLeaveMenu(ExitConfirm.Result result) {
+		switch (result) {
+			case MOVE:
+				AudioController.playCursor();
+				break;
+			case STAY:
+				AudioController.Effect.BACK.play();
+				break;
+			case EXIT:
+				leaveToMenu();
+				break;
+			default:
+				break;
+		}
 	}
 
 	private StorySave camp() {
@@ -1208,7 +1270,7 @@ public class StoryScreen extends Screen {
 			Color color = !unlocked ? Ui.DISABLED : (cleared ? Ui.TITLE : Color.white);
 			shadowed(font, lx, ly, label, on ? Ui.TITLE : color);
 		}
-		Ui.drawCentered(Options.getFont(), I18n.text("Cidades", "Cities", "Ciudades"), height * 0.03f, Ui.TITLE);
+		Ui.drawCentered(Options.getFont(), I18n.storyCities(), height * 0.03f, Ui.TITLE);
 		if (index >= 0 && index < n) {
 			StoryCampaign.Region item = StoryCampaign.REGIONS[index];
 			boolean unlocked = StoryCampaign.regionUnlocked(save, index);

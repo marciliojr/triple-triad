@@ -41,6 +41,9 @@
 - [x] Revisão dos diálogos do modo História em PT/ES/EN, com `StoryTextTest`
 - [x] Arte extra no modo História: retrato do Nilo Vann, derrota dos 6 NPCs (e rosto de derrota do adversário só quando o jogador vence), mapa-múndi em Cidades, tela de abertura com logo, arena da final e revelação da CC King em tela cheia, com `StoryArtTest`
 
+- [x] Modo História: Esc confirma voltar ao menu (progresso salvo) em todas as telas da campanha; X volta uma tela; menu da etapa só escolhe jogos por **Cidades**
+- [x] Falas do Squall e dos adversários reescritas como conversa de mesa de Triple Triad (PT/EN/ES), com `StoryTextTest` de glifos da fonte
+
 ## Não feito (de propósito)
 
 - [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões

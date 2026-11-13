@@ -28,8 +28,10 @@ import itdelatrisu.tripletriad.gfx.Input;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 
 /**
- * "Quit the game?" overlay, drawn as an FFVIII window over the current screen.
- * Opens from Esc (where Esc used to quit) and from the menu's Quit entry.
+ * Confirmation overlay, drawn as an FFVIII window over the current screen.
+ * {@link Purpose#QUIT_GAME} opens from Esc (where Esc used to quit) and from
+ * the menu's Quit entry. {@link Purpose#RETURN_MENU} is used in Story Mode so
+ * Esc can leave to the main menu without quitting the app.
  * The default answer is No. The key logic has no audio or GL calls so it can be tested.
  */
 public final class ExitConfirm {
@@ -41,8 +43,16 @@ public final class ExitConfirm {
 		MOVE,
 		/** The dialog closed and the game keeps running. */
 		STAY,
-		/** The player confirmed: quit the game. */
+		/** The player confirmed: quit the game, or return to the menu. */
 		EXIT
+	}
+
+	/** What the Yes answer will do. */
+	public enum Purpose {
+		/** Yes quits the application. */
+		QUIT_GAME,
+		/** Yes returns to the main menu (the caller saves first). */
+		RETURN_MENU
 	}
 
 	/** Index of the No answer (default). */
@@ -57,8 +67,20 @@ public final class ExitConfirm {
 	/** Highlighted answer. */
 	private int choice = NO;
 
-	/** Opens the dialog with No highlighted. */
+	/** What Yes will do when this dialog was opened. */
+	private Purpose purpose = Purpose.QUIT_GAME;
+
+	/** Opens a quit-game confirmation with No highlighted. */
 	public void open() {
+		open(Purpose.QUIT_GAME);
+	}
+
+	/**
+	 * Opens the dialog with No highlighted.
+	 * @param purpose what Yes will do
+	 */
+	public void open(Purpose purpose) {
+		this.purpose = purpose == null ? Purpose.QUIT_GAME : purpose;
 		open = true;
 		choice = NO;
 	}
@@ -74,6 +96,14 @@ public final class ExitConfirm {
 
 	/** @return {@link #NO} or {@link #YES} */
 	public int choice() { return choice; }
+
+	/** @return why this dialog was opened */
+	public Purpose purpose() { return purpose; }
+
+	/** Question shown in the window, from the current purpose. */
+	public String question() {
+		return purpose == Purpose.RETURN_MENU ? I18n.confirmReturnMenu() : I18n.confirmExitGame();
+	}
 
 	/**
 	 * Handles a canonical key (see {@code Controls}).
@@ -131,7 +161,7 @@ public final class ExitConfirm {
 	public Result click(int x, int y) {
 		if (!open)
 			return Result.NONE;
-		Box box = measure();
+		Box box = measure(question());
 		for (int i = 0; i < 2; i++) {
 			if (x >= box.optX[i] - box.pad && x <= box.optX[i] + box.optW[i] + box.pad
 					&& y >= box.optY - box.pad * 0.5f && y <= box.optY + box.line + box.pad * 0.5f)
@@ -149,11 +179,11 @@ public final class ExitConfirm {
 		g.setColor(new Color(0f, 0f, 0f, 0.62f));
 		g.fillRect(0, 0, width, height);
 
-		Box box = measure();
+		Box box = measure(question());
 		MenuScreen.drawWindow(g, box.x, box.y, box.w, box.h, true, 1f);
 		UnicodeFont title = Options.getFont();
 		UnicodeFont small = Options.getSmallFont();
-		String question = Ui.fit(title, I18n.confirmExitGame(), box.w - box.pad * 2f);
+		String question = Ui.fit(title, question(), box.w - box.pad * 2f);
 		float qx = box.x + (box.w - title.getWidth(question)) / 2f;
 		float qy = box.y + box.pad;
 		title.drawString(qx + 1f, qy + 1f, question, new Color(0.02f, 0.04f, 0.10f, 0.9f));
@@ -183,7 +213,7 @@ public final class ExitConfirm {
 	}
 
 	/** Window geometry for this frame. */
-	private static Box measure() {
+	private static Box measure(String question) {
 		int width = Options.getWidth();
 		int height = Options.getHeight();
 		UnicodeFont title = Options.getFont();
@@ -191,7 +221,7 @@ public final class ExitConfirm {
 		Box b = new Box();
 		b.line = small.getLineHeight();
 		b.pad = Math.max(10f, b.line * 0.7f);
-		float want = Math.max(title.getWidth(I18n.confirmExitGame()) + b.pad * 2f, width * 0.40f);
+		float want = Math.max(title.getWidth(question) + b.pad * 2f, width * 0.40f);
 		b.w = Math.min(width * 0.9f, want);
 		b.h = b.pad * 3.2f + title.getLineHeight() + b.line;
 		b.x = (width - b.w) / 2f;
