@@ -31,6 +31,7 @@ import itdelatrisu.tripletriad.gfx.UnicodeFont;
 import itdelatrisu.tripletriad.gfx.VideoLoop;
 import itdelatrisu.tripletriad.story.StoryAssets;
 import itdelatrisu.tripletriad.story.StoryCampaign;
+import itdelatrisu.tripletriad.story.StoryMap;
 import itdelatrisu.tripletriad.story.StorySave;
 
 /**
@@ -193,7 +194,7 @@ public class StoryScreen extends Screen {
 		else if (mode == Mode.STAGE)
 			clickList(y, stageItems().length, this::activateStage);
 		else if (mode == Mode.MAP)
-			clickList(y, StoryCampaign.REGIONS.length, this::openRegion);
+			clickMap(x, y);
 		else if (mode == Mode.DUELS && region != null)
 			clickList(y, region.duels.length, this::activateDuel);
 		else if (mode == Mode.SCENE)
@@ -531,8 +532,9 @@ public class StoryScreen extends Screen {
 
 	private void keyMap(int key) {
 		int n = StoryCampaign.REGIONS.length;
-		if (key == Input.KEY_DOWN || key == Input.KEY_UP) {
-			index = (key == Input.KEY_DOWN) ? (index + 1) % n : (index + n - 1) % n;
+		if (key == Input.KEY_DOWN || key == Input.KEY_UP || key == Input.KEY_RIGHT || key == Input.KEY_LEFT) {
+			boolean next = key == Input.KEY_DOWN || key == Input.KEY_RIGHT;
+			index = next ? (index + 1) % n : (index + n - 1) % n;
 			AudioController.playCursor();
 		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			openRegion(index);
@@ -540,6 +542,20 @@ public class StoryScreen extends Screen {
 			AudioController.Effect.BACK.play();
 			mode = Mode.STAGE;
 		}
+	}
+
+	/** Click a marker: the first click selects it, the second enters. */
+	private void clickMap(int x, int y) {
+		float radius = mapMarkerSize() * 0.9f;
+		int hit = StoryMap.hit(x, y, Options.getWidth(), Options.getHeight(), radius);
+		if (hit < 0)
+			return;
+		if (hit != index) {
+			index = hit;
+			AudioController.playCursor();
+			return;
+		}
+		openRegion(hit);
 	}
 
 	private void openRegion(int row) {
@@ -668,9 +684,11 @@ public class StoryScreen extends Screen {
 		if (!showingVideo && (key == Input.KEY_Z || key == Input.KEY_ENTER)) {
 			StorySave save = camp();
 			if (lineIndex >= 0 && lineIndex < lines.length) {
+				boolean still = sceneStill() != null;
+				int per = still ? STILL_LINES : 3;
 				ArrayList<String> wrapped = wrap(Options.getSmallFont(), lines[lineIndex].text(save),
-					sceneTextWidth(lines[lineIndex]));
-				int pages = Math.max(1, (wrapped.size() + 2) / 3);
+					still ? stillTextWidth() : sceneTextWidth(lines[lineIndex]));
+				int pages = Math.max(1, (wrapped.size() + per - 1) / per);
 				if (page + 1 < pages) {
 					page++;
 					AudioController.playCursor();
@@ -926,9 +944,30 @@ public class StoryScreen extends Screen {
 		return save == null ? "" : save.student();
 	}
 
+	private boolean titleMode() {
+		return mode == Mode.HUB || mode == Mode.PROTAGONIST || mode == Mode.NAME
+			|| mode == Mode.CAMPAIGNS || mode == Mode.DELETE;
+	}
+
+	/** @return the line on screen when it plays over a full-screen still, else null */
+	private StoryCampaign.Line sceneStill() {
+		if (mode != Mode.SCENE || showingVideo || lineIndex < 0 || lineIndex >= lines.length)
+			return null;
+		StoryCampaign.Line line = lines[lineIndex];
+		if (line == null || !line.hasScene() || StoryAssets.background(line.scene) == null)
+			return null;
+		return line;
+	}
+
 	private String backgroundFile() {
-		if (region != null && mode != Mode.HUB && mode != Mode.PROTAGONIST && mode != Mode.NAME
-				&& mode != Mode.CAMPAIGNS && mode != Mode.DELETE)
+		if (titleMode())
+			return StoryAssets.TITLE_BACKGROUND;
+		if (mode == Mode.MAP)
+			return StoryMap.BACKGROUND;
+		StoryCampaign.Line still = sceneStill();
+		if (still != null)
+			return still.scene;
+		if (region != null)
 			return region.background;
 		StorySave save = camp();
 		int i = StoryCampaign.currentRegion(save);
@@ -938,10 +977,7 @@ public class StoryScreen extends Screen {
 	private void renderHub(Graphics g, int height) {
 		Profile profile = game.getProfile();
 		int count = profile == null ? 0 : profile.campaignCount();
-		Ui.drawCentered(Options.getFont(), I18n.storyTitle(), height * 0.1f, Ui.TITLE);
-		Ui.drawCentered(Options.getSmallFont(), I18n.storyFan(), height * 0.18f, Ui.HINT);
-		String cap = count + "/" + StorySave.MAX;
-		Ui.drawCentered(Options.getSmallFont(), cap, height * 0.24f, Ui.HINT);
+		drawLogo(height);
 		UnicodeFont font = Options.getSmallFont();
 		String[] items = { I18n.storyNew(), I18n.storyContinue(), I18n.storyBackMenu() };
 		float start = height * 0.36f;
@@ -953,6 +989,32 @@ public class StoryScreen extends Screen {
 		if (count >= StorySave.MAX)
 			Ui.drawCentered(font, I18n.storyFull(), height * 0.78f, Ui.TITLE);
 		HintBar.draw(I18n.hintStoryHub(), height * 0.92f);
+	}
+
+	/**
+	 * Story Mode logo in the empty sky of titulo_modo_historia.png (upper-left).
+	 * Drawn as text so it follows the language; the font has no en dash, so the
+	 * title is split in two lines instead.
+	 */
+	private void drawLogo(int height) {
+		float x = Options.getWidth() * 0.05f;
+		UnicodeFont big = Options.getFont();
+		UnicodeFont small = Options.getSmallFont();
+		float y = height * 0.05f;
+		shadowed(big, x, y, I18n.storyLogoTitle(), Ui.TITLE);
+		y += big.getLineHeight() * 1.05f;
+		shadowed(big, x, y, I18n.storyLogoSubtitle(), Color.white);
+		y += big.getLineHeight() * 1.15f;
+		shadowed(small, x, y, Ui.fit(small, I18n.storyFan(), Options.getWidth() * 0.5f), Ui.HINT);
+		y += small.getLineHeight() * 1.1f;
+		Profile profile = game.getProfile();
+		int count = profile == null ? 0 : profile.campaignCount();
+		shadowed(small, x, y, I18n.storyTitle() + "  " + count + "/" + StorySave.MAX, Ui.HINT);
+	}
+
+	private static void shadowed(UnicodeFont font, float x, float y, String text, Color color) {
+		font.drawString(x + 2f, y + 2f, text, new Color(0f, 0f, 0f, 0.85f));
+		font.drawString(x, y, text, color);
 	}
 
 	private void renderProtagonist(Graphics g, int width, int height) {
@@ -1070,18 +1132,94 @@ public class StoryScreen extends Screen {
 		HintBar.draw(I18n.hintStoryStage(), height * 0.93f);
 	}
 
+	/** Marker size on the world map, in screen pixels. */
+	private static float mapMarkerSize() {
+		return Math.max(16f, Math.min(Options.getHeight() * 0.055f, 40f));
+	}
+
+	/**
+	 * World map (mapa_mundi.png) with the tournament stops drawn by the game:
+	 * dotted route, state icon (no_bloqueado / no_disponivel / no_vencido), name.
+	 */
 	private void renderMap(Graphics g, int height) {
-		Ui.drawCentered(Options.getFont(), I18n.text("Cidades", "Cities", "Ciudades"), height * 0.08f, Ui.TITLE);
-		UnicodeFont font = Options.getSmallFont();
-		float start = height * 0.16f;
-		float step = rowStep(StoryCampaign.REGIONS.length);
+		int width = Options.getWidth();
 		StorySave save = camp();
-		for (int i = 0; i < StoryCampaign.REGIONS.length; i++) {
+		int n = StoryCampaign.REGIONS.length;
+		float[][] at = new float[n][];
+		for (int i = 0; i < n; i++) {
+			StoryMap.Spot spot = StoryMap.spot(StoryCampaign.REGIONS[i].id);
+			at[i] = spot == null ? null : StoryMap.toScreen(spot, 0, 0, width, height);
+		}
+		float marker = mapMarkerSize();
+		// route in tournament order
+		for (int i = 0; i + 1 < n; i++) {
+			if (at[i] == null || at[i + 1] == null)
+				continue;
+			boolean open = StoryCampaign.regionUnlocked(save, i + 1);
+			g.setColor(open ? new Color(1f, 0.92f, 0.55f, 0.85f) : new Color(0.75f, 0.75f, 0.8f, 0.45f));
+			float dx = at[i + 1][0] - at[i][0], dy = at[i + 1][1] - at[i][1];
+			float len = (float) Math.sqrt(dx * dx + dy * dy);
+			int dots = (int) (len / Math.max(6f, marker * 0.3f));
+			float dot = Math.max(2f, marker * 0.08f);
+			for (int d = 1; d < dots; d++) {
+				float t = d / (float) dots;
+				g.fillRect(at[i][0] + dx * t - dot / 2f, at[i][1] + dy * t - dot / 2f, dot, dot);
+			}
+		}
+		UnicodeFont tiny = Options.getTinyFont();
+		UnicodeFont small = Options.getSmallFont();
+		for (int i = 0; i < n; i++) {
+			if (at[i] == null)
+				continue;
 			StoryCampaign.Region item = StoryCampaign.REGIONS[i];
 			boolean unlocked = StoryCampaign.regionUnlocked(save, i);
 			boolean cleared = StoryCampaign.stageCleared(item, save);
-			drawChoice(font, i, index, item.name(), start, step, iconFor(unlocked, cleared),
-				!unlocked ? Ui.DISABLED : (cleared ? Ui.TITLE : Ui.HINT));
+			boolean on = i == index;
+			float size = on ? marker * 1.25f : marker;
+			float x = at[i][0], y = at[i][1];
+			if (on) {
+				g.setColor(Ui.TITLE);
+				g.fillRect(x - size / 2f - 3f, y - size / 2f - 3f, size + 6f, size + 6f);
+				g.setColor(new Color(0.05f, 0.07f, 0.12f));
+				g.fillRect(x - size / 2f - 1f, y - size / 2f - 1f, size + 2f, size + 2f);
+			}
+			Image icon = iconFor(unlocked, cleared);
+			if (icon != null)
+				icon.draw(x - size / 2f, y - size / 2f, size, size);
+			else {
+				g.setColor(!unlocked ? Ui.DISABLED : (cleared ? Ui.TITLE : Color.white));
+				g.fillRect(x - size / 4f, y - size / 4f, size / 2f, size / 2f);
+			}
+			UnicodeFont font = on ? small : tiny;
+			String label = item.name();
+			float lw = font.getWidth(label);
+			float lh = font.getLineHeight();
+			StoryMap.Spot spot = StoryMap.spot(item.id);
+			float lx, ly;
+			switch (spot.label) {
+				case ABOVE: lx = x - lw / 2f; ly = y - size / 2f - lh - 2f; break;
+				case LEFT: lx = x - size / 2f - lw - 6f; ly = y - lh / 2f; break;
+				case RIGHT: lx = x + size / 2f + 6f; ly = y - lh / 2f; break;
+				case BELOW:
+				default: lx = x - lw / 2f; ly = y + size / 2f + 2f; break;
+			}
+			lx = Math.max(4f, Math.min(width - lw - 4f, lx));
+			ly = Math.max(4f, Math.min(height - lh - 4f, ly));
+			Color color = !unlocked ? Ui.DISABLED : (cleared ? Ui.TITLE : Color.white);
+			shadowed(font, lx, ly, label, on ? Ui.TITLE : color);
+		}
+		Ui.drawCentered(Options.getFont(), I18n.text("Cidades", "Cities", "Ciudades"), height * 0.03f, Ui.TITLE);
+		if (index >= 0 && index < n) {
+			StoryCampaign.Region item = StoryCampaign.REGIONS[index];
+			boolean unlocked = StoryCampaign.regionUnlocked(save, index);
+			boolean cleared = StoryCampaign.stageCleared(item, save);
+			String info = item.name() + "  -  " + I18n.storyMapState(unlocked, cleared);
+			float lh = small.getLineHeight();
+			float iw = small.getWidth(info) + width * 0.04f;
+			float iy = height * 0.84f;
+			g.setColor(new Color(0.03f, 0.05f, 0.1f, 0.8f));
+			g.fillRect((width - iw) / 2f, iy - lh * 0.25f, iw, lh * 1.5f);
+			Ui.drawCentered(small, info, iy, unlocked ? Ui.TITLE : Ui.DISABLED);
 		}
 		HintBar.draw(I18n.hintStoryMap(), height * 0.93f);
 	}
@@ -1150,7 +1288,8 @@ public class StoryScreen extends Screen {
 			return;
 		Ui.drawCentered(Options.getFont(), duel.name(), height * 0.08f, Ui.TITLE);
 		Ui.drawCentered(Options.getSmallFont(), duel.role(), height * 0.15f, Ui.HINT);
-		Image face = StoryAssets.portrait(duel.portrait, false);
+		StorySave beatenBy = camp();
+		Image face = StoryAssets.portrait(duel.portrait, beatenBy != null && beatenBy.isCleared(duel.id));
 		float size = height * 0.28f;
 		if (face != null)
 			face.draw(width * 0.08f, height * 0.22f, size, size);
@@ -1187,6 +1326,10 @@ public class StoryScreen extends Screen {
 		if (lineIndex < 0 || lineIndex >= lines.length)
 			return;
 		StoryCampaign.Line line = lines[lineIndex];
+		if (sceneStill() != null) {
+			renderStill(g, width, height, line);
+			return;
+		}
 		float boxW = width * 0.92f;
 		float boxH = height * 0.28f;
 		float boxX = (width - boxW) / 2f;
@@ -1204,7 +1347,11 @@ public class StoryScreen extends Screen {
 		float faceY = boxY + (boxH - face) / 2f;
 		float textX = sceneTextX(line);
 		if (line.narrator) {
-			drawNarrator(g, faceX, faceY, face);
+			Image nilo = narratorPortrait();
+			if (nilo != null)
+				nilo.draw(faceX, faceY, face, face);
+			else
+				drawNarrator(g, faceX, faceY, face);
 		} else {
 			Image portrait = StoryAssets.portrait(line.portraitFor(save), line.defeat || (line.isPlayer() && sceneDefeat));
 			if (portrait != null)
@@ -1232,7 +1379,67 @@ public class StoryScreen extends Screen {
 		HintBar.draw(I18n.hintStoryTalk(), height * 0.96f);
 	}
 
-	/** Original mark for Nilo Vann. Not a reused face. */
+	/**
+	 * Nilo Vann's portrait. After a lost match (the student's rematch scene)
+	 * the caller shows his frustrated face.
+	 */
+	private Image narratorPortrait() {
+		return StoryAssets.portrait(StoryCampaign.NARRATOR_PORTRAIT, sceneDefeat);
+	}
+
+	/** Lines per page in the left-third panel of a full-screen still. */
+	private static final int STILL_LINES = 7;
+
+	/** Left third of the screen for a full-screen still (x, y, w, h). */
+	private static float[] stillPanel() {
+		float width = Options.getWidth();
+		float height = Options.getHeight();
+		return new float[] { width * 0.025f, height * 0.08f, width * 0.31f, height * 0.78f };
+	}
+
+	/**
+	 * Full-screen still (e.g. revelacao_cc_king.png). The art keeps its left third
+	 * dark, so the speaker and the text go there.
+	 */
+	private void renderStill(Graphics g, int width, int height, StoryCampaign.Line line) {
+		float[] p = stillPanel();
+		g.setColor(new Color(0.02f, 0.03f, 0.07f, 0.55f));
+		g.fillRect(p[0], p[1], p[2], p[3]);
+		g.setColor(new Color(0.72f, 0.58f, 0.28f));
+		g.fillRect(p[0], p[1], p[2], 2f);
+		g.fillRect(p[0], p[1] + p[3] - 2f, p[2], 2f);
+		StorySave save = camp();
+		float pad = width * 0.015f;
+		float face = Math.min(p[2] * 0.42f, height * 0.2f);
+		float x = p[0] + pad;
+		float y = p[1] + pad;
+		Image portrait = line.narrator ? narratorPortrait()
+			: StoryAssets.portrait(line.portraitFor(save), line.defeat || (line.isPlayer() && sceneDefeat));
+		if (portrait != null) {
+			portrait.draw(x, y, face, face);
+		} else if (line.narrator) {
+			drawNarrator(g, x, y, face);
+		}
+		UnicodeFont small = Options.getSmallFont();
+		String who = line.name(save);
+		float nameY = y + face + small.getLineHeight() * 0.3f;
+		if (who != null && !who.isEmpty())
+			small.drawString(x, nameY, who, Ui.TITLE);
+		ArrayList<String> wrapped = wrap(small, line.text(save), stillTextWidth());
+		int from = page * STILL_LINES;
+		float textY = nameY + small.getLineHeight() * 1.3f;
+		for (int i = from; i < wrapped.size() && i < from + STILL_LINES; i++) {
+			small.drawString(x, textY, wrapped.get(i), Color.white);
+			textY += small.getLineHeight();
+		}
+		HintBar.draw(I18n.hintStoryTalk(), height * 0.96f);
+	}
+
+	private static float stillTextWidth() {
+		return stillPanel()[2] - Options.getWidth() * 0.03f;
+	}
+
+	/** Original mark for Nilo Vann, used when narrador_*.png is missing. */
 	private void drawNarrator(Graphics g, float x, float y, float size) {
 		g.setColor(new Color(0.72f, 0.58f, 0.28f));
 		g.fillRect(x, y, size, size);
@@ -1343,7 +1550,13 @@ public class StoryScreen extends Screen {
 		Image bg = StoryAssets.background(file);
 		if (bg != null)
 			letterbox(bg, 0, 0, width, height);
-		float shade = (mode == Mode.SCENE && showingVideo) ? 0f : 0.45f;
+		float shade = 0.45f;
+		if (mode == Mode.SCENE && (showingVideo || sceneStill() != null))
+			shade = 0f;
+		else if (mode == Mode.MAP)
+			shade = 0.1f;
+		else if (mode == Mode.HUB)
+			shade = 0.25f;
 		if (shade > 0f) {
 			g.setColor(new Color(0f, 0f, 0f, shade));
 			g.fillRect(0, 0, width, height);

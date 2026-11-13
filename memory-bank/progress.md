@@ -39,6 +39,7 @@
 - [x] Esc no menu / opção Sair do jogo pedem confirmação Não/Sim (padrão Não)
 - [x] Tela Sobre (fork de itdelatrisu, ampliado por marciliojr, GPLv3, versão, aviso Square Enix)
 - [x] Revisão dos diálogos do modo História em PT/ES/EN, com `StoryTextTest`
+- [x] Arte extra no modo História: retrato do Nilo Vann, derrota dos 6 NPCs (e rosto de derrota do adversário só quando o jogador vence), mapa-múndi em Cidades, tela de abertura com logo, arena da final e revelação da CC King em tela cheia, com `StoryArtTest`
 
 ## Não feito (de propósito)
 

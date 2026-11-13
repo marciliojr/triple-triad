@@ -14,7 +14,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 
 #### Added
 
-- Modo História: campanha original em que o jogador é um aluno de Balamb Garden. Squall orienta e não joga. O locutor Nilo Vann aparece num crachá desenhado na interface
+- Modo História: campanha original em que o jogador é um aluno de Balamb Garden. Squall orienta e não joga. O locutor Nilo Vann aparece com retrato próprio
 - Até 15 campanhas por perfil (`CAMP.*`), com nome do aluno, etapa, duelos, especiais já entregues e recompensa pendente. O álbum, os decks, os blocos do Campeonato e os troféus continuam do perfil. Apagar uma campanha pede confirmação e não apaga cartas
 - Save antigo `STORY_CLEARED` / `STORY_ARRIVALS` migra para a primeira campanha e permanece no arquivo. Gravação do perfil em arquivo temporário e troca atômica
 - Cada vitória oferece uma carta da mão jogada, com confirmação. A carta especial do encontro (Ifrit, Shiva, Bahamut e as demais do catálogo já mapeadas) entra só na primeira vitória e não aparece nessa mão
@@ -25,6 +25,13 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Menu principal: novas opções **Sobre** e **Sair do jogo** (esta abre a mesma confirmação)
 - Tela **Sobre**: créditos do projeto original de Jeffrey Han ([itdelatrisu/triple-triad](https://github.com/itdelatrisu/triple-triad), 2014), o fork desenvolvido e ampliado por Marcilio Junior ([marciliojr/triple-triad](https://github.com/marciliojr/triple-triad)), as principais adições, licença GPLv3, versão e o aviso de projeto de fã sem fins comerciais (FFVIII e Triple Triad pertencem à Square Enix). Rola com cima/baixo, esquerda/direita e roda do mouse; Esc volta ao menu. Textos em PT/EN/ES
 - `resources/version.properties`, preenchido pelo Gradle com a versão do `gradle.properties`, para a tela Sobre mostrar a versão real
+- Modo História, arte nova em jogo: retrato de Nilo Vann (`narrador_normal/derrota`) em todas as falas do locutor, no lugar do crachá desenhado (o crachá continua como reserva se o PNG faltar). Depois de uma partida perdida, ele aparece com a expressão de derrota
+- Modo História: os 6 NPCs (Lina Faris, Bram Holt / Mara Quill, Enne Doss, Nash Pell, Ivo Lenn, Tomas Reed) ganharam retrato de derrota (`npc_*_derrota.png`), usado quando o jogador vence a partida e no dossiê de quem já foi vencido
+- Modo História, **Cidades**: a lista virou o mapa-múndi (`mapa_mundi.png`) com as oito paradas do torneio desenhadas pelo jogo nas coordenadas da arte, rota pontilhada, ícone de estado (bloqueada / disponível / vencida), nome da etapa e uma faixa com o estado da selecionada. Setas escolhem, Z/Enter entra, clique seleciona e o segundo clique entra
+- Modo História: tela de abertura/hub (e escolha de protagonista, nome e lista de campanhas) com o fundo `titulo_modo_historia.png` e o logo **Card Club / A Jornada SeeD** escrito pelo jogo no canto superior esquerdo (PT/EN/ES: A Jornada SeeD, The SeeD Journey, La Travesía SeeD)
+- Modo História: a grande final no Garden usa o fundo `arena_final.png`, também na cerimônia de campeão(ã)
+- Modo História: a apresentação da final da seletiva contra a Quistis (CC King) passa sobre a cena em tela cheia `revelacao_cc_king.png`, com o locutor e a Quistis falando num painel no terço esquerdo
+- Testes: `StoryArtTest` (fundos de todas as etapas e telas em 640x360, retratos de todo falante, narrador e derrotas dos NPCs em 128x128, ícones de nó, coordenadas do mapa e acerto do clique, cena da revelação, derrota só para o adversário vencido)
 - Testes: `ExitConfirmTest`, `AboutTest` e `StoryTextTest` (acentos de PT/ES, marcas `{masc|fem}` bem formadas, EN só com `{name}`, limites de tamanho de fala, bio e estilo)
 
 #### Changed
@@ -33,6 +40,7 @@ O formato segue [Keep a Changelog](https://keepachangelog.com/pt-BR/1.1.0/), e o
 - Esquerda (o atalho já remapeado) foca esse painel; confirmar abre a troca de perfil e, dali, Esc volta ao menu. Na abertura, Esc na seleção de perfil continua saindo do jogo. Não há textura nova: avatar, cursor, verso e tabuleiro já existiam
 - Save da campanha no formato 3: nova chave `CAMP.n.GENDER = M|F`. Campanhas gravadas antes (sem a chave) abrem como **Aluno**, porque todo o texto anterior tratava o jogador como "o aluno" e nenhum retrato de protagonista era exibido. Arquivos antigos continuam abrindo; o resto do perfil não muda
 - A paginação da caixa de diálogo usa a mesma largura de texto do desenho
+- Modo História: a expressão de derrota do adversário agora aparece quando o jogador vence (fala de vitória e falas dele logo depois). Antes, o roteiro mostrava o rosto de derrota do adversário quando ele ganhava
 - Revisão completa dos diálogos do modo História em PT, ES e EN: acentos e gramática de PT/ES restaurados, termos de FFVIII (Forest Owls, Grupo do Porto / Harbor Group / Grupo del Puerto, cabeza de serie, eliminatorias), vozes dos personagens (Fujin em maiúsculas, Raijin com "ya know" em EN, Squall sem falar de si na terceira pessoa, Nilo Vann como locutor), traduções alinhadas entre os três idiomas, listas de regras da fase final com Same Wall e textos de interface da História (regras, avisos, dicas) corrigidos
 - Menu principal com doze opções: Jogo Rápido, Campeonato, História, Versus, Meu Deck, Troféus, Salvar, Como Jogar, Configurações, Cheats, Sobre e Sair do jogo
 
@@ -272,7 +280,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 
 #### Added
 
-- Story mode: an original campaign where the player is a Balamb Garden student. Squall advises and does not play. Announcer Nilo Vann appears as a badge drawn by the interface
+- Story mode: an original campaign where the player is a Balamb Garden student. Squall advises and does not play. Announcer Nilo Vann has his own portrait
 - Up to 15 campaigns per profile (`CAMP.*`), with the student name, stage, duels, specials already given and a pending reward. The album, decks, Championship blocks and trophies stay on the profile. Deleting a campaign asks for confirmation and does not remove cards
 - An old `STORY_CLEARED` / `STORY_ARRIVALS` save migrates into the first campaign and stays in the file. The profile is written to a temp file and replaced atomically
 - Each win offers one card from the hand that was played, with a confirmation. The meeting's special card (Ifrit, Shiva, Bahamut and the other mapped catalog ids) is given only on the first win and is not in that hand
@@ -283,6 +291,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Main menu: new **About** and **Quit game** entries (the latter opens the same confirmation)
 - **About** screen: credits for Jeffrey Han's original project ([itdelatrisu/triple-triad](https://github.com/itdelatrisu/triple-triad), 2014), the fork developed and expanded by Marcilio Junior ([marciliojr/triple-triad](https://github.com/marciliojr/triple-triad)), the main additions, the GPLv3 license, the version and a non-commercial fan project notice (FFVIII and Triple Triad belong to Square Enix). Scrolls with up/down, left/right and the mouse wheel; Esc returns to the menu. Text in PT/EN/ES
 - `resources/version.properties`, filled by Gradle from `gradle.properties`, so the About screen shows the real version
+- Story mode, new art in game: Nilo Vann's portrait (`narrador_normal/derrota`) on every announcer line, replacing the drawn badge (the badge stays as a fallback if the PNG is missing). After a lost match he shows his defeat face
+- Story mode: the 6 NPCs (Lina Faris, Bram Holt / Mara Quill, Enne Doss, Nash Pell, Ivo Lenn, Tomas Reed) got a defeat portrait (`npc_*_derrota.png`), used when the player wins the match and in the dossier of anyone already beaten
+- Story mode, **Cities**: the list became the world map (`mapa_mundi.png`) with the eight tournament stops drawn by the game at the art's coordinates, a dotted route, a state icon (locked / available / cleared), the stage name and a strip with the selected stop's state. Arrows select, Z/Enter enters, a click selects and a second click enters
+- Story mode: the title/hub screen (and the protagonist, name and campaign list screens) uses `titulo_modo_historia.png`, with the **Card Club / A Jornada SeeD** logo written by the game in the upper-left (PT/EN/ES: A Jornada SeeD, The SeeD Journey, La Travesía SeeD)
+- Story mode: the grand final in the Garden uses the `arena_final.png` background, also in the champion ceremony
+- Story mode: the presentation of the qualifier final against Quistis (CC King) plays over the full-screen still `revelacao_cc_king.png`, with the announcer and Quistis speaking in a panel in the left third
+- Tests: `StoryArtTest` (backgrounds for every stage and screen at 640x360, a portrait for every speaker, narrator and NPC defeat faces at 128x128, node icons, map coordinates and click hit, reveal scene, defeat face only for the beaten opponent)
 - Tests: `ExitConfirmTest`, `AboutTest` and `StoryTextTest` (PT/ES accents, well-formed `{masc|fem}` marks, EN uses only `{name}`, length limits for lines, bios and play style)
 
 #### Changed
@@ -291,6 +306,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and
 - Left (the binding already in use) focuses that panel; confirm opens profile selection and, from there, Esc returns to the menu. On startup, Esc on profile selection still quits. No new texture: avatar, cursor, card back and board were already loaded
 - Campaign save format 3: new key `CAMP.n.GENDER = M|F`. Campaigns saved before (without the key) open as the **male student**, since every earlier line called the player "o aluno" and no protagonist portrait was shown. Old files still load; the rest of the profile is unchanged
 - Dialogue box paging now uses the same text width as the drawing
+- Story mode: the opponent's defeat face now shows when the player wins (the win line and the opponent's own lines right after). Before, the script showed the opponent's defeat face when they won
 - Full review of Story mode dialogue in PT, ES and EN: PT/ES accents and grammar restored, FFVIII terms (Forest Owls, Harbor Group / Grupo do Porto / Grupo del Puerto, cabeza de serie, eliminatorias), character voices (Fujin in capitals, Raijin's "ya know" in EN, Squall no longer talks about himself in the third person, Nilo Vann as announcer), translations aligned across the three languages, final-stage rule lists now include Same Wall, and Story UI text (rules, notices, hints) fixed
 - Main menu with twelve entries: Quick Game, Championship, Story, Versus, My Deck, Trophies, Save, How to Play, Settings, Cheats, About and Quit game
 
