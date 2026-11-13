@@ -2,9 +2,9 @@
 
 O jogador cria um perfil, monta decks de 5 cartas do catálogo (`cards/deck.txt` + PNGs) e entra em Jogo Rápido ou Campeonato contra a IA.
 
-Fluxo: **Perfil → Menu → Decks / Meu Deck / Salvar / Como Jogar / Configurações / Campeonato → Partida → Menu**.
+Fluxo: **Perfil → Menu → Jogo Rápido / Campeonato / História / Versus / Meu Deck / Salvar / Troféus / Cheats / Como Jogar / Configurações**.
 
-Versus não está no menu (fica fora de escopo até o produto pedir).
+História: o aluno escolhe o nome; o perfil pode ter várias campanhas. O álbum é compartilhado. Duelos, tabela e recompensas especiais são de cada campanha.
 
 Persistência local (cwd = raiz do repo):
 

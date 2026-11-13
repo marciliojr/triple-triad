@@ -341,6 +341,217 @@ public final class I18n {
 		return pick("Configura\u00e7\u00f5es", "Settings", "Ajustes");
 	}
 
+	public static String menuStory() {
+		return pick("Hist\u00f3ria", "Story", "Historia");
+	}
+
+	public static String storyTitle() {
+		return pick("Hist\u00f3ria", "Story", "Historia");
+	}
+
+	public static String storyArrival(boolean video) {
+		return video
+			? pick("Chegada", "Arrival", "Llegada")
+			: pick("Chegada", "Arrival", "Llegada");
+	}
+
+	public static String storyRare() {
+		return pick("Voc\u00ea recebeu uma carta rara!", "You received a rare card!", "\u00a1Recibiste una carta rara!");
+	}
+
+	public static String hintStoryMap() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter entra    Esc volta",
+			"Up/down selects    Z/Enter enters    Esc back",
+			"Arriba/abajo elige    Z/Enter entra    Esc volver"));
+	}
+
+	public static String hintStoryList() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    Esc volta",
+			"Up/down selects    Z/Enter plays    Esc back",
+			"Arriba/abajo elige    Z/Enter juega    Esc volver"));
+	}
+
+	public static String hintStoryTalk() {
+		return Controls.dyn(pick("Z/Enter avan\u00e7a    Esc pula",
+			"Z/Enter advances    Esc skips",
+			"Z/Enter avanza    Esc salta"));
+	}
+
+	public static String hintStoryVideo() {
+		return Controls.dyn(pick("Z/S pula o v\u00eddeo    Esc pula a cena",
+			"Z/S skips the video    Esc skips the scene",
+			"Z/S salta el v\u00eddeo    Esc salta la escena"));
+	}
+
+	public static String hintStoryReward() {
+		return Controls.dyn(pick("Z/Enter continua", "Z/Enter continues", "Z/Enter contin\u00faa"));
+	}
+
+	public static String storyNew() {
+		return pick("Nova campanha", "New campaign", "Nueva campa\u00f1a");
+	}
+
+	public static String storyContinue() {
+		return pick("Continuar campanha", "Continue campaign", "Continuar campa\u00f1a");
+	}
+
+	public static String storyBackMenu() {
+		return pick("Voltar ao menu", "Back to menu", "Volver al men\u00fa");
+	}
+
+	public static String storyLeave() {
+		return pick("Sair da campanha", "Leave campaign", "Salir de la campa\u00f1a");
+	}
+
+	public static String storyFull() {
+		return pick("Limite de 15 campanhas. Nenhuma e apagada sozinha.",
+			"Limit of 15 campaigns. None is deleted on its own.",
+			"Limite de 15 campa\u00f1as. Ninguna se borra sola.");
+	}
+
+	public static String storyEmpty() {
+		return pick("Nenhuma campanha neste perfil.", "No campaign on this profile.", "Ninguna campa\u00f1a en este perfil.");
+	}
+
+	public static String storyNamePrompt() {
+		return pick("Nome do aluno de Balamb", "Name of the Balamb student", "Nombre del alumno de Balamb");
+	}
+
+	public static String storyFan() {
+		return pick("Historia original no mundo de FFVIII. Squall nao joga.",
+			"An original story in the world of FFVIII. Squall does not play.",
+			"Historia original en el mundo de FFVIII. Squall no juega.");
+	}
+
+	public static String storyDeleteAsk(String student) {
+		return pick("Apagar a campanha de " + student + "?",
+			"Delete " + student + "'s campaign?",
+			"\u00bfBorrar la campana de " + student + "?");
+	}
+
+	public static String storyNo() { return pick("Nao", "No", "No"); }
+
+	public static String storyDuels() { return pick("Partidas", "Matches", "Partidas"); }
+
+	public static String storyTable() { return pick("Tabela", "Standings", "Tabla"); }
+
+	public static String storyLadder() { return pick("Chave", "Bracket", "Llave"); }
+
+	public static String storyRulesTitle() { return pick("Regulamento", "Rules", "Reglamento"); }
+
+	public static String storySave() { return pick("Salvar", "Save", "Guardar"); }
+
+	public static String storySaved() { return pick("Progresso salvo.", "Progress saved.", "Progreso guardado."); }
+
+	public static String storyProgress(int done, int total) {
+		return done + "/" + total;
+	}
+
+	public static String storyObjective(String role, String opponent) {
+		return pick("Objetivo: " + role + " - " + opponent,
+			"Objective: " + role + " - " + opponent,
+			"Objetivo: " + role + " - " + opponent);
+	}
+
+	public static String storyChampion() {
+		return pick("Campeao mundial.", "World champion.", "Campeon mundial.");
+	}
+
+	public static String storyPending() {
+		return pick("Recompensa da vitoria ainda aberta.",
+			"The win reward is still open.",
+			"La recompensa de la victoria sigue abierta.");
+	}
+
+	public static String storyChoose() {
+		return pick("Escolha 1 carta da mao jogada.",
+			"Choose 1 card from the hand that was played.",
+			"Elige 1 carta de la mano jugada.");
+	}
+
+	public static String storyConfirmCard(String card) {
+		return pick("Ficar com " + card + "?", "Keep " + card + "?", "\u00bfQuedarte con " + card + "?");
+	}
+
+	public static String storyChosen() { return pick("Carta da partida", "Match card", "Carta de la partida"); }
+
+	public static String storySpecialCard() { return pick("Carta especial", "Special card", "Carta especial"); }
+
+	public static String storyPoints(int n) {
+		return pick(n + " pts", n + " pts", n + " pts");
+	}
+
+	public static String storyCutoff(int cutoff) {
+		return pick("Classificam os " + cutoff + " primeiros. Vitoria = 3. Derrota nao entra.",
+			"The top " + cutoff + " qualify. Win = 3. A loss stays off the table.",
+			"Clasifican los " + cutoff + " primeros. Victoria = 3. La derrota no entra.");
+	}
+
+	public static String storySeedNote() {
+		return pick("A cabeca de chave contra a Rainha nao entra nesta tabela.",
+			"The seed match against the Queen is not on this table.",
+			"La cabeza de llave contra la Reina no entra en esta tabla.");
+	}
+
+	public static String hintStoryHub() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter confirma    Esc volta ao menu",
+			"Up/down selects    Z/Enter confirms    Esc back to menu",
+			"Arriba/abajo elige    Z/Enter confirma    Esc volver al menu"));
+	}
+
+	public static String hintStoryCampaigns() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter abre    Del apaga    Esc volta",
+			"Up/down selects    Z/Enter opens    Del deletes    Esc back",
+			"Arriba/abajo elige    Z/Enter abre    Del borra    Esc volver"));
+	}
+
+	public static String hintStoryStage() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter entra    S salva    Esc sai da campanha",
+			"Up/down selects    Z/Enter enters    S saves    Esc leaves the campaign",
+			"Arriba/abajo elige    Z/Enter entra    S guarda    Esc sale de la campa\u00f1a"));
+	}
+
+	public static String hintStoryDuels() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter joga    T historico    S salva    Esc volta",
+			"Up/down selects    Z/Enter plays    T history    S saves    Esc back",
+			"Arriba/abajo elige    Z/Enter juega    T historial    S guarda    Esc volver"));
+	}
+
+	public static String hintStoryPick() {
+		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    C amplia    Esc volta",
+			"Left/right selects    Z/Enter confirms    C zooms    Esc back",
+			"Izq/der elige    Z/Enter confirma    C amplia    Esc volver"));
+	}
+
+	public static String hintStoryYesNo() {
+		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    Esc volta",
+			"Left/right selects    Z/Enter confirms    Esc back",
+			"Izq/der elige    Z/Enter confirma    Esc volver"));
+	}
+
+	public static String[] storyRules() {
+		return new String[] {
+			pick("Seletiva do Garden: chave continua. Vitoria enfrenta o proximo. Derrota repete a mesma chave e nao elimina.",
+				"Garden qualifier: a ladder. A win faces the next seed. A loss replays the same tie and does not eliminate you.",
+				"Selectiva del Garden: llave continua. La victoria enfrenta al siguiente. La derrota repite la misma llave y no elimina."),
+			pick("Fases de pontos: vitoria vale 3. A derrota fica de fora ate a revanche substituir o resultado. Os outros jogos do grupo ja estao na tabela.",
+				"Points phases: a win is worth 3. A loss stays off until the rematch replaces it. The group's other matches are already on the table.",
+				"Fases de puntos: la victoria vale 3. La derrota queda fuera hasta que la revancha sustituya el resultado. Los otros partidos del grupo ya estan en la tabla."),
+			pick("Cortes: Balamb, Deling e Dollet, os 2 primeiros. Timber, os 3 primeiros. Quartas em FH e semi em Esthar, so o 1o.",
+				"Cutoffs: Balamb, Deling and Dollet, top 2. Timber, top 3. FH quarters and the Esthar semi, 1st only.",
+				"Cortes: Balamb, Deling y Dollet, los 2 primeros. Timber, los 3 primeros. Cuartos en FH y semi en Esthar, solo el 1o."),
+			pick("Em FH, a mesa contra a Rainha e cabeca de chave. Nao da ponto e nao elimina nenhum dos dois.",
+				"At FH, the match against the Queen is a seed match. It scores nothing and eliminates neither player.",
+				"En FH, la mesa contra la Reina es cabeza de llave. No da punto y no elimina a ninguno."),
+			pick("A grande final e uma mesa no Garden. Derrota da revanche na hora. O titulo so muda com a vitoria.",
+				"The grand final is one table at Garden. A loss is an immediate rematch. The title changes only with a win.",
+				"La gran final es una mesa en el Garden. La derrota da revancha al momento. El titulo solo cambia con la victoria."),
+			pick("Cada vitoria: uma carta da mao jogada. A carta especial do encontro sai so na primeira vez, separada, e nunca nessa mao.",
+				"Every win: one card from the hand that was played. The meeting's special card leaves only the first time, apart, and never in that hand.",
+				"Cada victoria: una carta de la mano jugada. La carta especial del encuentro sale solo la primera vez, aparte, y nunca en esa mano.")
+		};
+	}
+
 	public static String menuChampionship() {
 		return pick("Campeonato", "Championship", "Campeonato");
 	}
@@ -1032,6 +1243,9 @@ public final class I18n {
 		return out.toArray(new String[0]);
 	}
 
+	/** Story and UI copy in the active language. */
+	public static String text(String pt, String en, String es) { return pick(pt, en, es); }
+
 	private static String pick(String pt, String en, String es) {
 		switch (Options.getLang()) {
 			case EN: return en;
@@ -1087,6 +1301,9 @@ public final class I18n {
 		"#Cheats",
 		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
 		"",
+		"#Hist\u00f3ria",
+		"Historia original: voce e um aluno de Balamb no Torneio Mundial. Squall orienta e nao joga. O mesmo perfil guarda ate 15 campanhas. Cada vitoria deixa escolher uma carta da mao; a carta especial do encontro sai so na primeira vez. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
+		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
 	};
@@ -1137,6 +1354,9 @@ public final class I18n {
 		"#Cheats",
 		"In the Cheats menu type a code and press Enter. cid = all cards | edea = Guardian Forces (levels 8-9) | balamb = characters (level 10) | monster = monsters (levels 1-7).",
 		"",
+		"#Story",
+		"An original story: you are a Balamb student in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns. Each win lets you choose one card from the hand; the meeting's special card is given only the first time. Leaving mid-match returns to the saved point without deleting the campaign.",
+		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
 	};
@@ -1186,6 +1406,9 @@ public final class I18n {
 		"",
 		"#Cheats",
 		"En el men\u00fa Trucos escribe un c\u00f3digo y pulsa Enter. cid = todas las cartas | edea = Guardian Forces (niveles 8-9) | balamb = personajes (nivel 10) | monster = monstruos (niveles 1-7).",
+		"",
+		"#Historia",
+		"Historia original: eres un alumno de Balamb en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campa\u00f1as. Cada victoria deja elegir una carta de la mano; la carta especial del encuentro sale solo la primera vez. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campa\u00f1a.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

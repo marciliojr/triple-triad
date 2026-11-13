@@ -1,0 +1,34 @@
+Triple Triad — campanha (recursos em res/story)
+Origem inspecionada: /home/marciliojr/Downloads/ROMS/final_fantasy_viii_recursos/
+Os originais nao foram renomeados nem movidos. Aqui estao copias.
+
+Importado
+- 7 fundos PNG 640x360: backgrounds/mesa_balamb_garden, mesa_balamb_town, mesa_timber, mesa_deling, mesa_dollet, mesa_fh, mesa_esthar
+- 40 retratos PNG 128x128: portraits/ (17 pares normal/derrota + 6 NPCs)
+- 6 elementos de UI PNG RGBA: ui/caixa_dialogo, no_bloqueado, no_disponivel, no_vencido, rare_card_banner, rare_card_banner_en
+- video_1.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como intro_historia.mp4 e convertido para VideoLoop
+- video_2.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_balamb_town.mp4 e convertido para VideoLoop
+Manifestos de origem preservados em backgrounds/MANIFESTO.txt, portraits/MANIFESTO.txt e ui/MANIFESTO.txt.
+
+Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais res/story/<id>.ogg)
+- intro_historia
+- chegada_balamb_town
+
+Videos ausentes (a campanha ja aponta para estes ids; sem os quadros, usa o fundo estatico e o dialogo)
+- chegada_timber
+- chegada_deling
+- chegada_dollet
+- chegada_fh
+- chegada_esthar
+- final_historia
+
+Audio ausente como arquivo solto
+O diretorio de recursos nao tem ogg, wav, mp3 nem flac fora das faixas embutidas nos dois mp4.
+Nao ha trilha propria da campanha. Fallback: a BGM do jogo (res/bgm.ogg) continua nas cenas sem video.
+Se o clipe tiver .ogg, a BGM pausa e o VideoLoop toca essa faixa. Se o .ogg nao existir, o video fica mudo e a BGM segue.
+Caminhos /workspace/ de outra maquina nao sao usados.
+
+Fundo sem regiao propria
+Shumi nao tem fundo. O duelo usa mesa_fh.png, dentro de Fisherman's Horizon.
+
+O jogo usa rare_card_banner.png (sem texto) e escreve a frase no idioma atual. rare_card_banner_en.png fica so como referencia.

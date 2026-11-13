@@ -1,0 +1,17 @@
+Triple Triad — Interface modo história
+Origem: arte gerada por IA (GenerateImage), recortada e ajustada com Pillow.
+Estilo original inspirado em interfaces PS1, não uma captura de FFVIII.
+6 arquivos PNG RGBA com alpha real; magenta removido, sem xadrez pintado.
+caixa_dialogo.png: 600x120, vazia. Insets 9-slice sugeridos: left/right 18 px, top/bottom 14 px. Área de texto sugerida x=24,y=18,w=552,h=84.
+no_bloqueado.png: 32x32, cadeado cinza; no_disponivel.png: 32x32, cristal ciano; no_vencido.png: 32x32, medalha dourada/check verde.
+rare_card_banner.png: 480x96, sem texto, versão indicada para I18n. Área de texto sugerida x=100,y=22,w=350,h=52.
+rare_card_banner_en.png: 480x96, texto Received a rare card!, renderizado com DejaVu Sans 22 px; versão ilustrativa inglesa.
+Banner: ornamento de carta/brasão à esquerda. 9-slice opcional left=100,right=18,top=14,bottom=14 para preservar ornamento.
+Limitações: bordas derivadas de arte IA raster, não vetores. Insets são sugestões e precisam ser testados no renderer do jogo. Fundo removido por chroma key; alpha antialias preservado no redimensionamento.
+Nenhuma implementação ou alteração de código, git, instalação, saves ou outros assets.
+caixa_dialogo.png: 600x120 RGBA
+no_bloqueado.png: 32x32 RGBA
+no_disponivel.png: 32x32 RGBA
+no_vencido.png: 32x32 RGBA
+rare_card_banner.png: 480x96 RGBA
+rare_card_banner_en.png: 480x96 RGBA

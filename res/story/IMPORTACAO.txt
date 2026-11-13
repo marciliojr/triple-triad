@@ -1,0 +1,25 @@
+Importar um video da campanha
+
+A logica nao muda. Cada regiao ja tem um id fixo. O jogo toca o clipe se existir
+res/story/<id>/frame_001.jpg. Se nao existir, mostra o fundo PNG e o dialogo.
+
+Ids
+- intro_historia          Balamb Garden
+- chegada_balamb_town     porto de Balamb Town
+- chegada_timber
+- chegada_deling
+- chegada_dollet
+- chegada_fh
+- chegada_esthar
+- final_historia
+
+Nao renomeie o arquivo original. Copie para res/story/<id>.mp4 e converta
+no formato do VideoLoop (quadros JPEG + Ogg), igual a intro e ao endgame:
+
+ffmpeg -y -i res/story/<id>.mp4 -vf scale=640:360 -r 24 -q:v 7 -start_number 1 res/story/<id>/frame_%03d.jpg
+ffmpeg -y -i res/story/<id>.mp4 -vn -c:a libvorbis -q:a 4 res/story/<id>.ogg
+
+O primeiro quadro tem de se chamar frame_001.jpg. A taxa e 24 fps.
+Se o mp4 nao tiver audio, pule o segundo comando: a cena segue com a BGM do jogo.
+Depois de gravar os quadros, abra a Chegada daquela cidade (ou entre nela de novo)
+para ver o video. Nao precisa recompilar nem alterar StoryCampaign.

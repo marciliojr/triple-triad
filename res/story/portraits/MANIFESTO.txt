@@ -1,0 +1,53 @@
+Triple Triad — 40 retratos gerados por IA (GenerateImage)
+17 entradas com _normal e _derrota (34 arquivos), mais 6 NPCs.
+PNG RGB 128x128, fundo cinza neutro opaco (não transparente).
+Originais em originals/: folhas duplas maiores, recortadas sem distorcer a proporção; padding lateral quando necessário.
+Referências: screenshots e retratos FFVIII de Jegged.com, URLs em references/sources.json.
+São interpretações não oficiais. Os NPCs comuns são arquétipos, não reproduções exatas de NPCs nomeados.
+Limitações: referências de NPCs têm poucos pixels; detalhes de rosto/vestuário são interpretações IA. Há pequenas variações de acabamento entre retratos. Squall e Shumi têm expressão de derrota discreta.
+Correções da lista: CC King é Quistis (confirmado); CC Heart é Xu. Club é um SeeD, não um estudioso de óculos; Spade é o jovem que oferece o primeiro deck, não um veterano forte; Joker é o comerciante do Training Center, não um palhaço. Quistis nesta roupa não usa óculos. Card Queen segue a roupa vista nos screenshots em vez do chapéu vermelho inventado.
+As cicatrizes de Squall/Seifer são características preexistentes; derrota significa perder cartas, sem novos ferimentos.
+Fontes de identidade: https://finalfantasy.fandom.com/wiki/Card_Club e https://jegged.com/Games/Final-Fantasy-VIII/Side-Quests/Card-Club-CC-Group.html
+Nenhuma alteração de código, git, instalação ou saves.
+
+Arquivos:
+card_queen_derrota.png | IA | 128x128 | SHA256 9fe7a63ca7faed766bb3193a00e70260856fbfe853e6408a617155bb19a6af12
+card_queen_normal.png | IA | 128x128 | SHA256 32fe87f205b6ab0de904eb1bd0db63895baad287eebebc42a42d2c3e92ce7fa3
+cc_club_derrota.png | IA | 128x128 | SHA256 0a0d291a0cf6f7d3bcd1ad77834a43aaafa19a4d890d01bb7e84919084181042
+cc_club_normal.png | IA | 128x128 | SHA256 6b83c5a582dd483adfdb24335383482f9114d94b7ac6b4f62e50b461bce66863
+cc_diamond_derrota.png | IA | 128x128 | SHA256 ee26219772c6f7ea3f44117cacbcbed58ee642a839fa21a57323e3f44941f882
+cc_diamond_normal.png | IA | 128x128 | SHA256 db1718a2e3140d0db8aabc235e159397054038119ee45127bc00c3bf20281bcc
+cc_heart_derrota.png | IA | 128x128 | SHA256 78f074248e3e9c1fb4650dc9597a474567a91e9bc49820e09d849dbbed7c9c99
+cc_heart_normal.png | IA | 128x128 | SHA256 78b33514448d6d40ea031e10a70e322f076aa1aced7a90b1e343f5560e39a117
+cc_jack_derrota.png | IA | 128x128 | SHA256 27fd63108bacc4b602e4855051fdb633c51510ed889ae47d5b2d35085bff1789
+cc_jack_normal.png | IA | 128x128 | SHA256 4d8914195f75b5162555cc92bff92eeaea9f81aff1aec41bdcff00c3e7aa39d7
+cc_joker_derrota.png | IA | 128x128 | SHA256 0f91d17ef143d43dee3db1e3764bc48983ac11bd76d5f9d044dde8b929b6738c
+cc_joker_normal.png | IA | 128x128 | SHA256 fd8e94fa254906d120499114acc38c677cad868e398d2997cde6c7a558a9c52d
+cc_king_derrota.png | IA | 128x128 | SHA256 7c78fb7e90805d2e5845fea5ef09a3326e6c8550143de68b5d7788d481d7177b
+cc_king_normal.png | IA | 128x128 | SHA256 2b84b2e667114b803caae6676ff3eb0a381a229a32cb00e8176317c89d5236c6
+cc_spade_derrota.png | IA | 128x128 | SHA256 90ad0e9f3709b2951d3efbacb917df3ae281352c77a7df6dc9432df6f9e53566
+cc_spade_normal.png | IA | 128x128 | SHA256 c9388c98cce6a43e790b1e54b0562266aa34a5b6ddbfef03f786c5b18fc40c51
+dobe_flo_derrota.png | IA | 128x128 | SHA256 493d5da183be341fa5709bddb4b46416e0000c684ddfccf8c38efd16775c10c9
+dobe_flo_normal.png | IA | 128x128 | SHA256 6f52f60609c9b9ce560ae12a229aafdba760eb39284611770edde5a116af80b8
+fujin_derrota.png | IA | 128x128 | SHA256 c6e61e212c407089a142e1d1b86499d941d0b04c0aa091d38be2b7de6d2d96eb
+fujin_normal.png | IA | 128x128 | SHA256 4ad398e7b628a9c2bd0d467eea6a4999441ce1043ae29a2a62d8ed7b3914d1e9
+npc_cadete.png | IA | 128x128 | SHA256 89484af8dd785d434481b89a102d22d13fbb63d533e6e6391d0f794a9e62b1a0
+npc_cientista_esthar.png | IA | 128x128 | SHA256 65a22de8bc96f00d966ef3e5cc316f78932ae91cfe0277fef4bb44895e158056
+npc_pescador.png | IA | 128x128 | SHA256 38cc7d8e97fc78ce3fa7580f61989dc6a87a5bbc438e3812073e9a1fa4897f03
+npc_pub_dollet.png | IA | 128x128 | SHA256 c5a7efd255f8e3e78840a486a965a0e83b728e9949de3c0da13ccad7d0d2aac0
+npc_soldado_dollet.png | IA | 128x128 | SHA256 6940d8d5e5dab43c23376f4abeba56ecfdc61c7c204d6f898945bee15b4650b5
+npc_soldado_galbadia.png | IA | 128x128 | SHA256 4fa74a168ce5a0a378988a3b4ce46b5c346af6bc719f75f003ddb831bfc82691
+odine_derrota.png | IA | 128x128 | SHA256 c340be09e1bb36b45bcbabc1eea564cdfc1385d65f3d264bdaaad78d20f8da45
+odine_normal.png | IA | 128x128 | SHA256 00322d0741295a24da1f671c185f36882cefe5a2d6b5d1a2ca70e400acfe19e7
+raijin_derrota.png | IA | 128x128 | SHA256 7065f817e773249db06420ba7c174e1322887581909c5b877a0a6363f1c15286
+raijin_normal.png | IA | 128x128 | SHA256 81383cb6067ca6f94b2bb98c774765bde3b783db16325d8fa1aeaa76194d374f
+rinoa_derrota.png | IA | 128x128 | SHA256 4c34acc796a6bdc8d46d8037c05134b17d70fdb08d19be1cd7414a95b61d2692
+rinoa_normal.png | IA | 128x128 | SHA256 24a1b6989bec208b943b775e042d19b0c9a80e646a797c2d725aa733bd609126
+seifer_derrota.png | IA | 128x128 | SHA256 4eb225f3e56cef9e409abe10982a8491714eba74f07fde4b3d1b3201f716b4e0
+seifer_normal.png | IA | 128x128 | SHA256 38f62dabc87f61b28d3ef762c3665004c73bd7e237067f966057095325fdb1b4
+shumi_derrota.png | IA | 128x128 | SHA256 558a29e42533ae208aabf83850a9b624c78dc5fc044a5eab636141461f3ffd39
+shumi_normal.png | IA | 128x128 | SHA256 ded090f85aa5e659dfc86f6e01a69bbbc757c08163a8d3af826733cda5f80b64
+squall_derrota.png | IA | 128x128 | SHA256 78a07093259062bea8881b7340a971cd135ef2ceb37f95cfe805ae068f705299
+squall_normal.png | IA | 128x128 | SHA256 db2508cfcaf0b84229fd20b73e0f4819e449dd33aaea125f94d421ce4729cd8c
+zone_watts_derrota.png | IA | 128x128 | SHA256 d557a1b45d01468f3d58cf119b29e7434fa07249812fe6cbdb1bc6498bc27158
+zone_watts_normal.png | IA | 128x128 | SHA256 ac9c7a62a8c4d78048f2657c35087c7de6621ab9c74e8ad7dc736b725f91ff76

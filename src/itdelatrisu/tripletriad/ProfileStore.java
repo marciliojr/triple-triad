@@ -26,6 +26,9 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.file.AtomicMoveNotSupportedException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -33,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.story.StorySave;
 
 /**
  * Loads and saves local player profiles (one file per player).
@@ -129,6 +133,11 @@ public class ProfileStore {
 		return loadFromFile(fileFor(id));
 	}
 
+	/** Reads a profile file. Used by the story tests and by {@link #load(int)}. */
+	public static Profile readFile(File file) {
+		return loadFromFile(file);
+	}
+
 	/**
 	 * Writes a profile by id.
 	 * @param id the profile id
@@ -139,6 +148,13 @@ public class ProfileStore {
 			return;
 		ensureDir();
 		saveToFile(fileFor(id), profile);
+	}
+
+	/** Writes a profile file. Same bytes as {@link #save(int, Profile)}. */
+	public static void writeFile(File file, Profile profile) {
+		if (file == null || profile == null || !profile.isValid())
+			return;
+		saveToFile(file, profile);
 	}
 
 	/**
@@ -268,6 +284,7 @@ public class ProfileStore {
 		Map<Integer, String> names = new HashMap<Integer, String>();
 		Map<Integer, int[]> cards = new HashMap<Integer, int[]>();
 		ChampionshipSlot[] parsedSlots = new ChampionshipSlot[Profile.SLOTS];
+		Map<Integer, StorySave> camps = new HashMap<Integer, StorySave>();
 
 		try (BufferedReader in = new BufferedReader(new InputStreamReader(
 				new FileInputStream(file), "utf-8"))) {
@@ -310,6 +327,28 @@ public class ProfileStore {
 						case "STAT_CHAMP_MATCH_LOSSES": profile.setChampMatchLosses(n); break;
 						default: break;
 					}
+					continue;
+				}
+				if (key.equals("STORY_CLEARED") || key.equals("STORY_LEGACY_CLEARED")) {
+					if (key.equals("STORY_LEGACY_CLEARED") || profile.getStoryClearedCsv().isEmpty())
+						profile.setStoryClearedCsv(value);
+					continue;
+				}
+				if (key.equals("STORY_ARRIVALS") || key.equals("STORY_LEGACY_ARRIVALS")) {
+					if (key.equals("STORY_LEGACY_ARRIVALS") || profile.getStoryArrivalsCsv().isEmpty())
+						profile.setStoryArrivalsCsv(value);
+					continue;
+				}
+				if (key.equals("STORY_MIGRATED")) {
+					profile.setStoryMigrated("1".equals(value));
+					continue;
+				}
+				if (key.equals("STORY_ACTIVE")) {
+					profile.setActiveStoryId(value);
+					continue;
+				}
+				if (key.startsWith("CAMP.")) {
+					readCampKey(camps, key, value);
 					continue;
 				}
 				if (key.equals("CHAMPIONSHIP_WINS")) {
@@ -396,8 +435,73 @@ public class ProfileStore {
 
 		for (int i = 0; i < Profile.SLOTS; i++)
 			profile.setSlot(i, parsedSlots[i]);
+		int campMax = 0;
+		for (Integer campId : camps.keySet()) {
+			if (campId.intValue() > campMax)
+				campMax = campId.intValue();
+		}
+		for (int i = 1; i <= campMax && profile.campaignCount() < StorySave.MAX; i++) {
+			StorySave camp = camps.get(Integer.valueOf(i));
+			if (camp != null && !camp.id().isEmpty() && !camp.student().isEmpty())
+				profile.getCampaigns().add(camp);
+		}
 		profile.migrateLegacyRun();
+		profile.migrateStoryIfNeeded();
 		return profile.isValid() ? profile : null;
+	}
+
+	private static void readCampKey(Map<Integer, StorySave> camps, String key, String value) {
+		String[] parts = key.split("\\.");
+		if (parts.length != 3)
+			return;
+		int index;
+		try {
+			index = Integer.parseInt(parts[1]);
+		} catch (NumberFormatException e) {
+			return;
+		}
+		if (index <= 0)
+			return;
+		StorySave save = camps.get(Integer.valueOf(index));
+		if (save == null) {
+			save = StorySave.blank();
+			camps.put(Integer.valueOf(index), save);
+		}
+		String field = parts[2];
+		try {
+			if (field.equals("ID"))
+				save.setId(value);
+			else if (field.equals("STUDENT"))
+				save.setStudent(value);
+			else if (field.equals("CREATED"))
+				save.setCreatedAt(Long.parseLong(value));
+			else if (field.equals("SAVED"))
+				save.setSavedAt(Long.parseLong(value));
+			else if (field.equals("CLEARED"))
+				save.setClearedCsv(value);
+			else if (field.equals("ARRIVALS"))
+				save.setArrivalsCsv(value);
+			else if (field.equals("SPECIALS"))
+				save.setSpecialsCsv(value);
+			else if (field.equals("PENDING"))
+				save.setPending(value, save.pendingPhase(), save.pendingHand(), save.pendingSpecial());
+			else if (field.equals("PHASE"))
+				save.setPending(save.pendingDuel(), value, save.pendingHand(), save.pendingSpecial());
+			else if (field.equals("HAND"))
+				save.setPending(save.pendingDuel(), save.pendingPhase(), StorySave.parseIds(value), save.pendingSpecial());
+			else if (field.equals("SPECIAL"))
+				save.setPending(save.pendingDuel(), save.pendingPhase(), save.pendingHand(), Integer.parseInt(value));
+			else if (field.equals("LAST"))
+				save.setLastHand(StorySave.parseIds(value));
+			else if (field.equals("COMPLETE"))
+				save.setComplete("1".equals(value));
+			else if (field.equals("LEGACY"))
+				save.setFromLegacy("1".equals(value));
+			else if (field.equals("STARTER"))
+				save.setStarterScene("1".equals(value));
+		} catch (NumberFormatException e) {
+			// keep defaults
+		}
 	}
 
 	/**
@@ -448,8 +552,10 @@ public class ProfileStore {
 	}
 
 	private static void saveToFile(File file, Profile profile) {
+		File dir = file.getParentFile();
+		File tmp = new File(dir != null ? dir : new File("."), file.getName() + ".tmp");
 		try (BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
-				new FileOutputStream(file), "utf-8"))) {
+				new FileOutputStream(tmp), "utf-8"))) {
 			writer.write("# Triple Triad profile");
 			writer.newLine();
 			writer.write(String.format("NAME = %s", profile.getName()));
@@ -470,6 +576,54 @@ public class ProfileStore {
 			writer.newLine();
 			writer.write(String.format("STAT_CHAMP_MATCH_LOSSES = %d", profile.getChampMatchLosses()));
 			writer.newLine();
+			writer.write("STORY_FORMAT = " + StorySave.FORMAT);
+			writer.newLine();
+			writer.write("STORY_MIGRATED = " + (profile.isStoryMigrated() ? "1" : "0"));
+			writer.newLine();
+			writer.write("STORY_ACTIVE = " + profile.getActiveStoryId());
+			writer.newLine();
+			writer.write("STORY_CLEARED = " + profile.getStoryClearedCsv());
+			writer.newLine();
+			writer.write("STORY_ARRIVALS = " + profile.getStoryArrivalsCsv());
+			writer.newLine();
+			writer.write("STORY_LEGACY_CLEARED = " + profile.getStoryClearedCsv());
+			writer.newLine();
+			writer.write("STORY_LEGACY_ARRIVALS = " + profile.getStoryArrivalsCsv());
+			writer.newLine();
+			for (int i = 0; i < profile.campaignCount(); i++) {
+				StorySave camp = profile.campaignAt(i);
+				String p = "CAMP." + (i + 1) + ".";
+				writer.write(p + "ID = " + camp.id());
+				writer.newLine();
+				writer.write(p + "STUDENT = " + camp.student());
+				writer.newLine();
+				writer.write(p + "CREATED = " + camp.createdAt());
+				writer.newLine();
+				writer.write(p + "SAVED = " + camp.savedAt());
+				writer.newLine();
+				writer.write(p + "CLEARED = " + camp.clearedCsv());
+				writer.newLine();
+				writer.write(p + "ARRIVALS = " + camp.arrivalsCsv());
+				writer.newLine();
+				writer.write(p + "SPECIALS = " + camp.specialsCsv());
+				writer.newLine();
+				writer.write(p + "PENDING = " + camp.pendingDuel());
+				writer.newLine();
+				writer.write(p + "PHASE = " + camp.pendingPhase());
+				writer.newLine();
+				writer.write(p + "HAND = " + StorySave.formatIds(camp.pendingHand()));
+				writer.newLine();
+				writer.write(p + "SPECIAL = " + camp.pendingSpecial());
+				writer.newLine();
+				writer.write(p + "LAST = " + StorySave.formatIds(camp.lastHand()));
+				writer.newLine();
+				writer.write(p + "COMPLETE = " + (camp.isComplete() ? "1" : "0"));
+				writer.newLine();
+				writer.write(p + "LEGACY = " + (camp.isFromLegacy() ? "1" : "0"));
+				writer.newLine();
+				writer.write(p + "STARTER = " + (camp.wantsStarter() ? "1" : "0"));
+				writer.newLine();
+			}
 			for (int i = 0; i < Profile.SLOTS; i++) {
 				ChampionshipSlot slot = profile.getSlot(i);
 				if (slot == null)
@@ -503,8 +657,21 @@ public class ProfileStore {
 				writer.write(String.format("DECK.%d.CARDS = %s", i + 1, formatCardIds(deck.getCardIds())));
 				writer.newLine();
 			}
+			writer.flush();
 		} catch (IOException e) {
 			Log.error(String.format("Failed to write profile '%s'.", file.getAbsolutePath()), e);
+			tmp.delete();
+			return;
+		}
+		try {
+			try {
+				Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+			} catch (AtomicMoveNotSupportedException e) {
+				Files.move(tmp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+			}
+		} catch (IOException e) {
+			Log.error(String.format("Failed to replace profile '%s'.", file.getAbsolutePath()), e);
+			tmp.delete();
 		}
 	}
 

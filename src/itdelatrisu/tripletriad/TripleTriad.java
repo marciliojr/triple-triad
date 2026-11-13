@@ -43,7 +43,9 @@ import itdelatrisu.tripletriad.ui.ProfilesScreen;
 import itdelatrisu.tripletriad.ui.SaveScreen;
 import itdelatrisu.tripletriad.ui.Screen;
 import itdelatrisu.tripletriad.ui.SettingsScreen;
+import itdelatrisu.tripletriad.ui.StoryScreen;
 import itdelatrisu.tripletriad.ui.Ui;
+import itdelatrisu.tripletriad.story.StoryCampaign;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -175,6 +177,13 @@ public class TripleTriad extends BasicGame {
 	/** Memory-card block of the current run (-1 = none). */
 	private int championshipSlot = -1;
 	private MemoryCardScreen memoryCardScreen;
+	private StoryScreen storyScreen;
+
+	/** True while a story duel is on the board. */
+	private boolean storyActive;
+
+	/** Rule toggles saved while a story duel replaces them. */
+	private boolean[] storyRuleSnapshot;
 
 	/** Card IDs for the player's current match deck. */
 	private int[] currentPlayerDeckIds;
@@ -263,6 +272,7 @@ public class TripleTriad extends BasicGame {
 		this.controlsScreen = new ControlsScreen(this);
 		Controls.init(this);
 		this.memoryCardScreen = new MemoryCardScreen(this);
+		this.storyScreen = new StoryScreen(this);
 
 		loadActiveProfile();
 		currentScreen = GameScreen.INTRO;
@@ -356,7 +366,7 @@ public class TripleTriad extends BasicGame {
 	 * Counts a finished Quick Game / championship match in the trophies (once).
 	 */
 	private void recordStats() {
-		if (statsRecorded || versus || profile == null)
+		if (statsRecorded || versus || storyActive || profile == null)
 			return;
 		statsRecorded = true;
 		int r = Integer.compare(playerScore, opponentScore);
@@ -718,7 +728,7 @@ public class TripleTriad extends BasicGame {
 
 		// rematch with the same player deck (Quick Game only)
 		if (key == Input.KEY_F5) {
-			if (championship == null && !versus && currentPlayerDeckIds != null)
+			if (championship == null && !versus && !storyActive && currentPlayerDeckIds != null)
 				restart(true);
 			return;
 		}
@@ -729,6 +739,8 @@ public class TripleTriad extends BasicGame {
 			(key == Input.KEY_Z || key == Input.KEY_ENTER)) {
 			if (championship != null)
 				championshipMatchFinished();
+			else if (storyActive)
+				storyMatchFinished();
 			else
 				showMenu();
 			return;
@@ -827,6 +839,8 @@ public class TripleTriad extends BasicGame {
 			textAlpha >= 1f && result == null) {
 			if (championship != null)
 				championshipMatchFinished();
+			else if (storyActive)
+				storyMatchFinished();
 			else
 				showMenu();
 			return;
@@ -1004,8 +1018,7 @@ public class TripleTriad extends BasicGame {
 		case Input.KEY_ENTER:
 			if (leaveChoice == 1) {
 				AudioController.Effect.SELECT.play();
-				leaveConfirm = false;
-				showMenu();
+				leaveMatchToMenuOrStory();
 			} else {
 				leaveConfirm = false;
 				AudioController.Effect.BACK.play();
@@ -1041,9 +1054,22 @@ public class TripleTriad extends BasicGame {
 				return;
 			}
 			AudioController.Effect.SELECT.play();
-			leaveConfirm = false;
-			showMenu();
+			leaveMatchToMenuOrStory();
 		}
+	}
+
+	/** Leaves the board. A story duel returns to the region list. */
+	private void leaveMatchToMenuOrStory() {
+		leaveConfirm = false;
+		if (storyActive) {
+			storyActive = false;
+			championshipOpponentAI = null;
+			restoreStoryRules();
+			currentScreen = GameScreen.STORY;
+			storyScreen.onMatchAbort();
+			return;
+		}
+		showMenu();
 	}
 
 	/**
@@ -1130,6 +1156,7 @@ public class TripleTriad extends BasicGame {
 			case CONTROLS: return controlsScreen;
 			case MEMORY_CARD: return memoryCardScreen;
 			case CHAMPIONSHIP: return championshipScreen;
+			case STORY: return storyScreen;
 			case MENU:
 			default: return menuScreen;
 		}
@@ -1335,6 +1362,8 @@ public class TripleTriad extends BasicGame {
 	public void showMenu() {
 		AudioController.stopVictory();
 		endVersus();
+		storyActive = false;
+		restoreStoryRules();
 		championship = null;
 		championshipSlot = -1;
 		championshipOpponentAI = null;
@@ -1429,6 +1458,117 @@ public class TripleTriad extends BasicGame {
 	 * @return the run, or null
 	 */
 	public ChampionshipRun getChampionshipRun() { return championship; }
+
+	/**
+	 * Opens the story campaign.
+	 */
+	/**
+	 * Opens the album card grid for the current story duel.
+	 */
+	public void showStoryCardPick() {
+		currentScreen = GameScreen.MY_DECK;
+		myDeckScreen.enterStoryPick(storyScreen.rememberedHand());
+	}
+
+	/** @return the opponent name while a story duel is being prepared */
+	public String storyOpponentName() {
+		return (storyScreen != null) ? storyScreen.opponentName() : "";
+	}
+
+	/**
+	 * Starts the prepared story duel with the hand chosen on the card grid.
+	 * @param ids five album card IDs
+	 */
+	public void storyHandChosen(int[] ids) {
+		storyScreen.beginWithHand(ids);
+	}
+
+	/** Leaves the card grid and returns to the story list. */
+	public void returnToStory() {
+		currentScreen = GameScreen.STORY;
+		storyScreen.backToList();
+	}
+
+	public void showStory() {
+		endVersus();
+		championship = null;
+		championshipOpponentAI = null;
+		currentOpponentDeckIds = null;
+		storyActive = false;
+		restoreStoryRules();
+		if (profile != null)
+			profile.migrateStoryIfNeeded();
+		currentScreen = GameScreen.STORY;
+		storyScreen.enter();
+	}
+
+	/**
+	 * Gives five level-1 cards when the shared album cannot fill a hand.
+	 * Does not replace an album that already has five cards.
+	 * @return true if cards were added
+	 */
+	public boolean topUpStoryAlbum() {
+		if (profile == null || profile.getCollection().size() >= SavedDeck.SIZE)
+			return false;
+		int guard = 0;
+		while (profile.getCollection().size() < SavedDeck.SIZE && guard < SavedDeck.SIZE) {
+			profile.addCard(guard + 1);
+			guard++;
+		}
+		saveProfile();
+		return true;
+	}
+
+	/**
+	 * Starts a story duel. Rules are forced for this match and restored when it ends.
+	 */
+	public void startStoryMatch(int[] playerIds, int minLevel, int maxLevel,
+			Options.AIType ai, StoryCampaign.Ruleset rules) {
+		if (playerIds == null || playerIds.length != SavedDeck.SIZE || rules == null)
+			return;
+		applyStoryRules(rules);
+		storyActive = true;
+		championship = null;
+		versus = false;
+		championshipOpponentAI = (ai != null) ? ai : Options.AIType.BALANCED;
+		currentPlayerDeckIds = playerIds.clone();
+		currentOpponentDeckIds = StoryCampaign.rollHand(deck, minLevel, maxLevel, new Random());
+		storyScreen.noteOpponentHand(currentOpponentDeckIds);
+		currentScreen = GameScreen.MATCH;
+		restart(true);
+	}
+
+	private void applyStoryRules(StoryCampaign.Ruleset rules) {
+		Rule[] all = Rule.values();
+		if (storyRuleSnapshot == null) {
+			storyRuleSnapshot = new boolean[all.length];
+			for (int i = 0; i < all.length; i++)
+				storyRuleSnapshot[i] = all[i].isActive();
+		}
+		for (int i = 0; i < all.length; i++)
+			all[i].setState(false);
+		for (int i = 0; i < rules.on.length; i++)
+			rules.on[i].setState(true);
+	}
+
+	private void restoreStoryRules() {
+		if (storyRuleSnapshot == null)
+			return;
+		Rule[] all = Rule.values();
+		for (int i = 0; i < all.length && i < storyRuleSnapshot.length; i++)
+			all[i].setState(storyRuleSnapshot[i]);
+		storyRuleSnapshot = null;
+	}
+
+	private void storyMatchFinished() {
+		storyActive = false;
+		championshipOpponentAI = null;
+		int result = Integer.compare(playerScore, opponentScore);
+		int[] opp = (currentOpponentDeckIds == null) ? new int[0] : currentOpponentDeckIds.clone();
+		restoreStoryRules();
+		currentScreen = GameScreen.STORY;
+		storyScreen.onMatchResult(result, opp);
+	}
 
 	/**
 	 * Opens the championship lobby.

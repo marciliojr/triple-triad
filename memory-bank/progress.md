@@ -33,6 +33,7 @@
 - [x] 1.1.1 (diálogo de save fecha de verdade; não reabre Dolphin/file picker)
 - [x] 1.2.0 (troca do Campeonato mostra Já possui / Nova!; cartas sem elemento sem quadrado vazio)
 - [x] 1.3.0 (intro e vídeo final, Memory Card PS1 15 blocos, Versus, joystick + todas as ações remapeáveis, teclado virtual, Cheats, Troféus, avatares, legendas HintBar)
+- [x] Modo História: aluno de Balamb, Nilo Vann, até 15 campanhas por perfil, tabela de grupos, uma carta escolhida por vitória e especial só na primeira vez. Dois vídeos prontos; seis chegadas ainda em fundo estático
 
 ## Não feito (de propósito)
 
