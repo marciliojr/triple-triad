@@ -9,8 +9,8 @@ Ids
 - chegada_timber          Timber (pronto, video_3)
 - chegada_deling          Deling (pronto, video_4)
 - chegada_dollet
-- chegada_fh
-- chegada_esthar
+- chegada_fh              Fisherman's Horizon (pronto, video_6)
+- chegada_esthar          Esthar (pronto, video_7)
 - final_historia
 
 Nao renomeie o arquivo original. Copie para res/story/<id>.mp4 e converta
