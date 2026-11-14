@@ -33,7 +33,7 @@
 - [x] 1.1.1 (diálogo de save fecha de verdade; não reabre Dolphin/file picker)
 - [x] 1.2.0 (troca do Campeonato mostra Já possui / Nova!; cartas sem elemento sem quadrado vazio)
 - [x] 1.3.0 (intro e vídeo final, Memory Card PS1 15 blocos, Versus, joystick + todas as ações remapeáveis, teclado virtual, Cheats, Troféus, avatares, legendas HintBar)
-- [x] Modo História: aluno ou aluna de Balamb (escolha por campanha, retrato nos diálogos e texto PT/ES com concordância; save `CAMP.n.GENDER`, campanha antiga = aluno), Nilo Vann, até 15 campanhas por perfil, tabela de grupos, uma carta escolhida por vitória e especial só na primeira vez. Quatro vídeos prontos (Garden, Balamb Town, Timber, Deling); Dollet, FH, Esthar e o final ainda em fundo estático
+- [x] Modo História: aluno ou aluna de Balamb (escolha por campanha, retrato nos diálogos e texto PT/ES com concordância; save `CAMP.n.GENDER`, campanha antiga = aluno), Nilo Vann, até 15 campanhas por perfil, tabela de grupos, uma carta escolhida por vitória e especial só na primeira vez. Seis vídeos prontos (Garden, Balamb Town, Timber, Deling, FH, Esthar); Dollet e o final ainda em fundo estático
 - [x] Menu principal no estilo das janelas do FFVIII: perfil ativo no canto superior esquerdo, doze opções (com Sobre e Sair do jogo), HintBar e atalhos remapeados
 
 - [x] Esc no menu / opção Sair do jogo pedem confirmação Não/Sim (padrão Não)
@@ -43,6 +43,8 @@
 
 - [x] Modo História: Esc confirma voltar ao menu (progresso salvo) em todas as telas da campanha; X volta uma tela; menu da etapa só escolhe jogos por **Cidades**
 - [x] Falas do Squall e dos adversários reescritas como conversa de mesa de Triple Triad (PT/EN/ES), com `StoryTextTest` de glifos da fonte
+
+- [x] Modo História: vídeos `chegada_fh` (video_6) e `chegada_esthar` (video_7) importados; pendentes `chegada_dollet` e `final_historia`
 
 ## Não feito (de propósito)
 

@@ -250,7 +250,7 @@ public final class StoryCampaign {
 
 	/** Clips that are not in the tree yet. The scenes still play on the still background. */
 	public static final String[] PENDING_VIDEOS = {
-		"chegada_dollet", "chegada_fh", "chegada_esthar", "final_historia"
+		"chegada_dollet", "final_historia"
 	};
 
 	public static final String PLAYER = "you";

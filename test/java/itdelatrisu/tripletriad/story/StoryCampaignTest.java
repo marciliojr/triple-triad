@@ -201,7 +201,7 @@ public class StoryCampaignTest {
 
 	@Test
 	public void onlyImportedStoryVideosExist() {
-		String[] ready = { "intro_historia", "chegada_balamb_town", "chegada_timber", "chegada_deling" };
+		String[] ready = { "intro_historia", "chegada_balamb_town", "chegada_timber", "chegada_deling", "chegada_fh", "chegada_esthar" };
 		for (int i = 0; i < ready.length; i++) {
 			assertTrue(StoryAssets.hasVideo(ready[i]), ready[i]);
 			assertTrue(StoryAssets.hasVideoAudio(ready[i]), ready[i]);

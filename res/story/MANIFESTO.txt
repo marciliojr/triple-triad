@@ -8,6 +8,11 @@ Importado
 - 6 elementos de UI PNG RGBA: ui/caixa_dialogo, no_bloqueado, no_disponivel, no_vencido, rare_card_banner, rare_card_banner_en
 - video_1.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como intro_historia.mp4 e convertido para VideoLoop
 - video_2.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_balamb_town.mp4 e convertido para VideoLoop
+- video_3.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_timber.mp4 e convertido para VideoLoop
+- video_4.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_deling.mp4 e convertido para VideoLoop
+- video_6.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_fh.mp4 e convertido para VideoLoop
+- video_7.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_esthar.mp4 e convertido para VideoLoop
+(video_5 ainda nao chegou; chegada_dollet continua no fundo estatico)
 Manifestos de origem preservados em backgrounds/MANIFESTO.txt, portraits/MANIFESTO.txt e ui/MANIFESTO.txt.
 
 Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais res/story/<id>.ogg)
@@ -15,11 +20,11 @@ Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais r
 - chegada_balamb_town
 - chegada_timber (video_3)
 - chegada_deling (video_4)
+- chegada_fh (video_6)
+- chegada_esthar (video_7)
 
 Videos ausentes (a campanha ja aponta para estes ids; sem os quadros, usa o fundo estatico e o dialogo)
 - chegada_dollet
-- chegada_fh
-- chegada_esthar
 - final_historia
 
 Audio ausente como arquivo solto
