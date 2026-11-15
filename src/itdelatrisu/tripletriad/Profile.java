@@ -454,9 +454,19 @@ public class Profile {
 	 * @return the campaign, or null if the name is empty or the list is full
 	 */
 	public StorySave addCampaign(String student, String gender) {
+		return addCampaign(student, gender, StorySave.Difficulty.NORMAL);
+	}
+
+	/**
+	 * Appends a campaign with the chosen protagonist and difficulty.
+	 * @param gender {@link StorySave#MALE} or {@link StorySave#FEMALE}
+	 * @param difficulty campaign difficulty; null becomes Normal
+	 * @return the campaign, or null if the name is empty or the list is full
+	 */
+	public StorySave addCampaign(String student, String gender, StorySave.Difficulty difficulty) {
 		if (campaigns.size() >= StorySave.MAX)
 			return null;
-		StorySave save = StorySave.create(student, gender);
+		StorySave save = StorySave.create(student, gender, difficulty);
 		if (save == null)
 			return null;
 		campaigns.add(save);

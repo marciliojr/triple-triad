@@ -674,10 +674,130 @@ public final class I18n {
 			pick("A grande final \u00e9 uma mesa no Garden. Derrota d\u00e1 revanche na hora. O t\u00edtulo s\u00f3 muda de m\u00e3os com a vit\u00f3ria.",
 				"The grand final is one table at the Garden. A loss means an instant rematch. The title only changes hands with a win.",
 				"La gran final es una mesa en el Garden. La derrota da revancha al momento. El t\u00edtulo solo cambia de manos con la victoria."),
-			pick("Cada vit\u00f3ria: escolha 1 carta do deck do advers\u00e1rio. No chefe da cidade, voc\u00ea ainda recebe 1 carta forte fixa, mostrada antes da escolha. Derrota n\u00e3o d\u00e1 nem tira carta.",
-				"Every win: choose 1 card from the opponent's deck. On a city boss, you also get 1 fixed strong card, shown before the choice. A loss gives and takes no card.",
-				"Cada victoria: elige 1 carta del mazo rival. En el jefe de la ciudad, tambi\u00e9n recibes 1 carta fuerte fija, mostrada antes de la elecci\u00f3n. La derrota no da ni quita carta.")
+			pick("Cada vit\u00f3ria: escolha 1 carta do deck do advers\u00e1rio. No chefe da cidade, voc\u00ea ainda recebe 1 carta forte fixa, mostrada antes da escolha. No F\u00e1cil e no Normal, a derrota n\u00e3o tira carta. No Dif\u00edcil, a derrota tira 1 carta da m\u00e3o que voc\u00ea jogou, e a cole\u00e7\u00e3o nunca fica com menos de 5.",
+				"Every win: choose 1 card from the opponent's deck. On a city boss, you also get 1 fixed strong card, shown before the choice. On Easy and Normal, a loss takes no card. On Hard, a loss costs 1 card from the hand you played, and the collection never drops below 5.",
+				"Cada victoria: elige 1 carta del mazo rival. En el jefe de la ciudad, tambi\u00e9n recibes 1 carta fuerte fija, mostrada antes de la elecci\u00f3n. En F\u00e1cil y Normal, la derrota no quita carta. En Dif\u00edcil, la derrota quita 1 carta de la mano que jugaste, y la colecci\u00f3n nunca queda con menos de 5."),
+			pick("Cada cidade tem o seu conjunto de regras. Depois de uma mesa, uma regra que voc\u00ea levou pode se espalhar para a cidade em que jogou, como no Triple Triad de FFVIII. A Rainha das Cartas pode acrescentar ou tirar uma regra da cidade. Random n\u00e3o entra na campanha. Sudden Death fica na final e n\u00e3o se espalha.",
+				"Each city has its own rule set. After a match, a rule you carried can spread into the city you just played, as in FFVIII Triple Triad. The Queen of Cards can add or drop one city rule. Random stays out of the campaign. Sudden Death stays at the final and does not spread.",
+				"Cada ciudad tiene su propio conjunto de reglas. Despu\u00e9s de una mesa, una regla que llevaste puede extenderse a la ciudad en la que jugaste, como en el Triple Triad de FFVIII. La Reina de las Cartas puede a\u00f1adir o quitar una regla de la ciudad. Random no entra en la campa\u00f1a. Sudden Death se queda en la final y no se extiende."),
+			pick("Depois de vencer o chefe da cidade, abre uma revanche opcional, com um deck mais forte e falas novas. A primeira vit\u00f3ria nessa mesa d\u00e1 uma segunda carta rara, distinta da primeira. As seguintes d\u00e3o s\u00f3 a escolha usual.",
+				"After you beat a city's boss, an optional rematch opens, with a stronger deck and new lines. The first win at that table gives a second rare card, different from the first. Later rematches give only the usual pick.",
+				"Despu\u00e9s de vencer al jefe de la ciudad, se abre una revancha opcional, con un mazo m\u00e1s fuerte y parlamentos nuevos. La primera victoria en esa mesa da una segunda carta rara, distinta de la primera. Las siguientes dan solo la elecci\u00f3n de siempre.")
 		};
+	}
+
+	public static String storyDifficultyTitle() {
+		return pick("Dificuldade", "Difficulty", "Dificultad");
+	}
+
+	public static String storyEasy() { return pick("F\u00e1cil", "Easy", "F\u00e1cil"); }
+
+	public static String storyNormal() { return pick("Normal", "Normal", "Normal"); }
+
+	public static String storyHard() { return pick("Dif\u00edcil", "Hard", "Dif\u00edcil"); }
+
+	public static String storyEasyNote() {
+		return pick("IA mais cautelosa e cartas um pouco mais fracas (n\u00edvel m\u00e1ximo -1). A derrota n\u00e3o tira carta.",
+			"A more cautious AI and slightly weaker cards (max level -1). A loss takes no card.",
+			"IA m\u00e1s cautelosa y cartas un poco m\u00e1s d\u00e9biles (nivel m\u00e1ximo -1). La derrota no quita carta.");
+	}
+
+	public static String storyNormalNote() {
+		return pick("O equil\u00edbrio atual da campanha. A derrota n\u00e3o tira carta.",
+			"The campaign's current balance. A loss takes no card.",
+			"El equilibrio actual de la campa\u00f1a. La derrota no quita carta.");
+	}
+
+	public static String storyHardNote() {
+		return pick("IA mais agressiva e cartas um pouco mais fortes (n\u00edvel m\u00e1ximo +1). A derrota tira 1 carta da m\u00e3o que voc\u00ea jogou (a cole\u00e7\u00e3o nunca fica com menos de 5). A vit\u00f3ria segue com a escolha usual e a carta fixa do chefe.",
+			"A more aggressive AI and slightly stronger cards (max level +1). A loss costs 1 card from the hand you played (the collection never drops below 5). A win still gives the usual pick and the boss's fixed card.",
+			"IA m\u00e1s agresiva y cartas un poco m\u00e1s fuertes (nivel m\u00e1ximo +1). La derrota quita 1 carta de la mano que jugaste (la colecci\u00f3n nunca queda con menos de 5). La victoria sigue con la elecci\u00f3n de siempre y la carta fija del jefe.");
+	}
+
+	public static String hintStoryDifficulty() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter confirma    X volta",
+			"Up/down selects    Z/Enter confirms    X back",
+			"Arriba/abajo elige    Z/Enter confirma    X vuelve"));
+	}
+
+	public static String storyProgressTitle() {
+		return pick("Progresso", "Progress", "Progreso");
+	}
+
+	public static String storyCollectionPct(int percent, int have, int total) {
+		return pick("Cole\u00e7\u00e3o: " + percent + "%  (" + have + "/" + total + ")",
+			"Collection: " + percent + "%  (" + have + "/" + total + ")",
+			"Colecci\u00f3n: " + percent + "%  (" + have + "/" + total + ")");
+	}
+
+	public static String storyMissingRares() {
+		return pick("Raras que ainda faltam", "Rares still missing", "Raras que a\u00fan faltan");
+	}
+
+	public static String storyAllRares() {
+		return pick("Todas as raras da campanha est\u00e3o no seu deck.",
+			"Every campaign rare is already in your deck.",
+			"Todas las raras de la campa\u00f1a est\u00e1n en tu mazo.");
+	}
+
+	public static String storyStats(int wins, int losses, int cards) {
+		return pick("Vit\u00f3rias " + wins + "    Derrotas " + losses + "    Cartas ganhas " + cards,
+			"Wins " + wins + "    Losses " + losses + "    Cards won " + cards,
+			"Victorias " + wins + "    Derrotas " + losses + "    Cartas ganadas " + cards);
+	}
+
+	public static String storyRematch() { return pick("Revanche", "Rematch", "Revancha"); }
+
+	public static String storyCityRules(String rules) {
+		return pick("Regras desta cidade: " + rules,
+			"Rules of this city: " + rules,
+			"Reglas de esta ciudad: " + rules);
+	}
+
+	public static String storyQueenAdd(String rule) {
+		return pick("Acrescentar " + rule, "Add " + rule, "A\u00f1adir " + rule);
+	}
+
+	public static String storyQueenRemove(String rule) {
+		return pick("Tirar " + rule, "Drop " + rule, "Quitar " + rule);
+	}
+
+	public static String storyQueenKeep() {
+		return pick("Deixar como est\u00e1", "Leave it as it is", "Dejarlo como est\u00e1");
+	}
+
+	public static String hintStoryQueen() {
+		return Controls.dyn(pick("Cima/baixo escolhe    Z/Enter confirma",
+			"Up/down selects    Z/Enter confirms",
+			"Arriba/abajo elige    Z/Enter confirma"));
+	}
+
+	public static String storyGiveTitle() {
+		return pick("Derrota no Dif\u00edcil: entregue 1 carta da m\u00e3o.",
+			"Hard-mode loss: give up 1 card from the hand.",
+			"Derrota en Dif\u00edcil: entrega 1 carta de la mano.");
+	}
+
+	public static String storyGiveAsk(String card) {
+		return pick("Entregar " + card + "?", "Give up " + card + "?", "\u00bfEntregar " + card + "?");
+	}
+
+	public static String hintStoryGive() {
+		return Controls.dyn(pick("Esquerda/direita escolhe    Z/Enter confirma",
+			"Left/right selects    Z/Enter confirms",
+			"Izquierda/derecha elige    Z/Enter confirma"));
+	}
+
+	public static String hintStoryProgress() {
+		return Controls.dyn(pick("Cima/baixo rola    X ou Esc volta",
+			"Up/down scrolls    X or Esc back",
+			"Arriba/abajo recorre    X o Esc vuelve"));
+	}
+
+	public static String storyUnknown() { return "???"; }
+
+	public static String storyRematchTag() {
+		return pick("revanche", "rematch", "revancha");
 	}
 
 	public static String menuChampionship() {

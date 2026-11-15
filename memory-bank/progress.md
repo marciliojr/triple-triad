@@ -50,10 +50,11 @@
 - [x] Modo História: deck próprio por campanha (formato 4), deck inicial de níveis 1-2, escolha de 1 carta do deck adversário e carta fixa no chefe, especiais aleatórias com teto, elenco renomeado, roteiro reescrito em PT/EN/ES, tela Coleção e simulação de força (`StoryBalanceTest`)
 - [x] Tema do menu `res/menu.ogg` (OC ReMix "Aroma of Sugary Warmth"); `bgm.ogg` só nas partidas; troca de leito sem reiniciar a mesma faixa (`AudioControllerTest`)
 - [x] Lições do Squall com explicação e exemplo de mesa (tabuleiro 3x3 ou mão da troca na caixa de diálogo), validados em `StoryRuleExampleTest`
+- [x] Modo História formato 5: regras regionais que se espalham (FFVIII), visita da Rainha por cidade, revanche opcional do chefe com rara única, tela Progresso e dificuldade Fácil/Normal/Difícil (saves antigos abrem como Normal). Testes em `StoryModeV5Test`
 
 
 ## Não feito (de propósito)
 
-- [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões
+- [ ] Trade rules clássicas (One/Diff/Direct/All); as regras regionais de captura no estilo FFVIII já estão no formato 5
 - [ ] Fat JAR / instalador
 - [ ] Suíte completa do motor de captura (há testes dos tabuleiros de exemplo do Squall em `StoryRuleExampleTest`)

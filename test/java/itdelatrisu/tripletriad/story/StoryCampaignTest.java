@@ -258,7 +258,7 @@ public class StoryCampaignTest {
 		String text = new String(Files.readAllBytes(file.toPath()), "UTF-8");
 		assertTrue(text.contains("CAMP.1.GENDER = M"));
 		assertTrue(text.contains("CAMP.2.GENDER = F"));
-		assertTrue(text.contains("STORY_FORMAT = 4"));
+		assertTrue(text.contains("STORY_FORMAT = 5"));
 
 		Profile loaded = ProfileStore.readFile(file);
 		assertEquals(StorySave.MALE, loaded.campaignAt(0).gender());

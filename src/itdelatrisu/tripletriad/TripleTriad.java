@@ -1622,15 +1622,16 @@ public class TripleTriad extends BasicGame {
 	 * The opponent hand comes from the campaign seed, not from the profile album.
 	 */
 	public void startStoryMatch(int[] playerIds, StoryCampaign.Duel duel) {
-		if (playerIds == null || playerIds.length != SavedDeck.SIZE || duel == null || duel.rules == null)
+		if (playerIds == null || playerIds.length != SavedDeck.SIZE || duel == null)
 			return;
-		applyStoryRules(duel.rules);
+		StorySave save = (profile == null) ? null : profile.activeStory();
+		StoryCampaign.Region region = StoryCampaign.regionOf(duel.id);
+		applyStoryRules(itdelatrisu.tripletriad.story.StoryRules.effective(save, region));
 		storyActive = true;
 		championship = null;
 		versus = false;
-		championshipOpponentAI = (duel.ai != null) ? duel.ai : Options.AIType.BALANCED;
+		championshipOpponentAI = StoryBalance.aiFor(duel, save);
 		currentPlayerDeckIds = playerIds.clone();
-		StorySave save = (profile == null) ? null : profile.activeStory();
 		currentOpponentDeckIds = StoryBalance.opponentHand(save, duel);
 		storyScreen.noteOpponentHand(currentOpponentDeckIds);
 		currentScreen = GameScreen.MATCH;
@@ -1638,6 +1639,10 @@ public class TripleTriad extends BasicGame {
 	}
 
 	private void applyStoryRules(StoryCampaign.Ruleset rules) {
+		applyStoryRules(rules == null ? new Rule[0] : rules.on);
+	}
+
+	private void applyStoryRules(Rule[] on) {
 		Rule[] all = Rule.values();
 		if (storyRuleSnapshot == null) {
 			storyRuleSnapshot = new boolean[all.length];
@@ -1646,8 +1651,12 @@ public class TripleTriad extends BasicGame {
 		}
 		for (int i = 0; i < all.length; i++)
 			all[i].setState(false);
-		for (int i = 0; i < rules.on.length; i++)
-			rules.on[i].setState(true);
+		if (on != null) {
+			for (int i = 0; i < on.length; i++) {
+				if (on[i] != null)
+					on[i].setState(true);
+			}
+		}
 	}
 
 	private void restoreStoryRules() {
@@ -1664,9 +1673,10 @@ public class TripleTriad extends BasicGame {
 		championshipOpponentAI = null;
 		int result = Integer.compare(playerScore, opponentScore);
 		int[] opp = (currentOpponentDeckIds == null) ? new int[0] : currentOpponentDeckIds.clone();
+		int[] mine = (currentPlayerDeckIds == null) ? new int[0] : currentPlayerDeckIds.clone();
 		restoreStoryRules();
 		currentScreen = GameScreen.STORY;
-		storyScreen.onMatchResult(result, opp);
+		storyScreen.onMatchResult(result, opp, mine);
 	}
 
 	/**

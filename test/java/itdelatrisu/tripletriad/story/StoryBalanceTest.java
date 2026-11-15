@@ -107,7 +107,11 @@ public class StoryBalanceTest {
 		for (String line : Files.readAllLines(file.toPath())) {
 			if (line.startsWith("CAMP.1.COLLECTION") || line.startsWith("CAMP.1.READY")
 					|| line.startsWith("CAMP.1.SEED") || line.startsWith("CAMP.1.SEEN")
-					|| line.startsWith("CAMP.1.GIVEN"))
+					|| line.startsWith("CAMP.1.GIVEN")
+					|| line.startsWith("CAMP.1.DIFFICULTY") || line.startsWith("CAMP.1.CITYRULES")
+					|| line.startsWith("CAMP.1.CARRY") || line.startsWith("CAMP.1.PLAYS")
+					|| line.startsWith("CAMP.1.QUEEN") || line.startsWith("CAMP.1.WINS")
+					|| line.startsWith("CAMP.1.LOSSES") || line.startsWith("CAMP.1.CARDWON"))
 				continue;
 			old.append(line.startsWith("STORY_FORMAT") ? "STORY_FORMAT = 3" : line).append('\n');
 		}
