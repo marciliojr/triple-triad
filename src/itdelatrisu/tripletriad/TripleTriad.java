@@ -47,7 +47,9 @@ import itdelatrisu.tripletriad.ui.Screen;
 import itdelatrisu.tripletriad.ui.SettingsScreen;
 import itdelatrisu.tripletriad.ui.StoryScreen;
 import itdelatrisu.tripletriad.ui.Ui;
+import itdelatrisu.tripletriad.story.StoryBalance;
 import itdelatrisu.tripletriad.story.StoryCampaign;
+import itdelatrisu.tripletriad.story.StorySave;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -1550,6 +1552,12 @@ public class TripleTriad extends BasicGame {
 		myDeckScreen.enterStoryPick(storyScreen.rememberedHand());
 	}
 
+	/** Opens the campaign collection from the stage menu. */
+	public void showStoryCollection() {
+		currentScreen = GameScreen.MY_DECK;
+		myDeckScreen.enterStoryGallery();
+	}
+
 	/** @return the opponent name while a story duel is being prepared */
 	public String storyOpponentName() {
 		return (storyScreen != null) ? storyScreen.opponentName() : "";
@@ -1567,6 +1575,11 @@ public class TripleTriad extends BasicGame {
 	public void returnToStory() {
 		currentScreen = GameScreen.STORY;
 		storyScreen.backToList();
+	}
+
+	public void returnToStoryStage() {
+		currentScreen = GameScreen.STORY;
+		storyScreen.backToStage();
 	}
 
 	public void showStory() {
@@ -1587,32 +1600,21 @@ public class TripleTriad extends BasicGame {
 	 * Does not replace an album that already has five cards.
 	 * @return true if cards were added
 	 */
-	public boolean topUpStoryAlbum() {
-		if (profile == null || profile.getCollection().size() >= SavedDeck.SIZE)
-			return false;
-		int guard = 0;
-		while (profile.getCollection().size() < SavedDeck.SIZE && guard < SavedDeck.SIZE) {
-			profile.addCard(guard + 1);
-			guard++;
-		}
-		saveProfile();
-		return true;
-	}
-
 	/**
 	 * Starts a story duel. Rules are forced for this match and restored when it ends.
+	 * The opponent hand comes from the campaign seed, not from the profile album.
 	 */
-	public void startStoryMatch(int[] playerIds, int minLevel, int maxLevel,
-			Options.AIType ai, StoryCampaign.Ruleset rules) {
-		if (playerIds == null || playerIds.length != SavedDeck.SIZE || rules == null)
+	public void startStoryMatch(int[] playerIds, StoryCampaign.Duel duel) {
+		if (playerIds == null || playerIds.length != SavedDeck.SIZE || duel == null || duel.rules == null)
 			return;
-		applyStoryRules(rules);
+		applyStoryRules(duel.rules);
 		storyActive = true;
 		championship = null;
 		versus = false;
-		championshipOpponentAI = (ai != null) ? ai : Options.AIType.BALANCED;
+		championshipOpponentAI = (duel.ai != null) ? duel.ai : Options.AIType.BALANCED;
 		currentPlayerDeckIds = playerIds.clone();
-		currentOpponentDeckIds = StoryCampaign.rollHand(deck, minLevel, maxLevel, new Random());
+		StorySave save = (profile == null) ? null : profile.activeStory();
+		currentOpponentDeckIds = StoryBalance.opponentHand(save, duel);
 		storyScreen.noteOpponentHand(currentOpponentDeckIds);
 		currentScreen = GameScreen.MATCH;
 		restart(true);

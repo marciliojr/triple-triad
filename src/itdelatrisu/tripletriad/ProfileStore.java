@@ -36,6 +36,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import itdelatrisu.tripletriad.gfx.Log;
+import itdelatrisu.tripletriad.story.StoryBalance;
 import itdelatrisu.tripletriad.story.StorySave;
 
 /**
@@ -442,11 +443,15 @@ public class ProfileStore {
 		}
 		for (int i = 1; i <= campMax && profile.campaignCount() < StorySave.MAX; i++) {
 			StorySave camp = camps.get(Integer.valueOf(i));
-			if (camp != null && !camp.id().isEmpty() && !camp.student().isEmpty())
+			if (camp != null && !camp.id().isEmpty() && !camp.student().isEmpty()) {
 				profile.getCampaigns().add(camp);
+				StoryBalance.migrateCollection(camp);
+			}
 		}
 		profile.migrateLegacyRun();
 		profile.migrateStoryIfNeeded();
+		for (int i = 0; i < profile.campaignCount(); i++)
+			StoryBalance.migrateCollection(profile.campaignAt(i));
 		return profile.isValid() ? profile : null;
 	}
 
@@ -501,6 +506,16 @@ public class ProfileStore {
 				save.setFromLegacy("1".equals(value));
 			else if (field.equals("STARTER"))
 				save.setStarterScene("1".equals(value));
+			else if (field.equals("SEED"))
+				save.setSeed(Long.parseLong(value));
+			else if (field.equals("COLLECTION"))
+				save.setCollectionCsv(value);
+			else if (field.equals("READY"))
+				save.setCollectionReady("1".equals(value));
+			else if (field.equals("SEEN"))
+				save.setSeenRulesCsv(value);
+			else if (field.equals("GIVEN"))
+				save.setPendingSpecialGiven("1".equals(value));
 		} catch (NumberFormatException e) {
 			// keep defaults
 		}
@@ -626,6 +641,16 @@ public class ProfileStore {
 				writer.write(p + "LEGACY = " + (camp.isFromLegacy() ? "1" : "0"));
 				writer.newLine();
 				writer.write(p + "STARTER = " + (camp.wantsStarter() ? "1" : "0"));
+				writer.newLine();
+				writer.write(p + "SEED = " + camp.seed());
+				writer.newLine();
+				writer.write(p + "COLLECTION = " + camp.collectionCsv());
+				writer.newLine();
+				writer.write(p + "READY = " + (camp.isCollectionReady() ? "1" : "0"));
+				writer.newLine();
+				writer.write(p + "SEEN = " + camp.seenRulesCsv());
+				writer.newLine();
+				writer.write(p + "GIVEN = " + (camp.isPendingSpecialGiven() ? "1" : "0"));
 				writer.newLine();
 			}
 			for (int i = 0; i < Profile.SLOTS; i++) {

@@ -46,6 +46,9 @@
 
 - [x] Modo História: vídeos `chegada_fh` (video_6) e `chegada_esthar` (video_7) importados; pendentes `chegada_dollet` e `final_historia`
 
+- [x] Modo História: deck próprio por campanha (formato 4), deck inicial de níveis 1-2, escolha de 1 carta do deck adversário e carta fixa no chefe, especiais aleatórias com teto, elenco renomeado, roteiro reescrito em PT/EN/ES, tela Coleção e simulação de força (`StoryBalanceTest`)
+
+
 ## Não feito (de propósito)
 
 - [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões
