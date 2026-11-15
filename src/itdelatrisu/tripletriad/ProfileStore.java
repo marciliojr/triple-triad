@@ -516,6 +516,22 @@ public class ProfileStore {
 				save.setSeenRulesCsv(value);
 			else if (field.equals("GIVEN"))
 				save.setPendingSpecialGiven("1".equals(value));
+			else if (field.equals("DIFFICULTY"))
+				save.setDifficulty(value);
+			else if (field.equals("CITYRULES"))
+				save.setCityRulesCsv(value);
+			else if (field.equals("CARRY"))
+				save.setCarryCsv(value);
+			else if (field.equals("PLAYS"))
+				save.setPlaysCsv(value);
+			else if (field.equals("QUEEN"))
+				save.setQueenUsedCsv(value);
+			else if (field.equals("WINS"))
+				save.setWins(Integer.parseInt(value));
+			else if (field.equals("LOSSES"))
+				save.setLosses(Integer.parseInt(value));
+			else if (field.equals("CARDWON"))
+				save.setCardsWon(Integer.parseInt(value));
 		} catch (NumberFormatException e) {
 			// keep defaults
 		}
@@ -651,6 +667,22 @@ public class ProfileStore {
 				writer.write(p + "SEEN = " + camp.seenRulesCsv());
 				writer.newLine();
 				writer.write(p + "GIVEN = " + (camp.isPendingSpecialGiven() ? "1" : "0"));
+				writer.newLine();
+				writer.write(p + "DIFFICULTY = " + camp.difficulty().name());
+				writer.newLine();
+				writer.write(p + "CITYRULES = " + camp.cityRulesCsv());
+				writer.newLine();
+				writer.write(p + "CARRY = " + camp.carryCsv());
+				writer.newLine();
+				writer.write(p + "PLAYS = " + camp.playsCsv());
+				writer.newLine();
+				writer.write(p + "QUEEN = " + camp.queenUsedCsv());
+				writer.newLine();
+				writer.write(p + "WINS = " + camp.wins());
+				writer.newLine();
+				writer.write(p + "LOSSES = " + camp.losses());
+				writer.newLine();
+				writer.write(p + "CARDWON = " + camp.cardsWon());
 				writer.newLine();
 			}
 			for (int i = 0; i < Profile.SLOTS; i++) {

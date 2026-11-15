@@ -34,6 +34,9 @@ import itdelatrisu.tripletriad.story.StoryAssets;
 import itdelatrisu.tripletriad.story.StoryCampaign;
 import itdelatrisu.tripletriad.story.StoryMap;
 import itdelatrisu.tripletriad.story.StoryRuleExample;
+import itdelatrisu.tripletriad.story.StoryProgress;
+import itdelatrisu.tripletriad.story.StoryRematch;
+import itdelatrisu.tripletriad.story.StoryRules;
 import itdelatrisu.tripletriad.story.StorySave;
 import itdelatrisu.tripletriad.story.StoryScript;
 
@@ -43,8 +46,8 @@ import itdelatrisu.tripletriad.story.StoryScript;
  */
 public class StoryScreen extends Screen {
 	private enum Mode {
-		HUB, PROTAGONIST, NAME, CAMPAIGNS, DELETE, STAGE, MAP, DUELS, TABLE, RULES, DOSSIER,
-		SCENE, PICK, CONFIRM, AWARD, SHOW
+		HUB, PROTAGONIST, NAME, DIFFICULTY, CAMPAIGNS, DELETE, STAGE, MAP, DUELS, TABLE, RULES, DOSSIER,
+		SCENE, PICK, CONFIRM, AWARD, SHOW, QUEEN, GIVE, GIVE_CONFIRM, PROGRESS
 	}
 
 	private static final int NAME_MAX = StorySave.NAME_MAX;
@@ -61,6 +64,18 @@ public class StoryScreen extends Screen {
 
 	/** Protagonist being chosen for a new campaign: 0 aluno, 1 aluna. */
 	private int protagonist;
+
+	/** Difficulty row while creating a campaign: 0 Easy, 1 Normal, 2 Hard. */
+	private int difficultyIndex = 1;
+
+	/** Queen's offer for the current city, or null. */
+	private StoryRules.QueenOffer queenOffer;
+
+	/** First visible rare row on the progress screen. */
+	private int progressScroll;
+
+	/** Screen to return to when closing the progress list. */
+	private Mode progressBack = Mode.HUB;
 
 	/** True while the scene follows a lost match: the protagonist shows the defeat face. */
 	private boolean sceneDefeat;
@@ -109,7 +124,7 @@ public class StoryScreen extends Screen {
 	 * @param result 1 win, -1 loss, 0 draw
 	 * @param opponentHand the five cards that were played
 	 */
-	public void onMatchResult(int result, int[] opponentHand) {
+	public void onMatchResult(int result, int[] opponentHand, int[] playerHand) {
 		resumeBgm();
 		StorySave save = camp();
 		if (duel == null || region == null || save == null) {
@@ -118,15 +133,36 @@ public class StoryScreen extends Screen {
 		}
 		if (opponentHand != null && opponentHand.length > 0)
 			liveOpp = opponentHand.clone();
+		if (result > 0)
+			save.recordWin();
+		else if (result < 0)
+			save.recordLoss();
+		StoryRules.Event spread = StoryRules.afterMatch(save, region.id);
+		StoryCampaign.Line extra = StoryScript.spreadLine(spread);
 		if (result > 0) {
-			save.armWin(duel.id, liveOpp, duel.rewardId);
+			int prize = StoryRematch.isRematchId(duel.id)
+				? StoryRematch.pendingReward(save, duel) : duel.rewardId;
+			save.armWin(duel.id, liveOpp, prize);
 			game.saveProfile();
 			markSaved();
-			play(join(new StoryCampaign.Line[] { duel.win }, duel.afterWin), StoryCampaign.After.CARD);
+			StoryCampaign.Line[] talk = join(new StoryCampaign.Line[] { duel.win }, duel.afterWin);
+			if (extra != null)
+				talk = join(new StoryCampaign.Line[] { extra }, talk);
+			play(talk, StoryCampaign.After.CARD);
 			return;
 		}
 		StoryCampaign.Line beat = (result < 0) ? duel.lose : StoryCampaign.tie(duel);
-		play(join(new StoryCampaign.Line[] { beat }, duel.afterLose), StoryCampaign.After.LIST);
+		StoryCampaign.Line[] talk = join(new StoryCampaign.Line[] { beat }, duel.afterLose);
+		if (extra != null)
+			talk = join(new StoryCampaign.Line[] { extra }, talk);
+		StoryCampaign.After next = StoryCampaign.After.LIST;
+		if (result < 0 && save.canForfeitCard(playerHand)) {
+			save.armGive(playerHand);
+			next = StoryCampaign.After.GIVE;
+		}
+		game.saveProfile();
+		markSaved();
+		play(talk, next);
 		sceneDefeat = result < 0;
 	}
 
@@ -145,6 +181,7 @@ public class StoryScreen extends Screen {
 			case HUB: renderHub(g, height); break;
 			case PROTAGONIST: renderProtagonist(g, width, height); break;
 			case NAME: renderName(g, height); break;
+			case DIFFICULTY: renderDifficulty(g, height); break;
 			case CAMPAIGNS: renderCampaigns(g, height); break;
 			case DELETE: renderYesNo(g, height, I18n.storyDeleteAsk(deleteName())); break;
 			case STAGE: renderStage(g, height); break;
@@ -158,6 +195,10 @@ public class StoryScreen extends Screen {
 			case CONFIRM: renderPick(g, width, height, true); break;
 			case AWARD: renderAward(g, width, height); break;
 			case SHOW: renderShow(g, width, height); break;
+			case QUEEN: renderQueen(g, height); break;
+			case GIVE: renderGive(g, width, height, false); break;
+			case GIVE_CONFIRM: renderGive(g, width, height, true); break;
+			case PROGRESS: renderProgress(g, height); break;
 			default: break;
 		}
 		if (System.currentTimeMillis() < savedUntil && !leaveMenu.isOpen())
@@ -176,6 +217,7 @@ public class StoryScreen extends Screen {
 			case HUB: keyHub(key); break;
 			case PROTAGONIST: keyProtagonist(key); break;
 			case NAME: keyName(key, c); break;
+			case DIFFICULTY: keyDifficulty(key); break;
 			case CAMPAIGNS: keyCampaigns(key); break;
 			case DELETE: keyDelete(key); break;
 			case STAGE: keyStage(key); break;
@@ -189,6 +231,10 @@ public class StoryScreen extends Screen {
 			case CONFIRM: keyConfirm(key); break;
 			case AWARD: keyAward(key); break;
 			case SHOW: keyShow(key); break;
+			case QUEEN: keyQueen(key); break;
+			case GIVE: keyGive(key); break;
+			case GIVE_CONFIRM: keyGiveConfirm(key); break;
+			case PROGRESS: keyProgress(key); break;
 			default: break;
 		}
 	}
@@ -205,6 +251,12 @@ public class StoryScreen extends Screen {
 			clickHub(y);
 		else if (mode == Mode.PROTAGONIST)
 			clickProtagonist(x, y);
+		else if (mode == Mode.DIFFICULTY)
+			clickList(y, 3, this::commitDifficulty);
+		else if (mode == Mode.QUEEN)
+			clickList(y, queenItems().length, this::activateQueen);
+		else if (mode == Mode.PROGRESS)
+			keyProgress(Input.KEY_DOWN);
 		else if (mode == Mode.CAMPAIGNS)
 			clickList(y, game.getProfile() == null ? 0 : game.getProfile().campaignCount(), this::openListed);
 		else if (mode == Mode.STAGE)
@@ -212,7 +264,11 @@ public class StoryScreen extends Screen {
 		else if (mode == Mode.MAP)
 			clickMap(x, y);
 		else if (mode == Mode.DUELS && region != null)
-			clickList(y, region.duels.length, this::activateDuel);
+			clickList(y, visibleDuels().length, this::activateDuel);
+		else if (mode == Mode.GIVE)
+			keyGive(Input.KEY_Z);
+		else if (mode == Mode.GIVE_CONFIRM)
+			keyGiveConfirm(Input.KEY_Z);
 		else if (mode == Mode.SCENE)
 			keyScene(Input.KEY_Z);
 		else if (mode == Mode.PICK)
@@ -224,7 +280,7 @@ public class StoryScreen extends Screen {
 	}
 
 	private void keyHub(int key) {
-		int n = 3;
+		int n = 4;
 		if (key == Input.KEY_DOWN || key == Input.KEY_UP) {
 			index = (key == Input.KEY_DOWN) ? (index + 1) % n : (index + n - 1) % n;
 			AudioController.playCursor();
@@ -233,6 +289,8 @@ public class StoryScreen extends Screen {
 				beginProtagonist();
 			else if (index == 1)
 				openCampaignList();
+			else if (index == 2)
+				openProgress(Mode.HUB);
 			else
 				leaveToMenu();
 		} else if (key == Input.KEY_ESCAPE) {
@@ -241,7 +299,7 @@ public class StoryScreen extends Screen {
 	}
 
 	private void clickHub(int y) {
-		int hit = hitRow(y, 3);
+		int hit = hitRow(y, 4);
 		if (hit < 0)
 			return;
 		if (hit != index) {
@@ -360,19 +418,15 @@ public class StoryScreen extends Screen {
 	}
 
 	private void commitName() {
-		Profile profile = game.getProfile();
-		if (profile == null)
-			return;
-		StorySave save = profile.addCampaign(name.toString(), chosenGender());
-		if (save == null) {
+		if (StorySave.cleanName(name.toString()).isEmpty()) {
 			AudioController.Effect.INVALID.play();
 			return;
 		}
 		vk.close();
+		difficultyIndex = 1;
+		index = 1;
+		mode = Mode.DIFFICULTY;
 		AudioController.Effect.SELECT.play();
-		game.saveProfile();
-		markSaved();
-		openSave(save);
 	}
 
 	private void openCampaignList() {
@@ -471,6 +525,12 @@ public class StoryScreen extends Screen {
 	}
 
 	private void resumePending(StorySave save) {
+		if (save.awaitingGive()) {
+			liveOpp = save.pendingHand();
+			cardIndex = 0;
+			mode = Mode.GIVE;
+			return;
+		}
 		duel = StoryCampaign.findDuel(save.pendingDuel());
 		region = StoryCampaign.regionOf(save.pendingDuel());
 		liveOpp = save.pendingHand();
@@ -522,6 +582,8 @@ public class StoryScreen extends Screen {
 			mode = Mode.MAP;
 		} else if (chosen.equals(I18n.storyCollection())) {
 			game.showStoryCollection();
+		} else if (chosen.equals(I18n.storyProgressTitle())) {
+			openProgress(Mode.STAGE);
 		} else if (chosen.equals(I18n.storyTable())) {
 			mode = Mode.TABLE;
 		} else if (chosen.equals(I18n.storyRulesTitle())) {
@@ -544,6 +606,7 @@ public class StoryScreen extends Screen {
 		ArrayList<String> items = new ArrayList<String>();
 		items.add(I18n.storyCities());
 		items.add(I18n.storyCollection());
+		items.add(I18n.storyProgressTitle());
 		if (here.kind == StoryCampaign.Kind.GROUP)
 			items.add(I18n.storyTable());
 		items.add(I18n.storyRulesTitle());
@@ -621,14 +684,15 @@ public class StoryScreen extends Screen {
 			resumePending(save);
 			return;
 		}
-		int n = region.duels.length;
+		StoryCampaign.Duel[] seats = visibleDuels();
+		int n = seats.length;
 		if (key == Input.KEY_DOWN || key == Input.KEY_UP) {
 			index = (key == Input.KEY_DOWN) ? (index + 1) % n : (index + n - 1) % n;
 			AudioController.playCursor();
 		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
 			activateDuel(index);
 		} else if (key == Input.KEY_T && index >= 0 && index < n) {
-			duel = region.duels[index];
+			duel = seats[index];
 			lineIndex = 0;
 			page = 0;
 			mode = Mode.DOSSIER;
@@ -649,17 +713,54 @@ public class StoryScreen extends Screen {
 			resumePending(save);
 			return;
 		}
-		if (!StoryCampaign.duelUnlocked(save, region, row)) {
+		StoryCampaign.Duel[] seats = visibleDuels();
+		if (row < 0 || row >= seats.length) {
 			AudioController.Effect.INVALID.play();
 			return;
 		}
-		duel = region.duels[row];
+		StoryCampaign.Duel seat = seats[row];
+		boolean rematch = StoryRematch.isRematchId(seat.id);
+		if (!rematch && !StoryCampaign.duelUnlocked(save, region, indexOfBase(seat))) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		if (rematch && !StoryRematch.unlocked(save, StoryRematch.bossOf(seat.id))) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		duel = seat;
 		AudioController.Effect.SELECT.play();
+		if (!rematch && StoryCampaign.isQueen(seat) && save != null && region != null
+				&& !save.queenUsed(region.id)) {
+			queenOffer = StoryRules.offer(save, region.id);
+			if (queenOffer != null) {
+				play(StoryScript.queenTalk(save, region), StoryCampaign.After.QUEEN);
+				return;
+			}
+			save.markQueenUsed(region.id);
+		}
+		startDuelTalk(save);
+	}
+
+	private void startDuelTalk(StorySave save) {
+		if (duel == null)
+			return;
 		StoryCampaign.Line[] brief = join(StoryScript.lessons(save, duel),
 			join(duel.open, new StoryCampaign.Line[] { duel.before }));
 		if (save != null)
 			game.saveProfile();
 		play(brief, StoryCampaign.After.PICK);
+	}
+
+	private int indexOfBase(StoryCampaign.Duel seat) {
+		if (region == null || seat == null)
+			return -1;
+		String id = StoryRematch.baseId(seat.id);
+		for (int i = 0; i < region.duels.length; i++) {
+			if (region.duels[i].id.equals(id))
+				return i;
+		}
+		return -1;
 	}
 
 	private void keyRules(int key) {
@@ -874,6 +975,14 @@ public class StoryScreen extends Screen {
 			case LIST:
 				mode = Mode.DUELS;
 				break;
+			case QUEEN:
+				index = 0;
+				mode = Mode.QUEEN;
+				break;
+			case GIVE:
+				cardIndex = 0;
+				mode = Mode.GIVE;
+				break;
 			case HUB:
 			default:
 				mode = Mode.HUB;
@@ -1062,7 +1171,7 @@ public class StoryScreen extends Screen {
 		int count = profile == null ? 0 : profile.campaignCount();
 		drawLogo(height);
 		UnicodeFont font = Options.getSmallFont();
-		String[] items = { I18n.storyNew(), I18n.storyContinue(), I18n.storyBackMenu() };
+		String[] items = { I18n.storyNew(), I18n.storyContinue(), I18n.storyProgressTitle(), I18n.storyBackMenu() };
 		float start = height * 0.36f;
 		float step = rowStep(items.length);
 		for (int i = 0; i < items.length; i++) {
@@ -1196,19 +1305,22 @@ public class StoryScreen extends Screen {
 			face.draw(fx, fy, size, size);
 		}
 		Ui.drawCentered(Options.getFont(), save.student(), height * 0.07f, Ui.TITLE);
-		Ui.drawCentered(Options.getSmallFont(), here.name(), height * 0.14f, Ui.HINT);
+		Ui.drawCentered(Options.getSmallFont(), here.name(), height * 0.13f, Ui.HINT);
+		Ui.drawCentered(Options.getSmallFont(), Ui.fit(Options.getSmallFont(),
+			I18n.storyCityRules(StoryRules.summarize(StoryRules.effective(save, here))),
+			Options.getWidth() * 0.86f), height * 0.175f, Ui.HINT);
 		StoryCampaign.Duel next = StoryCampaign.nextDuel(save);
 		String goal = save.isComplete() ? I18n.storyChampion(save.isFemale())
 			: (next == null ? I18n.storyChampion(save.isFemale()) : I18n.storyObjective(next.role(), next.name()));
 		Ui.drawCentered(Options.getSmallFont(), Ui.fit(Options.getSmallFont(), goal, Options.getWidth() * 0.86f),
-			height * 0.2f, Color.white);
+			height * 0.22f, Color.white);
 		Ui.drawCentered(Options.getSmallFont(),
 			I18n.storyProgress(StoryCampaign.clearedCount(save), StoryCampaign.duelCount()),
-			height * 0.25f, Ui.HINT);
+			height * 0.265f, Ui.HINT);
 		if (save.hasPending())
-			Ui.drawCentered(Options.getSmallFont(), I18n.storyPending(), height * 0.3f, Ui.TITLE);
+			Ui.drawCentered(Options.getSmallFont(), I18n.storyPending(), height * 0.305f, Ui.TITLE);
 		String[] items = stageItems();
-		float start = height * 0.34f;
+		float start = height * 0.36f;
 		float step = rowStep(items.length);
 		for (int i = 0; i < items.length; i++)
 			drawChoice(Options.getSmallFont(), i, index, items[i], start, step, null, Ui.HINT);
@@ -1310,17 +1422,27 @@ public class StoryScreen extends Screen {
 	private void renderDuels(Graphics g, int height) {
 		if (region == null)
 			return;
-		Ui.drawCentered(Options.getFont(), region.name(), height * 0.08f, Ui.TITLE);
-		UnicodeFont font = Options.getSmallFont();
-		float start = height * 0.16f;
-		float step = rowStep(Math.max(1, region.duels.length));
+		Ui.drawCentered(Options.getFont(), region.name(), height * 0.06f, Ui.TITLE);
 		StorySave save = camp();
-		for (int i = 0; i < region.duels.length; i++) {
-			StoryCampaign.Duel item = region.duels[i];
-			boolean unlocked = StoryCampaign.duelUnlocked(save, region, i);
+		UnicodeFont font = Options.getSmallFont();
+		Ui.drawCentered(font, Ui.fit(font,
+			I18n.storyCityRules(StoryRules.summarize(StoryRules.effective(save, region))),
+			Options.getWidth() * 0.86f), height * 0.12f, Ui.HINT);
+		StoryCampaign.Duel[] seats = visibleDuels();
+		float start = height * 0.18f;
+		float step = rowStep(Math.max(1, seats.length));
+		for (int i = 0; i < seats.length; i++) {
+			StoryCampaign.Duel item = seats[i];
+			boolean rematch = StoryRematch.isRematchId(item.id);
+			boolean unlocked = rematch
+				? StoryRematch.unlocked(save, StoryRematch.bossOf(item.id))
+				: StoryCampaign.duelUnlocked(save, region, indexOfBase(item));
 			boolean cleared = save != null && save.isCleared(item.id);
-			String label = item.role() + "  " + item.name();
-			if (item.rewardId > 0 && (save == null || !save.specialGranted(item.id)))
+			String label = rematch
+				? I18n.storyRematch() + "  " + item.name()
+				: item.role() + "  " + item.name();
+			int prize = rematch ? StoryRematch.pendingReward(save, item) : item.rewardId;
+			if (prize > 0 && (save == null || !save.specialGranted(item.id)))
 				label = label + "  *";
 			drawChoice(font, i, index, Ui.fit(font, label, Options.getWidth() * 0.7f), start, step,
 				iconFor(unlocked, cleared), !unlocked ? Ui.DISABLED : (cleared ? Ui.TITLE : Ui.HINT));
@@ -1353,11 +1475,19 @@ public class StoryScreen extends Screen {
 
 	private void renderRules(Graphics g, int height) {
 		String[] pages = I18n.storyRules();
-		Ui.drawCentered(Options.getFont(), I18n.storyRulesTitle(), height * 0.12f, Ui.TITLE);
+		Ui.drawCentered(Options.getFont(), I18n.storyRulesTitle(), height * 0.08f, Ui.TITLE);
 		UnicodeFont font = Options.getSmallFont();
+		StorySave save = camp();
+		StoryCampaign.Region here = region != null ? region
+			: (save == null ? null : StoryCampaign.REGIONS[StoryCampaign.currentRegion(save)]);
+		if (here != null) {
+			font.drawString(Options.getWidth() * 0.1f, height * 0.16f, Ui.fit(font,
+				I18n.storyCityRules(StoryRules.summarize(StoryRules.effective(save, here))),
+				Options.getWidth() * 0.8f), Ui.TITLE);
+		}
 		String body = rulesPage >= 0 && rulesPage < pages.length ? pages[rulesPage] : "";
 		ArrayList<String> wrapped = wrap(font, body, Options.getWidth() * 0.8f);
-		float y = height * 0.28f;
+		float y = height * 0.26f;
 		for (int i = 0; i < wrapped.size() && i < 8; i++) {
 			font.drawString(Options.getWidth() * 0.1f, y, wrapped.get(i), Color.white);
 			y += font.getLineHeight();
@@ -1890,7 +2020,9 @@ public class StoryScreen extends Screen {
 
 	private int hitRow(int y, int count) {
 		float start = mode == Mode.HUB ? Options.getHeight() * 0.36f
-			: (mode == Mode.STAGE ? Options.getHeight() * 0.34f : Options.getHeight() * 0.16f);
+			: (mode == Mode.STAGE ? Options.getHeight() * 0.36f
+			: (mode == Mode.DIFFICULTY ? Options.getHeight() * 0.2f
+			: (mode == Mode.QUEEN ? Options.getHeight() * 0.28f : Options.getHeight() * 0.16f)));
 		if (mode == Mode.CAMPAIGNS)
 			start = Options.getHeight() * 0.18f;
 		float step = rowStep(Math.max(1, count));
@@ -1964,4 +2096,311 @@ public class StoryScreen extends Screen {
 		}
 		showingVideo = false;
 	}
+
+	private StoryCampaign.Duel[] visibleDuels() {
+		if (region == null)
+			return new StoryCampaign.Duel[0];
+		ArrayList<StoryCampaign.Duel> out = new ArrayList<StoryCampaign.Duel>();
+		StorySave save = camp();
+		for (int i = 0; i < region.duels.length; i++) {
+			StoryCampaign.Duel item = region.duels[i];
+			out.add(item);
+			if (StoryRematch.unlocked(save, item))
+				out.add(StoryRematch.asDuel(item));
+		}
+		return out.toArray(new StoryCampaign.Duel[0]);
+	}
+
+	private void keyDifficulty(int key) {
+		if (key == Input.KEY_DOWN || key == Input.KEY_UP) {
+			difficultyIndex = (key == Input.KEY_DOWN) ? (difficultyIndex + 1) % 3 : (difficultyIndex + 2) % 3;
+			index = difficultyIndex;
+			AudioController.playCursor();
+		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
+			commitDifficulty(difficultyIndex);
+		} else if (key == Input.KEY_X) {
+			AudioController.Effect.BACK.play();
+			mode = Mode.NAME;
+			vk.autoOpen();
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+		}
+	}
+
+	private void commitDifficulty(int row) {
+		if (row < 0 || row > 2) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		difficultyIndex = row;
+		Profile profile = game.getProfile();
+		if (profile == null)
+			return;
+		StorySave.Difficulty[] levels = {
+			StorySave.Difficulty.EASY, StorySave.Difficulty.NORMAL, StorySave.Difficulty.HARD
+		};
+		StorySave save = profile.addCampaign(name.toString(), chosenGender(), levels[row]);
+		if (save == null) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		AudioController.Effect.SELECT.play();
+		game.saveProfile();
+		markSaved();
+		openSave(save);
+	}
+
+	private void renderDifficulty(Graphics g, int height) {
+		Ui.drawCentered(Options.getFont(), I18n.storyDifficultyTitle(), height * 0.08f, Ui.TITLE);
+		String[] labels = { I18n.storyEasy(), I18n.storyNormal(), I18n.storyHard() };
+		String[] notes = { I18n.storyEasyNote(), I18n.storyNormalNote(), I18n.storyHardNote() };
+		UnicodeFont font = Options.getSmallFont();
+		float start = height * 0.2f;
+		float step = height * 0.16f;
+		for (int i = 0; i < 3; i++) {
+			drawChoice(font, i, difficultyIndex, labels[i], start, step, null, Ui.TITLE);
+			ArrayList<String> wrapped = wrap(font, notes[i], Options.getWidth() * 0.7f);
+			float y = start + i * step + font.getLineHeight() * 1.15f;
+			for (int w = 0; w < wrapped.size() && w < 3; w++) {
+				font.drawString(Options.getWidth() * 0.22f, y, wrapped.get(w), Color.white);
+				y += font.getLineHeight();
+			}
+		}
+		HintBar.draw(I18n.hintStoryDifficulty(), height * 0.93f);
+	}
+
+	private String[] queenItems() {
+		ArrayList<String> items = new ArrayList<String>();
+		if (queenOffer != null && queenOffer.add != null)
+			items.add(I18n.storyQueenAdd(StoryRules.label(queenOffer.add)));
+		if (queenOffer != null && queenOffer.remove != null)
+			items.add(I18n.storyQueenRemove(StoryRules.label(queenOffer.remove)));
+		items.add(I18n.storyQueenKeep());
+		return items.toArray(new String[0]);
+	}
+
+	private void keyQueen(int key) {
+		String[] items = queenItems();
+		int n = Math.max(1, items.length);
+		if (key == Input.KEY_DOWN || key == Input.KEY_UP) {
+			index = (key == Input.KEY_DOWN) ? (index + 1) % n : (index + n - 1) % n;
+			AudioController.playCursor();
+		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
+			activateQueen(index);
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+		}
+	}
+
+	private void activateQueen(int row) {
+		StorySave save = camp();
+		String[] items = queenItems();
+		if (save == null || region == null || row < 0 || row >= items.length) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		itdelatrisu.tripletriad.Rule add = null;
+		itdelatrisu.tripletriad.Rule remove = null;
+		String chosen = items[row];
+		if (queenOffer != null && queenOffer.add != null
+				&& chosen.equals(I18n.storyQueenAdd(StoryRules.label(queenOffer.add))))
+			add = queenOffer.add;
+		else if (queenOffer != null && queenOffer.remove != null
+				&& chosen.equals(I18n.storyQueenRemove(StoryRules.label(queenOffer.remove))))
+			remove = queenOffer.remove;
+		StoryRules.applyQueen(save, region.id, add, remove);
+		queenOffer = null;
+		AudioController.Effect.SELECT.play();
+		game.saveProfile();
+		markSaved();
+		startDuelTalk(save);
+	}
+
+	private void renderQueen(Graphics g, int height) {
+		Ui.drawCentered(Options.getFont(), I18n.storyRulesTitle(), height * 0.08f, Ui.TITLE);
+		StorySave save = camp();
+		UnicodeFont font = Options.getSmallFont();
+		if (region != null) {
+			Ui.drawCentered(font, Ui.fit(font,
+				I18n.storyCityRules(StoryRules.summarize(StoryRules.effective(save, region))),
+				Options.getWidth() * 0.86f), height * 0.16f, Ui.HINT);
+		}
+		String[] items = queenItems();
+		float start = height * 0.28f;
+		float step = rowStep(Math.max(1, items.length));
+		for (int i = 0; i < items.length; i++)
+			drawChoice(font, i, index, items[i], start, step, null, Ui.HINT);
+		HintBar.draw(I18n.hintStoryQueen(), height * 0.93f);
+	}
+
+	private void renderGive(Graphics g, int width, int height, boolean confirming) {
+		StorySave save = camp();
+		Ui.drawCentered(Options.getFont(), I18n.storyGiveTitle(), height * 0.1f, Ui.TITLE);
+		int[] hand = save == null ? new int[0] : save.pendingHand();
+		float size = Options.getCardLength() * 0.42f;
+		float gap = size * 0.12f;
+		float total = hand.length * size + Math.max(0, hand.length - 1) * gap;
+		float x = (width - total) / 2f;
+		float y = height * 0.3f;
+		for (int i = 0; i < hand.length; i++) {
+			itdelatrisu.tripletriad.Card card = game.getDeck().getCardById(hand[i]);
+			boolean ok = save != null && save.containsCard(hand[i]);
+			if (card != null)
+				card.drawSized(x, y, size, true, !ok);
+			if (i == cardIndex) {
+				g.setColor(Ui.TITLE);
+				g.fillRect(x, y + size + 4f, size, 3f);
+			}
+			x += size + gap;
+		}
+		if (cardIndex >= 0 && cardIndex < hand.length) {
+			itdelatrisu.tripletriad.Card card = game.getDeck().getCardById(hand[cardIndex]);
+			if (card != null)
+				Ui.drawCentered(Options.getSmallFont(), card.getName(), height * 0.72f, Color.white);
+		}
+		if (confirming && cardIndex >= 0 && cardIndex < hand.length) {
+			itdelatrisu.tripletriad.Card card = game.getDeck().getCardById(hand[cardIndex]);
+			String label = card == null ? "" : card.getName();
+			renderYesNo(g, height, I18n.storyGiveAsk(label));
+			return;
+		}
+		HintBar.draw(I18n.hintStoryGive(), height * 0.92f);
+	}
+
+	private void keyGive(int key) {
+		StorySave save = camp();
+		int[] hand = save == null ? new int[0] : save.pendingHand();
+		if (key == Input.KEY_LEFT || key == Input.KEY_RIGHT) {
+			if (hand.length == 0)
+				return;
+			cardIndex = (key == Input.KEY_RIGHT) ? (cardIndex + 1) % hand.length
+				: (cardIndex + hand.length - 1) % hand.length;
+			AudioController.playCursor();
+		} else if (key == Input.KEY_Z || key == Input.KEY_ENTER) {
+			if (save != null && cardIndex >= 0 && cardIndex < hand.length && save.containsCard(hand[cardIndex])) {
+				mode = Mode.GIVE_CONFIRM;
+				yesNo = 0;
+				AudioController.Effect.SELECT.play();
+			} else
+				AudioController.Effect.INVALID.play();
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+		}
+	}
+
+	private void keyGiveConfirm(int key) {
+		if (key == Input.KEY_LEFT || key == Input.KEY_RIGHT || key == Input.KEY_UP || key == Input.KEY_DOWN) {
+			yesNo = 1 - yesNo;
+			AudioController.playCursor();
+			return;
+		}
+		if (key == Input.KEY_ESCAPE || key == Input.KEY_X) {
+			mode = Mode.GIVE;
+			AudioController.Effect.BACK.play();
+			return;
+		}
+		if (key != Input.KEY_Z && key != Input.KEY_ENTER)
+			return;
+		if (yesNo == 0) {
+			mode = Mode.GIVE;
+			AudioController.Effect.BACK.play();
+			return;
+		}
+		StorySave save = camp();
+		int[] hand = save == null ? new int[0] : save.pendingHand();
+		if (save == null || cardIndex < 0 || cardIndex >= hand.length) {
+			mode = Mode.GIVE;
+			return;
+		}
+		int removed = save.confirmGive(hand[cardIndex]);
+		if (removed <= 0) {
+			AudioController.Effect.INVALID.play();
+			mode = Mode.GIVE;
+			return;
+		}
+		AudioController.Effect.SELECT.play();
+		game.saveProfile();
+		markSaved();
+		mode = Mode.DUELS;
+	}
+
+	private void openProgress(Mode back) {
+		StorySave save = camp();
+		if (save == null && game.getProfile() != null)
+			save = game.getProfile().activeStory();
+		if (save == null) {
+			AudioController.Effect.INVALID.play();
+			return;
+		}
+		if (game.getProfile() != null)
+			game.getProfile().setActiveStoryId(save.id());
+		progressBack = back == null ? Mode.HUB : back;
+		progressScroll = 0;
+		index = 0;
+		mode = Mode.PROGRESS;
+		AudioController.Effect.SELECT.play();
+	}
+
+	private void keyProgress(int key) {
+		StoryProgress.Rare[] missing = StoryProgress.missingRares(camp());
+		int max = Math.max(0, missing.length - progressVisible());
+		if (key == Input.KEY_DOWN) {
+			progressScroll = Math.min(max, progressScroll + 1);
+			AudioController.playCursor();
+		} else if (key == Input.KEY_UP) {
+			progressScroll = Math.max(0, progressScroll - 1);
+			AudioController.playCursor();
+		} else if (key == Input.KEY_X) {
+			AudioController.Effect.BACK.play();
+			mode = progressBack;
+		} else if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+		}
+	}
+
+	private static int progressVisible() { return 8; }
+
+	private void renderProgress(Graphics g, int height) {
+		StorySave save = camp();
+		if (save == null) {
+			mode = Mode.HUB;
+			return;
+		}
+		Ui.drawCentered(Options.getFont(), I18n.storyProgressTitle(), height * 0.06f, Ui.TITLE);
+		UnicodeFont font = Options.getSmallFont();
+		int have = StoryProgress.uniqueOwned(save);
+		int total = StoryProgress.poolSize();
+		Ui.drawCentered(font, I18n.storyCollectionPct(StoryProgress.percent(save), have, total),
+			height * 0.13f, Ui.TITLE);
+		Ui.drawCentered(font, I18n.storyStats(save.wins(), save.losses(), save.cardsWon()),
+			height * 0.18f, Ui.HINT);
+		Ui.drawCentered(font, I18n.storyMissingRares(), height * 0.24f, Color.white);
+		StoryProgress.Rare[] missing = StoryProgress.missingRares(save);
+		if (missing.length == 0) {
+			Ui.drawCentered(font, I18n.storyAllRares(), height * 0.4f, Ui.HINT);
+		} else {
+			float y = height * 0.29f;
+			int vis = progressVisible();
+			for (int i = progressScroll; i < missing.length && i < progressScroll + vis; i++) {
+				StoryProgress.Rare rare = missing[i];
+				itdelatrisu.tripletriad.story.StoryBalance.Info info = itdelatrisu.tripletriad.story.StoryBalance.info(rare.cardId);
+				String card = info == null ? ("#" + rare.cardId) : info.name;
+				itdelatrisu.tripletriad.story.StoryCampaign.Region loc = rare.region();
+				String city = loc == null ? "" : loc.name();
+				String who = I18n.storyUnknown();
+				if (StoryProgress.opponentSeen(save, rare)) {
+					itdelatrisu.tripletriad.story.StoryCampaign.Duel d = rare.duel();
+					who = d == null ? I18n.storyUnknown() : d.name();
+				}
+				String tag = rare.rematch ? ("  (" + I18n.storyRematchTag() + ")") : "";
+				String line = card + "  -  " + city + "  /  " + who + tag;
+				font.drawString(Options.getWidth() * 0.1f, y, Ui.fit(font, line, Options.getWidth() * 0.8f),
+					Color.white);
+				y += font.getLineHeight() * 1.15f;
+			}
+		}
+		HintBar.draw(I18n.hintStoryProgress(), height * 0.93f);
+	}
+
+
 }

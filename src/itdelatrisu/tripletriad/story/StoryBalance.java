@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
+import itdelatrisu.tripletriad.Options;
 import itdelatrisu.tripletriad.Rule;
 import itdelatrisu.tripletriad.gfx.Assets;
 import itdelatrisu.tripletriad.story.StoryCampaign.Duel;
@@ -151,8 +152,8 @@ public final class StoryBalance {
 		if (duel == null)
 			return new int[0];
 		Random rng = new Random(handSeed(save, duel.id));
-		int min = Math.min(duel.minLevel, duel.maxLevel);
-		int max = Math.max(duel.minLevel, duel.maxLevel);
+		int min = levelMin(duel, save);
+		int max = levelMax(duel, save);
 		ArrayList<Info> pool = pool(min, max, max >= RARE_LEVEL);
 		widen(pool, min, max, max >= RARE_LEVEL);
 		shuffle(pool, rng);
@@ -160,12 +161,53 @@ public final class StoryBalance {
 		int[] hand = new int[n];
 		for (int i = 0; i < n; i++)
 			hand[i] = pool.get(i).id;
-		if (!duel.isBoss() && carriesSpecial(save, duel)) {
+		boolean bossLike = duel.isBoss() || StoryRematch.isRematchId(duel.id);
+		if (!bossLike && carriesSpecial(save, duel)) {
 			int special = pickSpecial(duel, hand, rng);
 			if (special > 0)
 				hand[weakest(hand)] = special;
 		}
 		return hand;
+	}
+
+	/** Lower level bound, after rematch bump and Easy/Hard. */
+	public static int levelMin(Duel duel, StorySave save) {
+		if (duel == null)
+			return 1;
+		int min = Math.min(duel.minLevel, duel.maxLevel);
+		int max = levelMax(duel, save);
+		return Math.min(min, max);
+	}
+
+	/** Upper level bound, after rematch bump and Easy/Hard (capped at 10). */
+	public static int levelMax(Duel duel, StorySave save) {
+		if (duel == null)
+			return 1;
+		int max = Math.max(duel.minLevel, duel.maxLevel);
+		if (save != null && save.isEasy())
+			max = Math.max(1, max - 1);
+		else if (save != null && save.isHard())
+			max = Math.min(10, max + 1);
+		return max;
+	}
+
+	/** AI used in a story match, after difficulty (and rematch seats already bumped). */
+	public static Options.AIType aiFor(Duel duel, StorySave save) {
+		Options.AIType ai = (duel == null || duel.ai == null) ? Options.AIType.BALANCED : duel.ai;
+		if (save == null || save.difficulty() == StorySave.Difficulty.NORMAL)
+			return ai;
+		if (save.isEasy()) {
+			if (ai == Options.AIType.OFFENSIVE)
+				return Options.AIType.BALANCED;
+			if (ai == Options.AIType.BALANCED)
+				return Options.AIType.DEFENSIVE;
+			return ai;
+		}
+		if (ai == Options.AIType.DEFENSIVE)
+			return Options.AIType.BALANCED;
+		if (ai == Options.AIType.BALANCED)
+			return Options.AIType.OFFENSIVE;
+		return ai;
 	}
 
 	/** @return true when this common opponent is the one (at most one per city) that carries the extra card */

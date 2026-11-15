@@ -42,11 +42,11 @@ import itdelatrisu.tripletriad.Rule;
  * <li>The campaign has its own collection, separate from the profile album.</li>
  * <li>Every win: choose one card from the opponent's deck. A city boss also
  * gives a fixed strong card, shown first, then the choice.</li>
- * <li>A defeat gives and takes nothing. The same table can be replayed.</li>
+ * <li>A defeat gives and takes nothing on Easy and Normal. On Hard, a loss costs 1 card from the hand that was played, but the collection never drops below 5. The same table can be replayed. After a city boss is beaten, an optional rematch offers a second rare once.</li>
  * </ul>
  */
 public final class StoryCampaign {
-	public enum After { HUB, STAGE, LIST, PICK, CARD, CEREMONY }
+	public enum After { HUB, STAGE, LIST, PICK, CARD, CEREMONY, QUEEN, GIVE }
 
 	public enum Kind { LADDER, GROUP, FINAL }
 
@@ -258,7 +258,8 @@ public final class StoryCampaign {
 	 * seifer/Seifer/Seifer/109, queen_esthar/Queen/Bahamut/97.
 	 */
 	private static final int[] SPECIALS = {
-		78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 95, 96, 97, 98, 99, 109
+		78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94,
+		95, 96, 97, 98, 99, 108, 109
 	};
 
 	/** Clips that are not in the tree yet. The scenes still play on the still background. */
@@ -358,17 +359,21 @@ public final class StoryCampaign {
 		id = canonicalId(id);
 		if (id.isEmpty())
 			return null;
+		String base = StoryRematch.baseId(id);
 		for (int r = 0; r < REGIONS.length; r++) {
 			Duel[] duels = REGIONS[r].duels;
 			for (int i = 0; i < duels.length; i++) {
 				if (duels[i].id.equals(id))
 					return duels[i];
+				if (StoryRematch.isRematchId(id) && duels[i].id.equals(base))
+					return StoryRematch.asDuel(duels[i]);
 			}
 		}
 		return null;
 	}
 
 	public static Region regionOf(String duelId) {
+		duelId = canonicalId(StoryRematch.baseId(duelId));
 		for (int r = 0; r < REGIONS.length; r++) {
 			Duel[] duels = REGIONS[r].duels;
 			for (int i = 0; i < duels.length; i++) {
@@ -377,6 +382,11 @@ public final class StoryCampaign {
 			}
 		}
 		return null;
+	}
+
+	/** @return true when this seat is the Queen of Cards */
+	public static boolean isQueen(Duel duel) {
+		return duel != null && "card_queen".equals(duel.portrait);
 	}
 
 	public static int regionIndex(Region region) {

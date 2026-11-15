@@ -16,6 +16,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Random;
 
+import itdelatrisu.tripletriad.Rule;
+
 /**
  * One story campaign. A profile can hold several of these.
  * The album, decks, championship blocks and trophies stay on the profile.
@@ -26,8 +28,14 @@ public final class StorySave {
 	 * On-disk format. Version 1 was the single STORY_CLEARED list.
 	 * Version 3 adds {@code CAMP.n.GENDER} (the chosen protagonist).
 	 * Version 4 adds the campaign collection, the special-roll seed and seen rules.
+	 * Version 5 adds difficulty, regional rules, rematch prizes, Queen changes
+	 * and campaign stats. Older saves load as {@link Difficulty#NORMAL}
+	 * with each city's native rules.
 	 */
-	public static final int FORMAT = 4;
+	public static final int FORMAT = 5;
+
+	/** Campaign difficulty, chosen when the campaign is created. */
+	public enum Difficulty { EASY, NORMAL, HARD }
 
 	/** Protagonist: aluno (male student). */
 	public static final String MALE = "M";
@@ -60,6 +68,9 @@ public final class StorySave {
 	/** The boss prize is on screen and has not been added to the collection yet. */
 	public static final String AWARD = "AWARD";
 
+	/** A hard-mode loss: the player must give up one card from the hand just played. */
+	public static final String GIVE = "GIVE";
+
 	private static final DateTimeFormatter WHEN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	private String id = "";
@@ -83,6 +94,14 @@ public final class StorySave {
 	private final ArrayList<String> seenRules = new ArrayList<String>();
 	private boolean pendingSpecialGiven;
 	private boolean collectionReady;
+	private Difficulty difficulty = Difficulty.NORMAL;
+	private String carryRule = "";
+	private final java.util.LinkedHashMap<String, String> cityRules = new java.util.LinkedHashMap<String, String>();
+	private final java.util.LinkedHashMap<String, Integer> cityPlays = new java.util.LinkedHashMap<String, Integer>();
+	private final ArrayList<String> queenUsed = new ArrayList<String>();
+	private int wins;
+	private int losses;
+	private int cardsWon;
 
 	private StorySave() {}
 
@@ -100,12 +119,23 @@ public final class StorySave {
 	 * @return a new campaign, or null if the name is empty
 	 */
 	public static StorySave create(String student, String gender) {
+		return create(student, gender, Difficulty.NORMAL);
+	}
+
+	/**
+	 * @param student the chosen name
+	 * @param gender {@link #MALE} or {@link #FEMALE}; anything else keeps {@link #LEGACY_GENDER}
+	 * @param difficulty campaign difficulty; null becomes {@link Difficulty#NORMAL}
+	 * @return a new campaign, or null if the name is empty
+	 */
+	public static StorySave create(String student, String gender, Difficulty difficulty) {
 		String clean = cleanName(student);
 		if (clean.isEmpty())
 			return null;
 		StorySave save = new StorySave();
 		save.student = clean;
 		save.setGender(gender);
+		save.setDifficulty(difficulty);
 		save.createdAt = System.currentTimeMillis();
 		save.savedAt = save.createdAt;
 		save.id = "c" + Long.toString(save.createdAt, 36) + Integer.toString(new Random().nextInt(46656), 36);
@@ -282,7 +312,7 @@ public final class StorySave {
 	 *         or null if the choice is not one of the eligible cards
 	 */
 	public int[] confirm(int chosen) {
-		if (!hasPending())
+		if (!hasPending() || GIVE.equals(pendingPhase))
 			return new int[0];
 		if (!eligible(chosen))
 			return null;
@@ -290,8 +320,10 @@ public final class StorySave {
 		int[] granted = (bonus > 0) ? new int[] { chosen, bonus } : new int[] { chosen };
 		if (bonus > 0 && !specials.contains(pendingDuel))
 			specials.add(pendingDuel);
-		if (!cleared.contains(pendingDuel))
+		if (!cleared.contains(pendingDuel) && !GIVE.equals(pendingPhase)
+				&& !"give".equals(pendingDuel))
 			cleared.add(pendingDuel);
+		addCardsWon(granted.length);
 		pendingDuel = "";
 		pendingPhase = "";
 		pendingHand = new int[0];
@@ -421,6 +453,193 @@ public final class StorySave {
 
 	public void setSeenRulesCsv(String csv) { fill(seenRules, csv); }
 
+	public Difficulty difficulty() { return difficulty; }
+
+	public boolean isEasy() { return difficulty == Difficulty.EASY; }
+
+	public boolean isHard() { return difficulty == Difficulty.HARD; }
+
+	public void setDifficulty(Difficulty value) {
+		difficulty = (value == null) ? Difficulty.NORMAL : value;
+	}
+
+	public void setDifficulty(String value) {
+		Difficulty parsed = parseDifficulty(value);
+		if (parsed != null)
+			difficulty = parsed;
+	}
+
+	/**
+	 * Accepts EASY/FACIL, NORMAL, HARD/DIFICIL (any case, with or without accent).
+	 * Unknown values leave the current choice (Normal on a blank save).
+	 */
+	public static Difficulty parseDifficulty(String value) {
+		if (value == null)
+			return null;
+		String v = value.trim().toLowerCase();
+		if (v.equals("e") || v.equals("easy") || v.equals("facil") || v.equals("fácil")
+				|| v.equals("facile") || v.equals("f"))
+			return Difficulty.EASY;
+		if (v.equals("n") || v.equals("normal"))
+			return Difficulty.NORMAL;
+		if (v.equals("h") || v.equals("hard") || v.equals("dificil") || v.equals("difícil")
+				|| v.equals("d"))
+			return Difficulty.HARD;
+		return null;
+	}
+
+	public Rule[] cityRules(String regionId) {
+		if (regionId == null || !cityRules.containsKey(regionId))
+			return null;
+		return StoryRules.parseRules(cityRules.get(regionId));
+	}
+
+	public void setCityRules(String regionId, Rule[] rules) {
+		if (regionId == null || regionId.isEmpty())
+			return;
+		if (rules == null || rules.length == 0)
+			cityRules.remove(regionId);
+		else
+			cityRules.put(regionId, StoryRules.formatRules(rules));
+		touch();
+	}
+
+	public String cityRulesCsv() { return joinMap(cityRules); }
+
+	public void setCityRulesCsv(String csv) { fillMap(cityRules, csv); }
+
+	public Rule carry() {
+		return carryRule == null || carryRule.isEmpty() ? null : StoryRules.parseRule(carryRule);
+	}
+
+	public void setCarry(Rule rule) {
+		carryRule = (rule == null) ? "" : rule.name();
+	}
+
+	public String carryCsv() { return carryRule == null ? "" : carryRule; }
+
+	public void setCarryCsv(String value) {
+		carryRule = (value == null) ? "" : value.trim();
+	}
+
+	public int plays(String regionId) {
+		if (regionId == null)
+			return 0;
+		Integer n = cityPlays.get(regionId);
+		return n == null ? 0 : n.intValue();
+	}
+
+	public void addPlay(String regionId) {
+		if (regionId == null || regionId.isEmpty())
+			return;
+		cityPlays.put(regionId, Integer.valueOf(plays(regionId) + 1));
+		touch();
+	}
+
+	public String playsCsv() { return joinIntMap(cityPlays); }
+
+	public void setPlaysCsv(String csv) { fillIntMap(cityPlays, csv); }
+
+	public boolean queenUsed(String regionId) {
+		return regionId != null && queenUsed.contains(regionId);
+	}
+
+	public void markQueenUsed(String regionId) {
+		if (regionId != null && !regionId.isEmpty() && !queenUsed.contains(regionId))
+			queenUsed.add(regionId);
+		touch();
+	}
+
+	public String queenUsedCsv() { return join(queenUsed); }
+
+	public void setQueenUsedCsv(String csv) { fill(queenUsed, csv); }
+
+	public int wins() { return wins; }
+
+	public int losses() { return losses; }
+
+	public int cardsWon() { return cardsWon; }
+
+	public void setWins(int value) { wins = Math.max(0, value); }
+
+	public void setLosses(int value) { losses = Math.max(0, value); }
+
+	public void setCardsWon(int value) { cardsWon = Math.max(0, value); }
+
+	public void recordWin() { wins++; touch(); }
+
+	public void recordLoss() { losses++; touch(); }
+
+	public void addCardsWon(int n) {
+		if (n > 0)
+			cardsWon += n;
+		touch();
+	}
+
+	/**
+	 * @return true when a hard-mode loss can take one of the played cards
+	 *         without leaving the collection with fewer than 5 cards
+	 */
+	public boolean canForfeitCard(int[] played) {
+		if (difficulty != Difficulty.HARD || collection.size() <= 5)
+			return false;
+		if (played == null)
+			return false;
+		for (int i = 0; i < played.length; i++) {
+			if (containsCard(played[i]))
+				return true;
+		}
+		return false;
+	}
+
+	/** Starts the hard-mode "give a card" step after a loss. */
+	public void armGive(int[] played) {
+		if (!canForfeitCard(played))
+			return;
+		pendingDuel = pendingDuel == null || pendingDuel.isEmpty() ? "give" : pendingDuel;
+		pendingPhase = GIVE;
+		pendingHand = copyHand(played);
+		pendingSpecial = 0;
+		pendingSpecialGiven = false;
+		touch();
+	}
+
+	public boolean awaitingGive() {
+		return hasPending() && GIVE.equals(pendingPhase);
+	}
+
+	/**
+	 * Removes one copy of the chosen card after a hard-mode loss.
+	 * @return the id removed, 0 if there is nothing pending, or -1 if the card is not eligible
+	 */
+	public int confirmGive(int chosen) {
+		if (!awaitingGive())
+			return 0;
+		if (!eligible(chosen) || !containsCard(chosen) || collection.size() <= 5)
+			return -1;
+		removeCard(chosen);
+		pendingDuel = "";
+		pendingPhase = "";
+		pendingHand = new int[0];
+		pendingSpecial = 0;
+		pendingSpecialGiven = false;
+		touch();
+		return chosen;
+	}
+
+	/** Removes one copy of a card. @return true if a copy was removed */
+	public boolean removeCard(int cardId) {
+		for (int i = 0; i < collection.size(); i++) {
+			if (collection.get(i).intValue() == cardId) {
+				collection.remove(i);
+				touch();
+				return true;
+			}
+		}
+		return false;
+	}
+
+
 	/** Copies a pre-campaign clear list without dropping unknown ids. */
 	public void absorbLegacy(String clearedCsv, String arrivalCsv) {
 		setClearedCsv(clearedCsv);
@@ -522,5 +741,67 @@ public final class StorySave {
 		int[] out = new int[n];
 		System.arraycopy(tmp, 0, out, 0, n);
 		return out;
+	}
+
+	private static String joinMap(java.util.Map<String, String> map) {
+		StringBuilder out = new StringBuilder();
+		for (java.util.Map.Entry<String, String> e : map.entrySet()) {
+			if (e.getValue() == null || e.getValue().isEmpty())
+				continue;
+			if (out.length() > 0)
+				out.append(';');
+			out.append(e.getKey()).append(':').append(e.getValue());
+		}
+		return out.toString();
+	}
+
+	private static void fillMap(java.util.Map<String, String> map, String csv) {
+		map.clear();
+		if (csv == null || csv.isEmpty())
+			return;
+		String[] parts = csv.split(";");
+		for (int i = 0; i < parts.length; i++) {
+			String part = parts[i].trim();
+			int colon = part.indexOf(':');
+			if (colon <= 0)
+				continue;
+			String key = part.substring(0, colon).trim();
+			String val = part.substring(colon + 1).trim();
+			if (!key.isEmpty() && !val.isEmpty())
+				map.put(key, val);
+		}
+	}
+
+	private static String joinIntMap(java.util.Map<String, Integer> map) {
+		StringBuilder out = new StringBuilder();
+		for (java.util.Map.Entry<String, Integer> e : map.entrySet()) {
+			if (e.getValue() == null || e.getValue().intValue() <= 0)
+				continue;
+			if (out.length() > 0)
+				out.append(',');
+			out.append(e.getKey()).append(':').append(e.getValue().intValue());
+		}
+		return out.toString();
+	}
+
+	private static void fillIntMap(java.util.Map<String, Integer> map, String csv) {
+		map.clear();
+		if (csv == null || csv.isEmpty())
+			return;
+		String[] parts = csv.split(",");
+		for (int i = 0; i < parts.length; i++) {
+			String part = parts[i].trim();
+			int colon = part.indexOf(':');
+			if (colon <= 0)
+				continue;
+			String key = part.substring(0, colon).trim();
+			try {
+				int n = Integer.parseInt(part.substring(colon + 1).trim());
+				if (!key.isEmpty() && n > 0)
+					map.put(key, Integer.valueOf(n));
+			} catch (NumberFormatException e) {
+				// skip
+			}
+		}
 	}
 }

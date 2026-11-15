@@ -76,8 +76,10 @@ public final class StoryScript {
 			out.add(lessonRandom());
 			save.markRuleSeen("RANDOM");
 		}
-		for (int i = 0; i < duel.rules.on.length; i++) {
-			Rule rule = duel.rules.on[i];
+		itdelatrisu.tripletriad.story.StoryCampaign.Region region = StoryCampaign.regionOf(duel.id);
+		Rule[] rules = StoryRules.effective(save, region);
+		for (int i = 0; i < rules.length; i++) {
+			Rule rule = rules[i];
 			String key = rule.name();
 			if (save.hasSeenRule(key))
 				continue;
@@ -150,6 +152,215 @@ public final class StoryScript {
 			"Random embaralharia as duas mãos, e você perderia a mão de 5 que acabou de montar. Nesta campanha a regra não é usada: a mão que você escolhe é a que entra na mesa.",
 			"Random would shuffle both hands, and you would lose the 5-card hand you just built. This campaign does not use that rule: the hand you pick is the one that enters the table.",
 			"Random barajaria las dos manos, y perderías la mano de 5 que acabas de montar. En esta campaña no se usa esa regla: la mano que eliges es la que entra en la mesa.");
+	}
+
+	public static Line spreadLine(StoryRules.Event event) {
+		if (event == null || event.rule == null)
+			return null;
+		Region region = null;
+		for (int i = 0; i < StoryCampaign.REGIONS.length; i++) {
+			if (StoryCampaign.REGIONS[i].id.equals(event.regionId))
+				region = StoryCampaign.REGIONS[i];
+		}
+		String rule = StoryRules.label(event.rule);
+		String pt = region == null ? "esta cidade" : region.namePt;
+		String en = region == null ? "this city" : region.nameEn;
+		String es = region == null ? "esta ciudad" : region.nameEs;
+		return N(
+			"A regra " + rule + " se espalhou. " + pt + " agora joga com " + rule + ".",
+			"The " + rule + " rule spread. " + en + " now plays with " + rule + ".",
+			"La regla " + rule + " se extendió. " + es + " ahora juega con " + rule + ".");
+	}
+
+	public static Line[] queenTalk(StorySave save, Region region) {
+		String id = region == null ? null : region.id;
+		String rules = StoryRules.summarize(StoryRules.effective(save, id));
+		return new Line[] {
+			say("card_queen", "Rainha das Cartas", "Queen of Cards", "Reina de las Cartas",
+				"As regras desta cidade são estas: " + rules + ". Eu posso acrescentar ou tirar uma, se você quiser. Ou deixamos a mesa como está.",
+				"The rules of this city are these: " + rules + ". I can add or drop one, if you like. Or we leave the table as it is.",
+				"Las reglas de esta ciudad son estas: " + rules + ". Puedo añadir o quitar una, si quieres. O dejamos la mesa como está."),
+			Q("Ela muda as regras da cidade, não só desta mesa. Se uma regra nova entrar, eu explico na hora.",
+				"She changes the city's rules, not just this table. If a new rule comes in, I will explain it then.",
+				"Ella cambia las reglas de la ciudad, no solo de esta mesa. Si entra una regla nueva, la explico en el momento.")
+		};
+	}
+
+	/** Bio, open, before, win, lose, afterWin, afterLose for a boss rematch. */
+	public static Line[] rematchLines(String bossId) {
+		String id = StoryRematch.baseId(bossId);
+		if ("king".equals(id))
+			return rematchPack("cc_king", "Quistis", "Quistis", "Quistis",
+				"Quistis volta à mesa com um deck mais denso. Revanche da seletiva do Garden.",
+				"Quistis returns to the table with a denser deck. Garden qualifier rematch.",
+				"Quistis vuelve a la mesa con un mazo más denso. Revancha de la selectiva del Garden.",
+				"Revanche da seletiva! Quistis, CC King, contra {name}!",
+				"Qualifier rematch! Quistis, CC King, against {name}!",
+				"¡Revancha de la selectiva! ¡Quistis, CC King, contra {name}!",
+				"Você já me venceu. Esta mão é outra. Mostre se o título de SeeD ainda vale.",
+				"You already beat me. This hand is another one. Show if the SeeD title still holds.",
+				"Ya me ganaste. Esta mano es otra. Demuestra si el título de SeeD todavía vale.",
+				"Melhor que da última vez. Leve esta, se ainda não a tiver.",
+				"Better than last time. Take this one, if you do not have it yet.",
+				"Mejor que la última vez. Llévate esta, si aún no la tienes.",
+				"A revanche é minha. Volte quando a mão estiver mais firme.",
+				"The rematch is mine. Come back when the hand is firmer.",
+				"La revancha es mía. Vuelve cuando la mano esté más firme.");
+		if ("fujin".equals(id))
+			return rematchPack("fujin", "Fujin", "Fujin", "Fujin",
+				"Fujin aceita a revanche em Balamb Town, com uma mão mais seca e mais rara.",
+				"Fujin takes the rematch in Balamb Town, with a tighter and rarer hand.",
+				"Fujin acepta la revancha en Balamb Town, con una mano más seca y más rara.",
+				"Revanche em Balamb Town! Fujin contra {name}!",
+				"Rematch in Balamb Town! Fujin against {name}!",
+				"¡Revancha en Balamb Town! ¡Fujin contra {name}!",
+				"REVANCHE. MÃO NOVA. NÃO ERRE.",
+				"REMATCH. NEW HAND. DO NOT MISS.",
+				"REVANCHA. MANO NUEVA. NO FALLES.",
+				"VOCÊ AGUENTOU. LEVE ESTA.",
+				"YOU HELD. TAKE THIS.",
+				"AGUANTASTE. LLÉVATE ESTA.",
+				"FALHOU. VOLTE.",
+				"YOU FAILED. RETURN.",
+				"FALLASTE. VUELVE.");
+		if ("rinoa".equals(id))
+			return rematchPack("rinoa", "Rinoa", "Rinoa", "Rinoa",
+				"Rinoa remarca a mesa de Timber com um deck mais alto e uma carta rara nova.",
+				"Rinoa books the Timber table again with a higher deck and a new rare.",
+				"Rinoa vuelve a marcar la mesa de Timber con un mazo más alto y una rara nueva.",
+				"Revanche de Timber! Rinoa contra {name}!",
+				"Timber rematch! Rinoa against {name}!",
+				"¡Revancha de Timber! ¡Rinoa contra {name}!",
+				"Eu treinei depois da última mesa. Se vencer de novo, levo o sorriso e você leva a carta.",
+				"I trained after the last table. If you win again, I keep the smile and you take the card.",
+				"Entrené después de la última mesa. Si ganas otra vez, me quedo la sonrisa y tú te llevas la carta.",
+				"Você leu melhor que eu. Esta é sua, se ainda faltar no álbum.",
+				"You read it better than I did. This one is yours, if it is still missing from the album.",
+				"Leiste mejor que yo. Esta es tuya, si aún falta en el álbum.",
+				"Desta vez eu fechei. A mesa continua aberta quando quiser voltar.",
+				"This time I closed it. The table stays open when you want to come back.",
+				"Esta vez la cerré. La mesa sigue abierta cuando quieras volver.");
+		if ("queen_deling".equals(id))
+			return rematchPack("card_queen", "Rainha das Cartas", "Queen of Cards", "Reina de las Cartas",
+				"A Rainha aceita uma segunda mesa em Deling, mais dura, com uma rara distinta.",
+				"The Queen accepts a second, harder table in Deling, with a different rare.",
+				"La Reina acepta una segunda mesa en Deling, más dura, con una rara distinta.",
+				"Revanche em Deling! A Rainha das Cartas contra {name}!",
+				"Deling rematch! The Queen of Cards against {name}!",
+				"¡Revancha en Deling! ¡La Reina de las Cartas contra {name}!",
+				"A primeira mesa já foi. Esta vem com outro peso. Se vencer, a rara é outra.",
+				"The first table is done. This one comes with more weight. If you win, the rare is another one.",
+				"La primera mesa ya fue. Esta viene con mas peso. Si ganas, la rara es otra.",
+				"Dois a um no meu livro. Leve a carta nova.",
+				"Two to one in my book. Take the new card.",
+				"Dos a uno en mi libro. Llévate la carta nueva.",
+				"A revanche ficou comigo. A cidade ainda está aberta.",
+				"The rematch stays with me. The city is still open.",
+				"La revancha se queda conmigo. La ciudad sigue abierta.");
+		if ("queen_dollet".equals(id))
+			return rematchPack("card_queen", "Rainha das Cartas", "Queen of Cards", "Reina de las Cartas",
+				"Segunda mesa da Rainha em Dollet. O deck sobe e a rara da revanche é única.",
+				"The Queen's second table in Dollet. The deck goes up and the rematch rare is unique.",
+				"Segunda mesa de la Reina en Dollet. El mazo sube y la rara de la revancha es única.",
+				"Revanche em Dollet! A Rainha das Cartas contra {name}!",
+				"Dollet rematch! The Queen of Cards against {name}!",
+				"¡Revancha en Dollet! ¡La Reina de las Cartas contra {name}!",
+				"Dollet já me viu perder uma. Não conto perder duas. A carta desta vez é outra.",
+				"Dollet already saw me lose one. I do not plan to lose two. The card this time is another.",
+				"Dollet ya me vio perder una. No pienso perder dos. La carta esta vez es otra.",
+				"Você leu o chão outra vez. Leve esta também.",
+				"You read the floor again. Take this one too.",
+				"Leiste el suelo otra vez. Llévate esta también.",
+				"Fechei a segunda. Volte se ainda quiser a carta.",
+				"I closed the second one. Come back if you still want the card.",
+				"Cerré la segunda. Vuelve si aún quieres la carta.");
+		if ("flo".equals(id))
+			return rematchPack("dobe_flo", "Dobe e Flo", "Dobe and Flo", "Dobe y Flo",
+				"Dobe e Flo aceitam a revanche em FH com um deck mais alto e uma rara nova.",
+				"Dobe and Flo take the rematch at FH with a higher deck and a new rare.",
+				"Dobe y Flo aceptan la revancha en FH con un mazo más alto y una rara nueva.",
+				"Revanche em Fisherman's Horizon! Dobe e Flo contra {name}!",
+				"Rematch at Fisherman's Horizon! Dobe and Flo against {name}!",
+				"¡Revancha en Fisherman's Horizon! ¡Dobe y Flo contra {name}!",
+				"A gente treinou na ponte. Se você fechar de novo, a carta é outra.",
+				"We trained on the bridge. If you close it again, the card is a different one.",
+				"Entrenamos en el puente. Si cierras otra vez, la carta es otra.",
+				"Duas vezes no mesmo cais. Fica com esta.",
+				"Twice on the same pier. Keep this one.",
+				"Dos veces en el mismo muelle. Quédate con esta.",
+				"A revanche ficou em casa. A mesa segue aberta.",
+				"The rematch stayed at home. The table stays open.",
+				"La revancha se quedó en casa. La mesa sigue abierta.");
+		if ("seifer".equals(id))
+			return rematchPack("seifer", "Seifer", "Seifer", "Seifer",
+				"Seifer marca a revanche em Esthar. Deck mais alto, rara distinta, mesmo orgulho.",
+				"Seifer books the rematch in Esthar. Higher deck, a different rare, the same pride.",
+				"Seifer marca la revancha en Esthar. Mazo más alto, rara distinta, el mismo orgullo.",
+				"Revanche em Esthar! Seifer contra {name}!",
+				"Esthar rematch! Seifer against {name}!",
+				"¡Revancha en Esthar! ¡Seifer contra {name}!",
+				"Uma derrota não me tira da chave. Esta mão é mais pesada. Se ganhar, a carta é outra.",
+				"One loss does not take me out of the bracket. This hand is heavier. If you win, the card is another.",
+				"Una derrota no me saca de la llave. Esta mano es más pesada. Si ganas, la carta es otra.",
+				"Vale. Leva esta também. Não se acostume.",
+				"Fine. Take this one too. Don't get used to it.",
+				"Vale. Llévate esta también. No te acostumbres.",
+				"A revanche é minha. Quando quiser, a mesa está aqui.",
+				"The rematch is mine. When you want it, the table is here.",
+				"La revancha es mía. Cuando quieras, la mesa está aquí.");
+		if ("queen_esthar".equals(id))
+			return rematchPack("card_queen", "Rainha das Cartas", "Queen of Cards", "Reina de las Cartas",
+				"A campeã aceita uma segunda final, ainda mais dura, com uma rara que só sai nesta revanche.",
+				"The champion accepts a second, even harder final, with a rare that only comes from this rematch.",
+				"La campeona acepta una segunda final, aún más dura, con una rara que solo sale en esta revancha.",
+				"Revanche da grande final! A Rainha das Cartas contra {name}!",
+				"Grand final rematch! The Queen of Cards against {name}!",
+				"¡Revancha de la gran final! ¡La Reina de las Cartas contra {name}!",
+				"O título já mudou de mãos. Esta mesa é por orgulho, e a carta é outra.",
+				"The title already changed hands. This table is for pride, and the card is another one.",
+				"El título ya cambió de manos. Esta mesa es por orgullo, y la carta es otra.",
+				"Duas finais, duas leituras. Fique com esta também.",
+				"Two finals, two readings. Keep this one too.",
+				"Dos finales, dos lecturas. Quédate también con esta.",
+				"Nesta eu fechei. O título continua seu. A mesa também.",
+				"I closed this one. The title stays yours. So does the table.",
+				"En esta la cerré. El título sigue siendo tuyo. La mesa también.");
+		return rematchPack("narrador", "Nilo Vann", "Nilo Vann", "Nilo Vann",
+			"Revanche do chefe da cidade.",
+			"Rematch against the city boss.",
+			"Revancha contra el jefe de la ciudad.",
+			"Revanche contra {name}!",
+			"Rematch against {name}!",
+			"¡Revancha contra {name}!",
+			"A revanche comeca.",
+			"The rematch starts.",
+			"Empieza la revancha.",
+			"Vitória na revanche.",
+			"Win in the rematch.",
+			"Victoria en la revancha.",
+			"Derrota na revanche. A mesa segue aberta.",
+			"Loss in the rematch. The table stays open.",
+			"Derrota en la revancha. La mesa sigue abierta.");
+	}
+
+	private static Line[] rematchPack(String portrait, String npt, String nen, String nes,
+			String bioPt, String bioEn, String bioEs,
+			String openPt, String openEn, String openEs,
+			String beforePt, String beforeEn, String beforeEs,
+			String winPt, String winEn, String winEs,
+			String losePt, String loseEn, String loseEs) {
+		Line bio = N(bioPt, bioEn, bioEs);
+		Line open = N(openPt, openEn, openEs);
+		Line before = say(portrait, npt, nen, nes, beforePt, beforeEn, beforeEs);
+		Line win = lost(portrait, npt, nen, nes, winPt, winEn, winEs);
+		Line lose = say(portrait, npt, nen, nes, losePt, loseEn, loseEs);
+		Line afterWin = N("Vitória de {name}! Se for a primeira revanche deste chefe, há uma carta rara nova. Depois, só a escolha usual.",
+			"Win for {name}! If this is the first rematch against this boss, there is a new rare card. After that, only the usual pick.",
+			"¡Victoria de {name}! Si es la primera revancha de este jefe, hay una carta rara nueva. Después, solo la elección de siempre.");
+		Line afterLose = N("Derrota de {name}. A revanche do chefe continua no mesmo lugar, quando quiser voltar.",
+			"Defeat for {name}. The boss rematch stays in the same place, when you want to come back.",
+			"Derrota de {name}. La revancha del jefe sigue en el mismo sitio, cuando quieras volver.");
+		return new Line[] { bio, open, before, win, lose, afterWin, afterLose };
 	}
 
 	static Region[] build() {

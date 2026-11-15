@@ -1,5 +1,7 @@
 # Active context
 
+Último trabalho (ainda sem commit): itens 3, 5, 6 e 8 do modo História na `master` local — regras regionais que se espalham, revanche do chefe, tela Progresso e dificuldade da campanha. Save no formato 5 (`DIFFICULTY`, `CITYRULES`, `CARRY`, `PLAYS`, `QUEEN`, `WINS`, `LOSSES`, `CARDWON`). Saves 4 e anteriores abrem como Normal. `./gradlew clean build test` passou com 65 testes. Sem commit nem push.
+
 Último marco: **1.3.0** na `master`, com o modo História ainda sem número de release. O deck próprio da campanha, as recompensas novas, o balanceamento e o roteiro reescrito estão na `master` depois do merge de `feat/historia-deck-balanceamento`.
 
 ## Menu principal

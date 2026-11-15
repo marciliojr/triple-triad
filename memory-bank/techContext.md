@@ -33,3 +33,5 @@ Textos: `I18n` / `Lang`. Fonte OpenSans com glifos PT-BR e ES.
 - gdx-controllers 2.2.4 (`gdxControllersVersion` em `gradle.properties`) para joystick (Jamepad/SDL no desktop)
 - `resources/gamecontrollerdb.txt` (SDL_GameControllerDB) entra no jar; Jamepad lê `/gamecontrollerdb.txt` do classpath. Fallback Linux `/dev/input/js*` (eventos de 8 bytes) sem dependência nova
 - Fonte extra `tinyFont` (Options) para legendas densas
+
+O save da História está no formato 5 (`StorySave.FORMAT`). A migração de 4 e anteriores preenche dificuldade Normal e as regras nativas das cidades.
