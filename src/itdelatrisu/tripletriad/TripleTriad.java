@@ -146,6 +146,9 @@ public class TripleTriad extends BasicGame {
 	/** Active screen. */
 	private GameScreen currentScreen;
 
+	/** Last screen whose music bed was applied. */
+	private GameScreen musicScreen;
+
 	/** Player profile. */
 	private Profile profile;
 
@@ -295,16 +298,29 @@ public class TripleTriad extends BasicGame {
 	}
 
 	/**
-	 * Called when the opening video ends, is skipped or fails: starts the BGM
-	 * and shows the menu (or profile creation).
+	 * Called when the opening video ends, is skipped or fails: shows the
+	 * menu (or profile creation) and starts the menu bed after the screen
+	 * has changed, so the intro is no longer the active screen.
 	 */
 	public void introFinished() {
-		AudioController.applyMusic();
 		profileSelectExits = true;
 		if (profile != null && profile.isValid())
 			showProfileSelect();
 		else
 			showProfile();
+		syncMusic();
+	}
+
+	/**
+	 * Keeps the looping bed in sync with the active screen: battle theme
+	 * on matches, menu theme everywhere else, no music during the intro.
+	 * Same-bed screen changes do not restart the track.
+	 */
+	private void syncMusic() {
+		if (currentScreen == musicScreen)
+			return;
+		musicScreen = currentScreen;
+		AudioController.onScreen(currentScreen);
 	}
 
 	/** Shows the profile selection (memory card blocks). */
@@ -575,6 +591,7 @@ public class TripleTriad extends BasicGame {
 	@Override
 	public void update(GameContainer container, int delta)
 			throws SlickException {
+		syncMusic();
 		if (championship != null && currentScreen != GameScreen.MEMORY_CARD)
 			championship.addPlayMillis(delta);
 		if (currentScreen != GameScreen.MATCH) {

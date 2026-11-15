@@ -48,10 +48,12 @@
 - [x] Modo História: vídeos `final_historia` (video_8) e `encerramento_campeao` (video_9) importados; pendente só `chegada_dollet` (video_5 ainda não chegou)
 
 - [x] Modo História: deck próprio por campanha (formato 4), deck inicial de níveis 1-2, escolha de 1 carta do deck adversário e carta fixa no chefe, especiais aleatórias com teto, elenco renomeado, roteiro reescrito em PT/EN/ES, tela Coleção e simulação de força (`StoryBalanceTest`)
+- [x] Tema do menu `res/menu.ogg` (OC ReMix "Aroma of Sugary Warmth"); `bgm.ogg` só nas partidas; troca de leito sem reiniciar a mesma faixa (`AudioControllerTest`)
+- [x] Lições do Squall com explicação e exemplo de mesa (tabuleiro 3x3 ou mão da troca na caixa de diálogo), validados em `StoryRuleExampleTest`
 
 
 ## Não feito (de propósito)
 
 - [ ] Trade rules clássicas (One/Diff/Direct/All) e regiões
 - [ ] Fat JAR / instalador
-- [ ] Testes automatizados do motor de captura
+- [ ] Suíte completa do motor de captura (há testes dos tabuleiros de exemplo do Squall em `StoryRuleExampleTest`)

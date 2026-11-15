@@ -69,6 +69,7 @@ public final class StoryScript {
 			return new Line[0];
 		if (!save.hasSeenRule("TRADE")) {
 			out.add(lessonTrade());
+			out.add(lessonTradeClassic());
 			save.markRuleSeen("TRADE");
 		}
 		if (!save.hasSeenRule("RANDOM")) {
@@ -92,49 +93,63 @@ public final class StoryScript {
 	private static Line lesson(Rule rule) {
 		switch (rule) {
 			case OPEN: return Q(
-				"Open: você vê os ranks dela. Não tem blefe. Leia a mão e jogue no lado fraco. Exemplo: um 2 aberto e um alvo.",
-				"Open: you can see her ranks. No bluff. Read the hand and play the weak side. Example: an open 2 is a target.",
-				"Open: ves sus rangos. No hay farol. Lee la mano y juega al lado débil. Ejemplo: un 2 abierto es un blanco.");
+				"Open: a mão dela fica à vista. Você lê os ranks e ataca o lado fraco, sem blefe. Neste exemplo a Geezard (direita 4) entra à esquerda da Red Bat (esquerda 2). 4 é maior que 2, e a Red Bat vira.",
+				"Open: her hand stays in sight. You read the ranks and attack the weak side. There is no bluff. In this example Geezard (right 4) lands left of Red Bat (left 2). 4 is higher than 2, and Red Bat flips.",
+				"Open: su mano queda a la vista. Lees los rangos y atacas el lado débil, sin farol. En este ejemplo la Geezard (derecha 4) entra a la izquierda de la Red Bat (izquierda 2). 4 es mayor que 2, y la Red Bat gira.",
+				StoryRuleExample.OPEN);
 			case SAME: return Q(
-				"Same: se dois lados seus empatarem com os vizinhos no mesmo número, os dois viram. Exemplo: 5 contra 5 em dois lados.",
-				"Same: if two of your sides tie the neighbors on the same number, both flip. Example: 5 against 5 on two sides.",
-				"Same: si dos lados tuyos empatan con los vecinos en el mismo número, los dos giran. Ejemplo: 5 contra 5 en dos lados.");
+				"Same: se dois lados da carta que você joga empatam com os vizinhos no mesmo número, os dois viram, mesmo que o rank não seja maior. Neste exemplo a Thrustaevis no centro fecha 5 com a Grand Mantis em cima e 5 com a Fastitocalon-F à esquerda.",
+				"Same: if two sides of the card you play tie the neighbors on the same number, both flip, even if your rank is not higher. In this example Thrustaevis in the center ties 5 with Grand Mantis above and 5 with Fastitocalon-F on the left.",
+				"Same: si dos lados de la carta que juegas empatan con los vecinos en el mismo número, las dos giran, aunque tu rango no sea mayor. En este ejemplo la Thrustaevis en el centro cierra 5 con la Grand Mantis arriba y 5 con la Fastitocalon-F a la izquierda.",
+				StoryRuleExample.SAME);
 			case SAME_WALL: return Q(
-				"Same Wall: a borda da mesa conta como A. Um 5 na parede e um 5 numa carta vizinha também fecha o Same.",
-				"Same Wall: the edge of the table counts as A. A 5 on the wall and a 5 on a neighbor also close Same.",
-				"Same Wall: el borde de la mesa cuenta como A. Un 5 en la pared y un 5 en una carta vecina también cierran el Same.");
+				"Same Wall: a borda da mesa conta como A (10). Se a carta que você joga tem um A na parede, basta um outro lado empatar com o vizinho para fechar o Same. Neste exemplo a PuPu no canto tem A na borda direita e 1 igual à Funguar. A Funguar vira.",
+				"Same Wall: the edge of the table counts as A (10). If the card you play has an A on the wall, one other side that ties a neighbor is enough to close Same. In this example PuPu in the corner has A on the right edge and a 1 that matches Funguar. Funguar flips.",
+				"Same Wall: el borde cuenta como A (10). Si tu carta tiene un A en la pared, basta un lado que empate con el vecino para cerrar el Same. En este ejemplo la PuPu en la esquina tiene A a la derecha y un 1 igual al de la Funguar. La Funguar gira.",
+				StoryRuleExample.SAME_WALL);
 			case PLUS: return Q(
-				"Plus: some o seu lado com o da vizinha. Se duas somas forem iguais, as duas viram. 6+2 e 5+3 fecham Plus.",
-				"Plus: add your side to the neighbor's. If two sums match, both flip. 6+2 and 5+3 close Plus.",
-				"Plus: suma tu lado con el de la vecina. Si dos sumas son iguales, las dos giran. 6+2 y 5+3 cierran Plus.");
+				"Plus: some o seu lado com o da vizinha. Se duas somas forem iguais, as duas viram. Neste exemplo a Vysage no centro faz 6+2 com a Fastitocalon-F em cima e 5+3 com a Bite Bug à esquerda. As somas dão 8, e as duas viram.",
+				"Plus: add your side to the neighbor's. If two sums match, both flip. In this example Vysage in the center makes 6+2 with Fastitocalon-F above and 5+3 with Bite Bug on the left. Both sums are 8, and both cards flip.",
+				"Plus: suma tu lado con el de la vecina. Si dos sumas son iguales, las dos giran. En este ejemplo la Vysage en el centro hace 6+2 con la Fastitocalon-F arriba y 5+3 con la Bite Bug a la izquierda. Las dos sumas dan 8, y las dos giran.",
+				StoryRuleExample.PLUS);
 			case COMBO: return Q(
-				"Combo: depois de um Same ou Plus, as cartas viradas atacam de novo. Segure o Combo até ter para onde ir.",
-				"Combo: after a Same or Plus, the flipped cards attack again. Hold the Combo until you have somewhere to go.",
-				"Combo: después de un Same o Plus, las cartas giradas atacan de nuevo. Aguanta el Combo hasta tener a donde ir.");
+				"Combo: depois de um Same ou Plus, as cartas que acabaram de virar atacam de novo, como se você as tivesse jogado. Neste exemplo o Same vira a Grand Mantis, e o 2 da direita dela é maior que o 1 da Grat. A Grat também vira.",
+				"Combo: after a Same or Plus, the cards that just flipped attack again, as if you had played them. In this example Same flips Grand Mantis, and its right 2 is higher than Grat's left 1. Grat flips too.",
+				"Combo: después de un Same o Plus, las cartas que acaba de girar atacan de nuevo, como si tú las hubieras jugado. En este ejemplo el Same gira a la Grand Mantis, y el 2 de su derecha es mayor que el 1 de la Grat. La Grat también gira.",
+				StoryRuleExample.COMBO);
 			case ELEMENTAL: return Q(
-				"Elemental: a casa tem um elemento. Carta do mesmo ganha +1 naquele lado; de outro, -1. Olhe o chão antes de soltar.",
-				"Elemental: the square has an element. A matching card gets +1 on that side; a different one, -1. Look at the floor before you drop.",
-				"Elemental: la casilla tiene un elemento. La carta del mismo recibe +1 en ese lado; otra, -1. Mira el suelo antes de soltar.");
+				"Elemental: a casa tem um elemento. Carta do mesmo recebe +1 naquele lado; de outro, -1. Same e Plus usam o rank puro; só a captura comum usa o bônus. Neste exemplo a SAM08G de Fogo entra numa casa de Fogo: o 6 vira 7 e supera o 6 da Armadodo.",
+				"Elemental: the square has an element. A matching card gets +1 on that side; a different one, -1. Same and Plus use the raw rank; only a normal capture uses the bonus. In this example Fire SAM08G lands on a Fire square: the 6 becomes 7 and beats Armadodo's 6.",
+				"Elemental: la casilla tiene un elemento. Carta del mismo: +1 en ese lado; otra, -1. Same y Plus usan el rango puro; solo la captura común usa el bono. En este ejemplo la SAM08G de Fuego entra en fuego: el 6 pasa a 7 y supera el 6 de la Armadodo.",
+				StoryRuleExample.ELEMENTAL);
 			case SUDDEN_DEATH: return Q(
-				"Sudden Death: se empatar 5 a 5, outra mesa começa com as cartas da cor de cada um. Não trate o empate como fim.",
-				"Sudden Death: if it ties 5 to 5, another table starts with each side's colors. Don't treat the tie as the end.",
-				"Sudden Death: si empata 5 a 5, otra mesa empieza con las cartas del color de cada uno. No tomes el empate como el final.");
+				"Sudden Death: se a mesa fecha 5 a 5, o jogo não acaba. Começa outra mesa com as mesmas cartas, cada uma na cor de quem a controlava no empate. Não trate o 5 a 5 como o fim.",
+				"Sudden Death: if the table closes 5 to 5, the game is not over. Another table starts with the same cards, each in the color of who controlled it at the tie. Don't treat 5 to 5 as the end.",
+				"Sudden Death: si la mesa cierra 5 a 5, el juego no termina. Empieza otra mesa con las mismas cartas, cada una en el color de quien la controlaba en el empate. No tomes el 5 a 5 como el final.");
 			default: return null;
 		}
 	}
 
 	private static Line lessonTrade() {
 		return Q(
-			"Aqui a troca não é One nem All. Você ganha e escolhe uma carta do deck que acabou de enfrentar. Derrota não tira nada.",
-			"Trade here is not One or All. You win and pick a card from the deck you just faced. A loss takes nothing.",
-			"Aquí el intercambio no es One ni All. Ganas y eliges una carta del mazo que acabas de enfrentar. La derrota no quita nada.");
+			"A troca desta campanha não é One, Diff, Direct nem All. Se você vencer, escolhe 1 carta do deck que acabou de enfrentar, como a carta marcada neste exemplo. No chefe da cidade, leva também uma carta fixa. Derrota não tira nada.",
+			"This campaign's trade is not One, Diff, Direct or All. If you win, you pick 1 card from the deck you just faced, like the marked card in this example. Beat a city boss, and you also get a fixed card. A loss takes nothing.",
+			"El intercambio de esta campaña no es One, Diff, Direct ni All. Si ganas, eliges 1 carta del mazo que acabas de enfrentar, como la carta marcada en este ejemplo. En el jefe de la ciudad, también llevas una carta fija. La derrota no quita nada.",
+			StoryRuleExample.TRADE);
+	}
+
+	private static Line lessonTradeClassic() {
+		return Q(
+			"No jogo clássico, One troca só 1 carta; Diff troca a diferença do placar; Direct: cada um fica com as cartas que virou; All: o vencedor leva o deck inteiro. Nenhuma dessas regras vale nesta campanha.",
+			"In the classic game, One trades only 1 card; Diff trades the score difference; Direct: each player keeps the cards they flipped; All: the winner takes the whole deck. None of those rules apply in this campaign.",
+			"En el juego clásico, One intercambia solo 1 carta; Diff, la diferencia del marcador; Direct: cada uno se queda con las cartas que giró; All: el ganador se lleva el mazo entero. Ninguna de esas reglas vale en esta campaña.");
 	}
 
 	private static Line lessonRandom() {
 		return Q(
-			"Random embaralharia as duas mãos e você perderia a mão montada. Nesta campanha a regra não é usada: a mão que você escolhe é a que entra.",
-			"Random would shuffle both hands and you would lose the hand you built. This campaign does not use that rule: the hand you pick is the one that enters.",
-			"Random barajaria las dos manos y perderías la mano montada. En esta campaña no se usa esa regla: la mano que eliges es la que entra.");
+			"Random embaralharia as duas mãos, e você perderia a mão de 5 que acabou de montar. Nesta campanha a regra não é usada: a mão que você escolhe é a que entra na mesa.",
+			"Random would shuffle both hands, and you would lose the 5-card hand you just built. This campaign does not use that rule: the hand you pick is the one that enters the table.",
+			"Random barajaria las dos manos, y perderías la mano de 5 que acabas de montar. En esta campaña no se usa esa regla: la mano que eliges es la que entra en la mesa.");
 	}
 
 	static Region[] build() {
@@ -1431,6 +1446,10 @@ public final class StoryScript {
 
 	private static Line Q(String pt, String en, String es) {
 		return new Line(false, "squall", false, "Squall", "Squall", "Squall", pt, en, es);
+	}
+
+	private static Line Q(String pt, String en, String es, StoryRuleExample example) {
+		return Q(pt, en, es).withExample(example);
 	}
 
 	private static Line say(String portrait, String npt, String nen, String nes, String pt, String en, String es) {

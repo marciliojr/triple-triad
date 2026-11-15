@@ -29,9 +29,11 @@ import itdelatrisu.tripletriad.gfx.Log;
 import itdelatrisu.tripletriad.gfx.SlickException;
 import itdelatrisu.tripletriad.gfx.UnicodeFont;
 import itdelatrisu.tripletriad.gfx.VideoLoop;
+import itdelatrisu.tripletriad.Element;
 import itdelatrisu.tripletriad.story.StoryAssets;
 import itdelatrisu.tripletriad.story.StoryCampaign;
 import itdelatrisu.tripletriad.story.StoryMap;
+import itdelatrisu.tripletriad.story.StoryRuleExample;
 import itdelatrisu.tripletriad.story.StorySave;
 import itdelatrisu.tripletriad.story.StoryScript;
 
@@ -1457,7 +1459,162 @@ public class StoryScreen extends Screen {
 			small.drawString(textX, textY, wrapped.get(i), Color.white);
 			textY += small.getLineHeight();
 		}
+		if (line.hasExample())
+			renderRuleExample(g, width, height, line.example);
 		HintBar.draw(I18n.hintStoryTalk(), height * 0.96f);
+	}
+
+	/**
+	 * Mini 3x3 (or a 5-card trade hand) drawn just above the dialogue box,
+	 * reusing {@link Card#drawSized}. Highlights the card that was just
+	 * played (gold) and the cards it flips (cyan), with a short arrow in
+	 * the gap when they share a side.
+	 */
+	private void renderRuleExample(Graphics g, int width, int height, StoryRuleExample example) {
+		float boxY = height * 0.62f;
+		if (example.kind == StoryRuleExample.Kind.HAND) {
+			int n = example.ids.length;
+			float size = Math.min(height * 0.12f, width * 0.1f);
+			float gap = size * 0.1f;
+			float total = n * size + Math.max(0, n - 1) * gap;
+			float x = (width - total) / 2f;
+			float y = boxY - size - height * 0.04f;
+			panel(g, x - 8f, y - 8f, total + 16f, size + 16f);
+			for (int i = 0; i < n; i++) {
+				Card card = exampleCard(example.ids[i]);
+				if (card != null)
+					card.drawSized(x, y, size, false, false);
+				if (i == example.placedPos)
+					frame(g, x, y, size, new Color(0.93f, 0.84f, 0.55f), 3f);
+				x += size + gap;
+			}
+			return;
+		}
+
+		float size = Math.min(height * 0.115f, width * 0.12f);
+		float gap = size * 0.1f;
+		float grid = 3f * size + 2f * gap;
+		float ox = (width - grid) / 2f;
+		float oy = boxY - grid - height * 0.035f;
+		if (oy < height * 0.02f) {
+			float scale = (boxY - height * 0.055f) / grid;
+			if (scale < 1f) {
+				size *= scale;
+				gap *= scale;
+				grid = 3f * size + 2f * gap;
+				ox = (width - grid) / 2f;
+				oy = boxY - grid - height * 0.03f;
+			}
+		}
+		panel(g, ox - 8f, oy - 8f, grid + 16f, grid + 16f);
+		float[] cx = new float[9];
+		float[] cy = new float[9];
+		for (int pos = 0; pos < 9; pos++) {
+			float x = ox + (pos % 3) * (size + gap);
+			float y = oy + (pos / 3) * (size + gap);
+			cx[pos] = x + size / 2f;
+			cy[pos] = y + size / 2f;
+			g.setColor(new Color(0.07f, 0.08f, 0.14f, 0.92f));
+			g.fillRect(x, y, size, size);
+			g.setColor(new Color(0.45f, 0.38f, 0.22f, 0.85f));
+			g.drawRect(x, y, size, size);
+			if (example.elements != null && example.elements[pos] != null
+					&& example.elements[pos] != Element.NEUTRAL) {
+				Image icon = example.elements[pos].getFirstFrame();
+				if (icon != null) {
+					float es = size * 0.28f;
+					icon.draw(x + 2f, y + 2f, es, es);
+				}
+			}
+			if (example.ids[pos] > 0) {
+				Card card = exampleCard(example.ids[pos]);
+				if (card != null) {
+					boolean owned = example.playerOwned[pos] || example.isFlip(pos);
+					card.drawSized(x, y, size, owned, false);
+				}
+			}
+			if (example.isPlaced(pos))
+				frame(g, x, y, size, new Color(0.93f, 0.84f, 0.55f), 3f);
+			else if (example.isFlip(pos))
+				frame(g, x, y, size, new Color(0.45f, 0.85f, 0.95f), 3f);
+		}
+		for (int flip : example.flipPos) {
+			if (flip < 0 || flip > 8)
+				continue;
+			int placed = example.placedPos;
+			// Combo flips may come from a neighbor of the placed card; still
+			// draw a short arrow when the two cells share a side.
+			int src = placed;
+			if (Math.abs((flip % 3) - (placed % 3)) + Math.abs((flip / 3) - (placed / 3)) != 1) {
+				// walk from the first same/plus neighbor if this is a combo cell
+				src = -1;
+				for (int mid : example.flipPos) {
+					if (Math.abs((flip % 3) - (mid % 3)) + Math.abs((flip / 3) - (mid / 3)) == 1) {
+						src = mid;
+						break;
+					}
+				}
+			}
+			if (src >= 0)
+				arrow(g, cx[src], cy[src], cx[flip], cy[flip], size, gap);
+		}
+	}
+
+	private Card exampleCard(int id) {
+		if (game.getDeck() != null) {
+			Card card = game.getDeck().getCardById(id);
+			if (card != null)
+				return card;
+		}
+		return null;
+	}
+
+	private static void panel(Graphics g, float x, float y, float w, float h) {
+		g.setColor(new Color(0.05f, 0.07f, 0.12f, 0.88f));
+		g.fillRect(x, y, w, h);
+		g.setColor(new Color(0.72f, 0.58f, 0.28f));
+		g.fillRect(x, y, w, 2f);
+		g.fillRect(x, y + h - 2f, w, 2f);
+		g.fillRect(x, y, 2f, h);
+		g.fillRect(x + w - 2f, y, 2f, h);
+	}
+
+	private static void frame(Graphics g, float x, float y, float size, Color color, float t) {
+		g.setColor(color);
+		g.fillRect(x - t, y - t, size + 2f * t, t);
+		g.fillRect(x - t, y + size, size + 2f * t, t);
+		g.fillRect(x - t, y, t, size);
+		g.fillRect(x + size, y, t, size);
+	}
+
+	private static void arrow(Graphics g, float x1, float y1, float x2, float y2, float size, float gap) {
+		g.setColor(new Color(0.93f, 0.84f, 0.55f));
+		float dx = x2 - x1;
+		float dy = y2 - y1;
+		float thick = Math.max(2f, gap * 0.18f);
+		if (Math.abs(dx) >= Math.abs(dy)) {
+			float dir = dx < 0 ? -1f : 1f;
+			float start = x1 + dir * (size * 0.42f);
+			float end = x2 - dir * (size * 0.42f);
+			float len = (end - start) * dir;
+			if (len <= 2f)
+				return;
+			g.fillRect(Math.min(start, end), y1 - thick / 2f, Math.abs(end - start), thick);
+			float head = Math.max(5f, gap * 0.45f);
+			for (int i = 0; i < head; i++)
+				g.fillRect(end - dir * i, y1 - (head - i), 2f, (head - i) * 2f);
+		} else {
+			float dir = dy < 0 ? -1f : 1f;
+			float start = y1 + dir * (size * 0.42f);
+			float end = y2 - dir * (size * 0.42f);
+			float len = (end - start) * dir;
+			if (len <= 2f)
+				return;
+			g.fillRect(x1 - thick / 2f, Math.min(start, end), thick, Math.abs(end - start));
+			float head = Math.max(5f, gap * 0.45f);
+			for (int i = 0; i < head; i++)
+				g.fillRect(x1 - (head - i), end - dir * i, (head - i) * 2f, 2f);
+		}
 	}
 
 	/**

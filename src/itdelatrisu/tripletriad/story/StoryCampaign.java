@@ -75,14 +75,21 @@ public final class StoryCampaign {
 		public final String namePt, nameEn, nameEs;
 		public final String pt, en, es;
 		public final String scene;
+		public final StoryRuleExample example;
 
 		public Line(boolean narrator, String portrait, boolean defeat,
 				String namePt, String nameEn, String nameEs, String pt, String en, String es) {
-			this(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, null);
+			this(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, null, null);
 		}
 
 		public Line(boolean narrator, String portrait, boolean defeat,
 				String namePt, String nameEn, String nameEs, String pt, String en, String es, String scene) {
+			this(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, scene, null);
+		}
+
+		public Line(boolean narrator, String portrait, boolean defeat,
+				String namePt, String nameEn, String nameEs, String pt, String en, String es,
+				String scene, StoryRuleExample example) {
 			this.narrator = narrator;
 			this.portrait = portrait;
 			this.defeat = defeat;
@@ -93,21 +100,29 @@ public final class StoryCampaign {
 			this.en = en;
 			this.es = es;
 			this.scene = (scene == null || scene.isEmpty()) ? null : scene;
+			this.example = example;
 		}
 
 		/** @return the same line with the speaker's defeat face on or off */
 		public Line withDefeat(boolean lost) {
 			if (lost == defeat)
 				return this;
-			return new Line(narrator, portrait, lost, namePt, nameEn, nameEs, pt, en, es, scene);
+			return new Line(narrator, portrait, lost, namePt, nameEn, nameEs, pt, en, es, scene, example);
 		}
 
 		/** @return the same line shown over a full-screen still */
 		public Line withScene(String file) {
-			return new Line(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, file);
+			return new Line(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, file, example);
+		}
+
+		/** @return the same line with a mini-board or hand example in the dialogue */
+		public Line withExample(StoryRuleExample board) {
+			return new Line(narrator, portrait, defeat, namePt, nameEn, nameEs, pt, en, es, scene, board);
 		}
 
 		public boolean hasScene() { return scene != null; }
+
+		public boolean hasExample() { return example != null; }
 
 		public String name() { return I18n.text(namePt, nameEn, nameEs); }
 

@@ -109,7 +109,7 @@ Em relação ao original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1):
 
 Código-base, partida, regras e assets: **Jeffrey Han** ([@itdelatrisu](https://github.com/itdelatrisu/)).
 
-Conceitos e música: Square Enix. Arte in-game: mods FFVIII do MCINDUS — [Tripod v1.1](http://forums.qhimm.com/index.php?topic=15301.0), [SeeD Reborn v3.2](http://forums.qhimm.com/index.php?topic=15320.0). Sprites: [UltimeciaFFB](http://ultimeciaffb.deviantart.com/). SFX: [TekkamanChronos](http://www.youtube.com/watch?v=xKzxcJLiitQ).
+Conceitos e música: Square Enix. Tema do menu: Final Fantasy VIII "Aroma of Sugary Warmth" OC ReMix, de Clément Panchout com Facemelting Solos, Gamer of the Winds e SableProvidence (álbum Final Fantasy VIII: SeeDs of Pandora, OCR04439, engenheiro James C. Hoffman, compositor Nobuo Uematsu, OverClocked ReMix, 2023; uso pessoal não comercial). https://ff8.ocremix.org / https://ocremix.org. A faixa de batalha é o BGM original do projeto. Arte in-game: mods FFVIII do MCINDUS — [Tripod v1.1](http://forums.qhimm.com/index.php?topic=15301.0), [SeeD Reborn v3.2](http://forums.qhimm.com/index.php?topic=15320.0). Sprites: [UltimeciaFFB](http://ultimeciaffb.deviantart.com/). SFX: [TekkamanChronos](http://www.youtube.com/watch?v=xKzxcJLiitQ).
 
 ### Licença
 
@@ -220,7 +220,7 @@ Compared with the original (Java 7, Ant/Eclipse, Slick2D + LWJGL 2.9.1):
 
 Base code, match, rules, and assets: **Jeffrey Han** ([@itdelatrisu](https://github.com/itdelatrisu/)).
 
-Concepts and music: Square Enix. In-game art: MCINDUS FFVIII mods — [Tripod v1.1](http://forums.qhimm.com/index.php?topic=15301.0), [SeeD Reborn v3.2](http://forums.qhimm.com/index.php?topic=15320.0). Sprites: [UltimeciaFFB](http://ultimeciaffb.deviantart.com/). SFX: [TekkamanChronos](http://www.youtube.com/watch?v=xKzxcJLiitQ).
+Concepts and music: Square Enix. Menu theme: Final Fantasy VIII "Aroma of Sugary Warmth" OC ReMix by Clément Panchout feat. Facemelting Solos, Gamer of the Winds and SableProvidence (album Final Fantasy VIII: SeeDs of Pandora, OCR04439, engineer James C. Hoffman, composer Nobuo Uematsu, OverClocked ReMix, 2023; personal non-commercial use). https://ff8.ocremix.org / https://ocremix.org. The battle track is the project's original BGM. In-game art: MCINDUS FFVIII mods — [Tripod v1.1](http://forums.qhimm.com/index.php?topic=15301.0), [SeeD Reborn v3.2](http://forums.qhimm.com/index.php?topic=15320.0). Sprites: [UltimeciaFFB](http://ultimeciaffb.deviantart.com/). SFX: [TekkamanChronos](http://www.youtube.com/watch?v=xKzxcJLiitQ).
 
 ### License
 
