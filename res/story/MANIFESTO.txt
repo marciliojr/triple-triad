@@ -12,6 +12,8 @@ Importado
 - video_4.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_deling.mp4 e convertido para VideoLoop
 - video_6.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_fh.mp4 e convertido para VideoLoop
 - video_7.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_esthar.mp4 e convertido para VideoLoop
+- video_8.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como final_historia.mp4 e convertido para VideoLoop
+- video_9.mp4 (mp4, h264 1280x720, aac, 20s, 24 fps) copiado como encerramento_campeao.mp4 e convertido para VideoLoop
 (video_5 ainda nao chegou; chegada_dollet continua no fundo estatico)
 Manifestos de origem preservados em backgrounds/MANIFESTO.txt, portraits/MANIFESTO.txt e ui/MANIFESTO.txt.
 
@@ -22,10 +24,11 @@ Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais r
 - chegada_deling (video_4)
 - chegada_fh (video_6)
 - chegada_esthar (video_7)
+- final_historia (video_8)
+- encerramento_campeao (video_9)
 
 Videos ausentes (a campanha ja aponta para estes ids; sem os quadros, usa o fundo estatico e o dialogo)
 - chegada_dollet
-- final_historia
 
 Audio ausente como arquivo solto
 O diretorio de recursos nao tem ogg, wav, mp3 nem flac fora das faixas embutidas nos dois mp4.

@@ -918,6 +918,8 @@ public class StoryScreen extends Screen {
 		String videoId = null;
 		if (next == StoryCampaign.After.STAGE && region != null && script == region.arrival)
 			videoId = region.video;
+		if (next == StoryCampaign.After.CEREMONY)
+			videoId = StoryCampaign.ENDING_VIDEO;
 		playScene(videoId, script, next);
 	}
 

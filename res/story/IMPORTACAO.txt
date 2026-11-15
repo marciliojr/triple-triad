@@ -11,7 +11,8 @@ Ids
 - chegada_dollet
 - chegada_fh              Fisherman's Horizon (pronto, video_6)
 - chegada_esthar          Esthar (pronto, video_7)
-- final_historia
+- final_historia          grande final no Garden (pronto, video_8)
+- encerramento_campeao    celebracao do titulo apos a final (pronto, video_9)
 
 Nao renomeie o arquivo original. Copie para res/story/<id>.mp4 e converta
 no formato do VideoLoop (quadros JPEG + Ogg), igual a intro e ao endgame:
@@ -22,4 +23,7 @@ ffmpeg -y -i res/story/<id>.mp4 -vn -c:a libvorbis -q:a 4 res/story/<id>.ogg
 O primeiro quadro tem de se chamar frame_001.jpg. A taxa e 24 fps.
 Se o mp4 nao tiver audio, pule o segundo comando: a cena segue com a BGM do jogo.
 Depois de gravar os quadros, abra a Chegada daquela cidade (ou entre nela de novo)
-para ver o video. Nao precisa recompilar nem alterar StoryCampaign.
+para ver o video. O clipe encerramento_campeao toca depois da vitoria na final,
+antes das falas da cerimonia; se os quadros faltarem, o jogo usa o fundo da arena.
+Nao precisa recompilar para uma chegada ja mapeada. O encerramento usa o id
+StoryCampaign.ENDING_VIDEO.

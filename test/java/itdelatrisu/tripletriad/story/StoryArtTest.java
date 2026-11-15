@@ -50,6 +50,7 @@ public class StoryArtTest {
 		Region last = StoryCampaign.REGIONS[StoryCampaign.REGIONS.length - 1];
 		assertEquals("final", last.id);
 		assertEquals(StoryCampaign.FINAL_ARENA, last.background);
+		assertEquals("final_historia", last.video);
 		assertEquals(last, StoryCampaign.regionOf(StoryCampaign.FINAL_DUEL));
 	}
 

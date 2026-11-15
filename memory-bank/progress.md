@@ -45,6 +45,7 @@
 - [x] Falas do Squall e dos adversários reescritas como conversa de mesa de Triple Triad (PT/EN/ES), com `StoryTextTest` de glifos da fonte
 
 - [x] Modo História: vídeos `chegada_fh` (video_6) e `chegada_esthar` (video_7) importados; pendentes `chegada_dollet` e `final_historia`
+- [x] Modo História: vídeos `final_historia` (video_8) e `encerramento_campeao` (video_9) importados; pendente só `chegada_dollet` (video_5 ainda não chegou)
 
 - [x] Modo História: deck próprio por campanha (formato 4), deck inicial de níveis 1-2, escolha de 1 carta do deck adversário e carta fixa no chefe, especiais aleatórias com teto, elenco renomeado, roteiro reescrito em PT/EN/ES, tela Coleção e simulação de força (`StoryBalanceTest`)
 
