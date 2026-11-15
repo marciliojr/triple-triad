@@ -248,8 +248,11 @@ public final class StoryCampaign {
 
 	/** Clips that are not in the tree yet. The scenes still play on the still background. */
 	public static final String[] PENDING_VIDEOS = {
-		"chegada_dollet", "final_historia"
+		"chegada_dollet"
 	};
+
+	/** Closing clip after the player wins the grand final, before the ceremony lines. */
+	public static final String ENDING_VIDEO = "encerramento_campeao";
 
 	public static final String PLAYER = "you";
 

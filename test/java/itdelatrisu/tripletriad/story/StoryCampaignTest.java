@@ -223,7 +223,7 @@ public class StoryCampaignTest {
 
 	@Test
 	public void onlyImportedStoryVideosExist() {
-		String[] ready = { "intro_historia", "chegada_balamb_town", "chegada_timber", "chegada_deling", "chegada_fh", "chegada_esthar" };
+		String[] ready = { "intro_historia", "chegada_balamb_town", "chegada_timber", "chegada_deling", "chegada_fh", "chegada_esthar", "final_historia", StoryCampaign.ENDING_VIDEO };
 		for (int i = 0; i < ready.length; i++) {
 			assertTrue(StoryAssets.hasVideo(ready[i]), ready[i]);
 			assertTrue(StoryAssets.hasVideoAudio(ready[i]), ready[i]);
@@ -235,6 +235,10 @@ public class StoryCampaignTest {
 			assertNotNull(StoryCampaign.findDuel("queen_esthar"));
 		}
 		assertTrue(StoryAssets.hasVideo(null) == false);
+		assertEquals(1, StoryCampaign.PENDING_VIDEOS.length);
+		assertEquals("chegada_dollet", StoryCampaign.PENDING_VIDEOS[0]);
+		assertEquals("final_historia", StoryCampaign.REGIONS[StoryCampaign.REGIONS.length - 1].video);
+		assertEquals("encerramento_campeao", StoryCampaign.ENDING_VIDEO);
 		File still = Assets.file("story/backgrounds/mesa_timber.png");
 		assertTrue(still.isFile());
 	}
