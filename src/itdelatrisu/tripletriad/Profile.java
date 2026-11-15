@@ -21,6 +21,7 @@ package itdelatrisu.tripletriad;
 import java.util.ArrayList;
 import java.util.List;
 
+import itdelatrisu.tripletriad.story.StoryBalance;
 import itdelatrisu.tripletriad.story.StorySave;
 
 /**
@@ -114,7 +115,7 @@ public class Profile {
 	/** Legacy arrivals. Kept as a snapshot. */
 	private final ArrayList<String> storyArrivals = new ArrayList<String>();
 
-	/** Independent story campaigns. The album is not inside them. */
+	/** Independent story campaigns. Each has its own collection; the album stays here. */
 	private final ArrayList<StorySave> campaigns = new ArrayList<StorySave>();
 
 	/** Id of the campaign the story menu will open. */
@@ -440,7 +441,7 @@ public class Profile {
 	}
 
 	/**
-	 * Appends a campaign. Does not touch the album or the other campaigns.
+	 * Appends a campaign with its own starter deck. Does not touch the album.
 	 * @return the campaign, or null if the name is empty or the list is full
 	 */
 	public StorySave addCampaign(String student) {
@@ -464,7 +465,7 @@ public class Profile {
 	}
 
 	/**
-	 * Removes one campaign. Cards already in the album stay there.
+	 * Removes one campaign and its collection. The profile album is left alone.
 	 * @param confirm must be true; a cancel leaves the list as it is
 	 */
 	public boolean deleteCampaign(String id, boolean confirm) {
@@ -481,12 +482,13 @@ public class Profile {
 		return false;
 	}
 
-	/** Adds story reward cards to the shared album. */
+	/** Adds story reward cards to the active campaign collection, never to the album. */
 	public void grantStoryCards(int[] ids) {
-		if (ids == null)
+		StorySave save = activeStory();
+		if (save == null || ids == null)
 			return;
 		for (int i = 0; i < ids.length; i++)
-			addCard(ids[i]);
+			save.addCard(ids[i]);
 	}
 
 	/**
@@ -510,6 +512,7 @@ public class Profile {
 		save.absorbLegacy(getStoryClearedCsv(), getStoryArrivalsCsv());
 		campaigns.add(save);
 		activeStoryId = save.id();
+		StoryBalance.migrateCollection(save);
 	}
 
 	public String getStoryClearedCsv() { return joinIds(storyCleared); }

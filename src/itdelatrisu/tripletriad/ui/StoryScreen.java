@@ -33,6 +33,7 @@ import itdelatrisu.tripletriad.story.StoryAssets;
 import itdelatrisu.tripletriad.story.StoryCampaign;
 import itdelatrisu.tripletriad.story.StoryMap;
 import itdelatrisu.tripletriad.story.StorySave;
+import itdelatrisu.tripletriad.story.StoryScript;
 
 /**
  * Story campaign: several saves per profile, tournament stages, Nilo Vann
@@ -41,7 +42,7 @@ import itdelatrisu.tripletriad.story.StorySave;
 public class StoryScreen extends Screen {
 	private enum Mode {
 		HUB, PROTAGONIST, NAME, CAMPAIGNS, DELETE, STAGE, MAP, DUELS, TABLE, RULES, DOSSIER,
-		SCENE, PICK, CONFIRM, SHOW
+		SCENE, PICK, CONFIRM, AWARD, SHOW
 	}
 
 	private static final int NAME_MAX = StorySave.NAME_MAX;
@@ -153,6 +154,7 @@ public class StoryScreen extends Screen {
 			case SCENE: renderScene(g, width, height); break;
 			case PICK: renderPick(g, width, height, false); break;
 			case CONFIRM: renderPick(g, width, height, true); break;
+			case AWARD: renderAward(g, width, height); break;
 			case SHOW: renderShow(g, width, height); break;
 			default: break;
 		}
@@ -183,6 +185,7 @@ public class StoryScreen extends Screen {
 			case SCENE: keyScene(key); break;
 			case PICK: keyPick(key); break;
 			case CONFIRM: keyConfirm(key); break;
+			case AWARD: keyAward(key); break;
 			case SHOW: keyShow(key); break;
 			default: break;
 		}
@@ -212,6 +215,8 @@ public class StoryScreen extends Screen {
 			keyScene(Input.KEY_Z);
 		else if (mode == Mode.PICK)
 			keyPick(Input.KEY_Z);
+		else if (mode == Mode.AWARD)
+			keyAward(Input.KEY_Z);
 		else if (mode == Mode.SHOW || mode == Mode.RULES || mode == Mode.DOSSIER || mode == Mode.TABLE)
 			keyPressed(Input.KEY_Z, (char) 0);
 	}
@@ -363,8 +368,6 @@ public class StoryScreen extends Screen {
 		}
 		vk.close();
 		AudioController.Effect.SELECT.play();
-		if (game.topUpStoryAlbum())
-			save.setStarterScene(true);
 		game.saveProfile();
 		markSaved();
 		openSave(save);
@@ -475,7 +478,10 @@ public class StoryScreen extends Screen {
 		}
 		if (StorySave.TALK.equals(save.pendingPhase()))
 			play(join(new StoryCampaign.Line[] { duel.win }, duel.afterWin), StoryCampaign.After.CARD);
-		else {
+		else if (StorySave.AWARD.equals(save.pendingPhase()) || save.awaitingAward()) {
+			cardIndex = 0;
+			mode = Mode.AWARD;
+		} else {
 			cardIndex = 0;
 			mode = Mode.PICK;
 		}
@@ -512,6 +518,8 @@ public class StoryScreen extends Screen {
 		if (chosen.equals(I18n.storyCities())) {
 			index = StoryCampaign.currentRegion(save);
 			mode = Mode.MAP;
+		} else if (chosen.equals(I18n.storyCollection())) {
+			game.showStoryCollection();
 		} else if (chosen.equals(I18n.storyTable())) {
 			mode = Mode.TABLE;
 		} else if (chosen.equals(I18n.storyRulesTitle())) {
@@ -533,6 +541,7 @@ public class StoryScreen extends Screen {
 		StoryCampaign.Region here = StoryCampaign.REGIONS[StoryCampaign.currentRegion(save)];
 		ArrayList<String> items = new ArrayList<String>();
 		items.add(I18n.storyCities());
+		items.add(I18n.storyCollection());
 		if (here.kind == StoryCampaign.Kind.GROUP)
 			items.add(I18n.storyTable());
 		items.add(I18n.storyRulesTitle());
@@ -644,7 +653,11 @@ public class StoryScreen extends Screen {
 		}
 		duel = region.duels[row];
 		AudioController.Effect.SELECT.play();
-		play(join(duel.open, new StoryCampaign.Line[] { duel.before }), StoryCampaign.After.PICK);
+		StoryCampaign.Line[] brief = join(StoryScript.lessons(save, duel),
+			join(duel.open, new StoryCampaign.Line[] { duel.before }));
+		if (save != null)
+			game.saveProfile();
+		play(brief, StoryCampaign.After.PICK);
 	}
 
 	private void keyRules(int key) {
@@ -838,7 +851,7 @@ public class StoryScreen extends Screen {
 				game.saveProfile();
 				markSaved();
 				cardIndex = 0;
-				mode = Mode.PICK;
+				mode = (save != null && save.awaitingAward()) ? Mode.AWARD : Mode.PICK;
 				break;
 			case CEREMONY:
 				if (save != null)
@@ -890,11 +903,15 @@ public class StoryScreen extends Screen {
 		System.arraycopy(ids, 0, lastHand, 0, ids.length);
 		if (save != null)
 			save.setLastHand(ids);
-		game.startStoryMatch(ids, duel.minLevel, duel.maxLevel, duel.ai, duel.rules);
+		game.startStoryMatch(ids, duel);
 	}
 
 	public void backToList() {
 		mode = (region != null) ? Mode.DUELS : Mode.STAGE;
+	}
+
+	public void backToStage() {
+		mode = Mode.STAGE;
 	}
 
 	private void play(StoryCampaign.Line[] script, StoryCampaign.After next) {
@@ -1557,6 +1574,43 @@ public class StoryScreen extends Screen {
 		if (preview && cardIndex >= 0 && cardIndex < hand.length)
 			Ui.drawCardPreview(g, game.getDeck(), hand[cardIndex]);
 		HintBar.draw(I18n.hintStoryPick(), height * 0.92f);
+	}
+
+	private void keyAward(int key) {
+		if (key == Input.KEY_ESCAPE) {
+			requestLeaveMenu();
+			return;
+		}
+		if (key != Input.KEY_Z && key != Input.KEY_ENTER && key != Input.KEY_X)
+			return;
+		StorySave save = camp();
+		if (save == null) {
+			mode = Mode.PICK;
+			return;
+		}
+		int prize = save.takeBossReward();
+		if (prize > 0) {
+			Profile profile = game.getProfile();
+			if (profile != null)
+				profile.grantStoryCards(new int[] { prize });
+		}
+		game.saveProfile();
+		markSaved();
+		AudioController.Effect.SELECT.play();
+		cardIndex = 0;
+		mode = Mode.PICK;
+	}
+
+	private void renderAward(Graphics g, int width, int height) {
+		StorySave save = camp();
+		int prize = save == null ? 0 : save.pendingSpecial();
+		Ui.drawCentered(Options.getFont(), I18n.storyAwardTitle(), height * 0.1f, Ui.TITLE);
+		float size = Options.getCardLength() * 0.48f;
+		drawRewardCard(g, width, height, prize, I18n.storySpecialCard(), width * 0.5f, size);
+		Card card = game.getDeck().getCardById(prize);
+		String name = card == null ? "" : card.getName();
+		Ui.drawCentered(Options.getSmallFont(), I18n.storyAwardTaken(name), height * 0.78f, Color.white);
+		HintBar.draw(I18n.hintStoryAward(), height * 0.92f);
 	}
 
 	private void renderShow(Graphics g, int width, int height) {

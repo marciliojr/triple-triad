@@ -11,7 +11,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Files;
-import java.util.Random;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,9 +45,15 @@ public class StoryCampaignTest {
 		assertNull(profile.addCampaign("   "));
 		assertEquals(2, profile.campaignCount());
 
-		profile.grantStoryCards(new int[] { 12 });
+		profile.setActiveStory(ana.id());
+		int anaStarter = ana.collectionSize();
+		profile.grantStoryCards(new int[] { 30 });
+		assertEquals(anaStarter + 1, ana.collectionSize());
+		assertEquals(1, campCopies(ana, 12));
+		assertEquals(0, copies(profile, 30));
+		assertEquals(1, copies(profile, 3));
 		assertTrue(profile.deleteCampaign(ana.id(), true));
-		assertEquals(1, copies(profile, 12));
+		assertEquals(0, copies(profile, 30));
 		assertEquals(1, copies(profile, 3));
 		assertEquals(bia.id(), profile.activeStory().id());
 	}
@@ -78,20 +83,36 @@ public class StoryCampaignTest {
 		assertEquals(1, loaded.campaignCount());
 		StorySave again = loaded.activeStory();
 		assertEquals("Ana", again.student());
-		assertEquals(StorySave.PICK, again.pendingPhase());
+		assertEquals(StorySave.AWARD, again.pendingPhase());
 		assertArrayEquals(new int[] { 1, 2, 3, 4, 5 }, again.pendingHand());
 		assertEquals(85, again.pendingSpecial());
+		assertFalse(again.isPendingSpecialGiven());
 		assertTrue(again.hasArrival("garden"));
-		assertEquals("king", loaded.getStoryClearedCsv().isEmpty() ? again.pendingDuel() : again.pendingDuel());
+		assertEquals("king", again.pendingDuel());
 
-		int[] granted = again.confirm(2);
-		assertArrayEquals(new int[] { 2, 85 }, granted);
-		loaded.grantStoryCards(granted);
+		int prize = again.takeBossReward();
+		assertEquals(85, prize);
+		loaded.grantStoryCards(new int[] { prize });
+		assertEquals(StorySave.PICK, again.pendingPhase());
 		ProfileStore.writeFile(file, loaded);
+
+		Profile mid = ProfileStore.readFile(file);
+		StorySave midSave = mid.activeStory();
+		assertEquals(StorySave.PICK, midSave.pendingPhase());
+		assertTrue(midSave.isPendingSpecialGiven());
+		assertEquals(1, campCopies(midSave, 85));
+		assertEquals(0, midSave.takeBossReward());
+		assertEquals(1, campCopies(midSave, 85));
+		int[] granted = midSave.confirm(2);
+		assertArrayEquals(new int[] { 2 }, granted);
+		mid.grantStoryCards(granted);
+		ProfileStore.writeFile(file, mid);
 		Profile after = ProfileStore.readFile(file);
 		assertEquals(0, after.activeStory().confirm(2).length);
-		assertEquals(1, copies(after, 2));
-		assertEquals(1, copies(after, 85));
+		assertEquals(1, campCopies(after.activeStory(), 2));
+		assertEquals(1, campCopies(after.activeStory(), 85));
+		assertEquals(0, copies(after, 2));
+		assertEquals(0, copies(after, 85));
 		assertFalse(new File(file.getParentFile(), file.getName() + ".tmp").isFile());
 	}
 
@@ -117,25 +138,26 @@ public class StoryCampaignTest {
 	}
 
 	@Test
-	public void oneCardPerWinAndSpecialOnlyOnce() {
+	public void oneCardPerWinAndTwoOnBoss() {
 		StorySave save = StorySave.create("Ana");
-		save.armWin("queen_town", new int[] { 1, 2, 3, 4, 84 }, 84);
+		int before = save.collectionSize();
+		save.armWin("queen_town", new int[] { 1, 2, 3, 4, 84 }, 0);
 		assertEquals(0, save.pendingSpecial());
-		assertNull(save.confirm(84));
-		assertTrue(save.hasPending());
 		assertNull(save.confirm(99));
-		assertArrayEquals(new int[] { 1 }, save.confirm(1));
+		assertTrue(save.hasPending());
+		assertArrayEquals(new int[] { 84 }, save.confirm(84));
 		assertFalse(save.specialGranted("queen_town"));
 
-		save.armWin("queen_town", new int[] { 1, 2, 3, 4, 5 }, 84);
-		assertEquals(84, save.pendingSpecial());
-		assertArrayEquals(new int[] { 5, 84 }, save.confirm(5));
-		assertTrue(save.specialGranted("queen_town"));
+		save.armWin("king", new int[] { 1, 2, 3, 4, 5 }, 85);
+		assertEquals(85, save.pendingSpecial());
+		assertArrayEquals(new int[] { 5, 85 }, save.confirm(5));
+		assertTrue(save.specialGranted("king"));
 
-		save.armWin("queen_town", new int[] { 1, 2, 3, 4, 5 }, 84);
+		save.armWin("king", new int[] { 1, 2, 3, 4, 5 }, 85);
 		assertEquals(0, save.pendingSpecial());
 		assertArrayEquals(new int[] { 2 }, save.confirm(2));
 		assertEquals(0, save.confirm(2).length);
+		assertEquals(before, save.collectionSize());
 	}
 
 	@Test
@@ -180,23 +202,23 @@ public class StoryCampaignTest {
 	}
 
 	@Test
-	public void rolledHandsNeverContainSpecials() throws Exception {
-		int[][] catalog = readCatalog();
-		Random random = new Random(7);
+	public void onlyBossesHaveAFixedReward() {
+		int bosses = 0;
 		for (int r = 0; r < StoryCampaign.REGIONS.length; r++) {
 			Duel[] duels = StoryCampaign.REGIONS[r].duels;
+			boolean hasBoss = false;
 			for (int d = 0; d < duels.length; d++) {
 				Duel duel = duels[d];
-				if (duel.rewardId > 0)
+				if (duel.isBoss()) {
+					hasBoss = true;
+					bosses++;
 					assertTrue(StoryCampaign.isSpecial(duel.rewardId), duel.id);
-				for (int n = 0; n < 8; n++) {
-					int[] hand = StoryCampaign.rollHand(catalog[0], catalog[1], duel.minLevel, duel.maxLevel, random);
-					assertEquals(5, hand.length, duel.id);
-					for (int i = 0; i < hand.length; i++)
-						assertFalse(StoryCampaign.isSpecial(hand[i]), duel.id);
-				}
+				} else
+					assertEquals(0, duel.rewardId, duel.id);
 			}
+			assertTrue(hasBoss, StoryCampaign.REGIONS[r].id);
 		}
+		assertEquals(8, bosses);
 	}
 
 	@Test
@@ -232,7 +254,7 @@ public class StoryCampaignTest {
 		String text = new String(Files.readAllBytes(file.toPath()), "UTF-8");
 		assertTrue(text.contains("CAMP.1.GENDER = M"));
 		assertTrue(text.contains("CAMP.2.GENDER = F"));
-		assertTrue(text.contains("STORY_FORMAT = 3"));
+		assertTrue(text.contains("STORY_FORMAT = 4"));
 
 		Profile loaded = ProfileStore.readFile(file);
 		assertEquals(StorySave.MALE, loaded.campaignAt(0).gender());
@@ -344,6 +366,10 @@ public class StoryCampaignTest {
 				n++;
 		}
 		return n;
+	}
+
+	private static int campCopies(StorySave save, int cardId) {
+		return save == null ? 0 : save.copies(cardId);
 	}
 
 	private static void clear(StorySave save, Region region) {

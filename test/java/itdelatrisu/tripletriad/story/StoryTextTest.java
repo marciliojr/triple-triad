@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import itdelatrisu.tripletriad.story.StoryCampaign.Duel;
 import itdelatrisu.tripletriad.story.StoryCampaign.Line;
 import itdelatrisu.tripletriad.story.StoryCampaign.Region;
+import itdelatrisu.tripletriad.story.StorySave;
 
 /** Spelling and format checks for the Story Mode script in PT, EN and ES. */
 public class StoryTextTest {
@@ -123,7 +124,10 @@ public class StoryTextTest {
 		List<Line> all = new ArrayList<Line>();
 		add(all, StoryCampaign.STARTER);
 		add(all, StoryCampaign.ceremony());
+		StorySave probe = StorySave.create("Ana");
 		for (Region region : StoryCampaign.REGIONS) {
+			for (Duel d : region.duels)
+				add(all, StoryScript.lessons(probe, d));
 			add(all, region.arrival);
 			for (Duel d : region.duels) {
 				add(all, d.bio);

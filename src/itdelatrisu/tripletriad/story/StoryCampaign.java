@@ -39,10 +39,11 @@ import itdelatrisu.tripletriad.Rule;
  * Esthar semi top 1. The FH match against the Queen is a seed match: no points,
  * nobody is eliminated.</li>
  * <li>The final is one match. A loss is a rematch. The title passes only on a win.</li>
- * <li>Every win: choose one card from the hand that was played. A designated
- * special card is added on the first win only and is never in that hand.</li>
+ * <li>The campaign has its own collection, separate from the profile album.</li>
+ * <li>Every win: choose one card from the opponent's deck. A city boss also
+ * gives a fixed strong card, shown first, then the choice.</li>
+ * <li>A defeat gives and takes nothing. The same table can be replayed.</li>
  * </ul>
- * Specials use real catalog ids. They are excluded from every story hand.
  */
 public final class StoryCampaign {
 	public enum After { HUB, STAGE, LIST, PICK, CARD, CEREMONY }
@@ -182,6 +183,9 @@ public final class StoryCampaign {
 		public String role() { return I18n.text(rolePt, roleEn, roleEs); }
 
 		public String style() { return I18n.text(stylePt, styleEn, styleEs); }
+
+		/** @return true when this is the city boss (a fixed prize is defined) */
+		public boolean isBoss() { return rewardId > 0; }
 	}
 
 	/** A tournament stop. */
@@ -232,17 +236,11 @@ public final class StoryCampaign {
 	}
 
 	/**
-	 * Fixed prizes. These ids never enter a story hand, so the common choice
-	 * cannot take them early. Mapping: duel id, character, card, catalog id.
-	 * king/Quistis/Ifrit/85, queen_town/Queen/Shiva/84, raijin/Raijin/Angelo/79,
-	 * fujin/Fujin/Quezacotl/83, zone/Zone/Chicobo/82, jack/CC Jack/Gilgamesh/80,
-	 * rinoa/Rinoa/Siren/86, diamond/CC Diamond/Sacred/87,
-	 * soldier_deling/Mara Quill/Minotaur/88, queen_deling/Queen/Alexander/95,
-	 * pub/Tomas Reed/Chubby Chocobo/78, soldier_dollet/Enne Doss/MiniMog/81,
-	 * queen_dollet/Queen/Diablos/90, pescador/Nash Pell/Leviathan/91,
-	 * shumi/Elder Muum/Carbuncle/89, flo/Dobe and Flo/Phoenix/96,
-	 * queen_fh/Queen/Doomtrain/98, cientista/Ivo Lenn/Odin/92,
-	 * odine/Odine/Eden/99, seifer/Seifer/Seifer/109, queen_esthar/Queen/Bahamut/97.
+	 * Catalog ids treated as rare/special (level 8+ prizes used by city bosses).
+	 * Mapping of the current bosses: king/Quistis/Ifrit/85, fujin/Fujin/Quezacotl/83,
+	 * rinoa/Rinoa/Siren/86, queen_deling/Queen/Alexander/95,
+	 * queen_dollet/Queen/Diablos/90, flo/Dobe and Flo/Phoenix/96,
+	 * seifer/Seifer/Seifer/109, queen_esthar/Queen/Bahamut/97.
 	 */
 	private static final int[] SPECIALS = {
 		78, 79, 80, 81, 82, 83, 84, 85, 86, 87, 88, 89, 90, 91, 92, 95, 96, 97, 98, 99, 109
@@ -326,8 +324,21 @@ public final class StoryCampaign {
 		return out.toString();
 	}
 
+	/**
+	 * Maps a stored duel id to the current id. Old saves keep the same keys;
+	 * {@code final} is the former id of the grand final.
+	 */
+	public static String canonicalId(String id) {
+		if (id == null || id.isEmpty())
+			return "";
+		if (id.equals("final"))
+			return "queen_esthar";
+		return id;
+	}
+
 	public static Duel findDuel(String id) {
-		if (id == null)
+		id = canonicalId(id);
+		if (id.isEmpty())
 			return null;
 		for (int r = 0; r < REGIONS.length; r++) {
 			Duel[] duels = REGIONS[r].duels;

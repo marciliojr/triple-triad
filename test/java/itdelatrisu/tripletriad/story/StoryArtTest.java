@@ -115,20 +115,15 @@ public class StoryArtTest {
 	}
 
 	@Test
-	public void kingRevealPlaysOverTheStill() {
+	public void quistisKeepsHerPortraitAndTheOldStillStaysInTheTree() {
 		Duel king = StoryCampaign.findDuel("king");
 		assertNotNull(king);
 		assertEquals("cc_king", king.portrait);
-		assertTrue(king.open.length > 0);
+		assertEquals("Quistis", king.namePt);
 		for (Line line : king.open)
-			assertEquals(StoryCampaign.KING_REVEAL, line.scene);
-		assertEquals(StoryCampaign.KING_REVEAL, king.before.scene);
-		int stills = 0;
-		for (Line line : allLines()) {
-			if (line.hasScene())
-				stills++;
-		}
-		assertEquals(king.open.length + 1, stills);
+			assertFalse(line.hasScene(), "the CC King reveal was dropped");
+		assertFalse(king.before.hasScene());
+		assertTrue(Assets.file("story/backgrounds/" + StoryCampaign.KING_REVEAL).isFile());
 	}
 
 	@Test

@@ -52,6 +52,7 @@ public class MyDeckScreen extends Screen {
 
 	/** Pick opened from the story campaign (same grid, different return). */
 	private boolean storyPick;
+	private boolean campaignBag;
 
 	/** Grid cursor. */
 	private int cursor;
@@ -93,6 +94,7 @@ public class MyDeckScreen extends Screen {
 	public void enterGallery() {
 		mode = MODE_GALLERY;
 		storyPick = false;
+		campaignBag = false;
 		cursor = 0;
 		scrollRow = 0;
 		previewIndex = -1;
@@ -106,6 +108,7 @@ public class MyDeckScreen extends Screen {
 	public void enterPick() {
 		mode = MODE_PICK;
 		storyPick = false;
+		campaignBag = false;
 		cursor = 0;
 		scrollRow = 0;
 		previewIndex = -1;
@@ -120,7 +123,14 @@ public class MyDeckScreen extends Screen {
 	public void enterStoryPick(int[] preselect) {
 		enterPick();
 		storyPick = true;
+		campaignBag = true;
 		preselectHand(preselect);
+	}
+
+	/** Opens the campaign collection, view-only, from the stage menu. */
+	public void enterStoryGallery() {
+		enterGallery();
+		campaignBag = true;
 	}
 
 	@Override
@@ -133,8 +143,10 @@ public class MyDeckScreen extends Screen {
 
 		ArrayList<Integer> view = albumView();
 		String title = I18n.menuMyDeck();
-		if (mode == MODE_PICK && storyPick && !game.storyOpponentName().isEmpty())
-			title = game.storyOpponentName();
+		if (campaignBag && mode == MODE_GALLERY)
+			title = I18n.storyCollection();
+		else if (mode == MODE_PICK && storyPick && !game.storyOpponentName().isEmpty())
+			title = I18n.storyHandTitle(game.storyOpponentName());
 		Ui.drawCentered(font, title, height * 0.04f, Ui.TITLE);
 		if (mode == MODE_PICK)
 			Ui.drawCentered(small, I18n.cardCount(selected.size()) + "    " + I18n.sortLine(),
@@ -167,7 +179,9 @@ public class MyDeckScreen extends Screen {
 			if (previewIndex >= 0)
 				hint = (mode == MODE_GALLERY) ? I18n.hintMyDeckPreview() : I18n.hintCardPreview();
 			else if (mode == MODE_PICK)
-				hint = I18n.hintMyDeckPick();
+				hint = storyPick ? I18n.hintStoryHandPick() : I18n.hintMyDeckPick();
+			else if (campaignBag)
+				hint = I18n.hintStoryCollection();
 			else
 				hint = I18n.hintMyDeck();
 			HintBar.draw(hint, height * 0.93f);
@@ -220,7 +234,8 @@ public class MyDeckScreen extends Screen {
 					game.returnToStory();
 				else
 					game.showDeckSelect();
-			}
+			} else if (campaignBag)
+				game.returnToStoryStage();
 			else
 				game.showMenu();
 			break;
@@ -265,9 +280,15 @@ public class MyDeckScreen extends Screen {
 		case Input.KEY_R:
 			if (mode == MODE_PICK)
 				fillRandom();
-			else if (!album().isEmpty()) {
+			else if (!campaignBag && !album().isEmpty()) {
 				AudioController.Effect.SELECT.play();
 				game.showRemoveCards();
+			}
+			break;
+		case Input.KEY_X:
+			if (campaignBag && mode == MODE_GALLERY) {
+				AudioController.Effect.BACK.play();
+				game.returnToStoryStage();
 			}
 			break;
 		case Input.KEY_T:
@@ -401,7 +422,7 @@ public class MyDeckScreen extends Screen {
 	}
 
 	private void beginDeleteConfirm() {
-		if (mode != MODE_GALLERY)
+		if (mode != MODE_GALLERY || campaignBag)
 			return;
 		ArrayList<Integer> bag = album();
 		int viewIndex = (previewIndex >= 0) ? previewIndex : cursor;
@@ -628,6 +649,10 @@ public class MyDeckScreen extends Screen {
 		Profile profile = game.getProfile();
 		if (profile == null)
 			return new ArrayList<Integer>();
+		if (campaignBag) {
+			itdelatrisu.tripletriad.story.StorySave save = profile.activeStory();
+			return (save == null) ? new ArrayList<Integer>() : save.cards();
+		}
 		return profile.getCollection();
 	}
 

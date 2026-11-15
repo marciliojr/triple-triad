@@ -524,6 +524,22 @@ public final class I18n {
 
 	public static String storyCities() { return pick("Cidades", "Cities", "Ciudades"); }
 
+	public static String storyCollection() { return pick("Coleção", "Collection", "Colección"); }
+
+	public static String storyHandTitle(String opponent) {
+		String name = (opponent == null || opponent.isEmpty()) ? "..." : opponent;
+		return pick("Mão contra " + name, "Hand vs " + name, "Mano contra " + name);
+	}
+
+	public static String storyAwardTitle() {
+		return pick("Carta do chefe", "Boss card", "Carta del jefe");
+	}
+
+	public static String storyAwardTaken(String card) {
+		String name = (card == null) ? "" : card;
+		return pick("Você recebeu " + name + ".", "You received " + name + ".", "Recibiste " + name + ".");
+	}
+
 	public static String storyTable() { return pick("Tabela", "Standings", "Tabla"); }
 
 	public static String storyLadder() { return pick("Chave", "Bracket", "Llave"); }
@@ -617,6 +633,24 @@ public final class I18n {
 			"Izq/der elige    Z/Enter confirma    C amplia    X vuelve    Esc men\u00fa"));
 	}
 
+	public static String hintStoryCollection() {
+		return Controls.dyn(pick("Setas movem    C amplia    T ordena    X volta    Esc menu",
+			"Arrows move    C zooms    T sorts    X back    Esc menu",
+			"Flechas mueven    C amplia    T ordena    X vuelve    Esc men\u00fa"));
+	}
+
+	public static String hintStoryAward() {
+		return Controls.dyn(pick("Z/Enter segue para a escolha    Esc menu",
+			"Z/Enter continues to the choice    Esc menu",
+			"Z/Enter sigue a la elecci\u00f3n    Esc men\u00fa"));
+	}
+
+	public static String hintStoryHandPick() {
+		return Controls.dyn(pick("Setas movem    Z marca 5 cartas    Enter confirma    C amplia    R aleat\u00f3rio    Esc volta",
+			"Arrows move    Z marks 5 cards    Enter confirms    C zooms    R random    Esc back",
+			"Flechas mueven    Z marca 5 cartas    Enter confirma    C amplia    R aleatorio    Esc vuelve"));
+	}
+
 	public static String hintStoryYesNo() {
 		return Controls.dyn(pick("Esq/dir escolhe    Z/Enter confirma    Esc volta",
 			"Left/right selects    Z/Enter confirms    Esc back",
@@ -631,18 +665,18 @@ public final class I18n {
 			pick("Fases de pontos: vit\u00f3ria vale 3. A derrota fica de fora at\u00e9 a revanche substituir o resultado. Os outros jogos do grupo j\u00e1 est\u00e3o na tabela.",
 				"Points stages: a win is worth 3. A loss stays off the board until the rematch replaces it. The group's other matches are already in the standings.",
 				"Fases de puntos: la victoria vale 3. La derrota queda fuera hasta que la revancha sustituya el resultado. Los otros partidos del grupo ya est\u00e1n en la tabla."),
-			pick("Cortes: Balamb, Deling e Dollet, os 2 primeiros. Timber, os 3 primeiros. Quartas em FH e semifinal em Esthar, s\u00f3 o 1\u00ba.",
+			pick("Cortes: Balamb, Deling e Dollet, os 2 primeiros. Timber, os 3 primeiros. Quartas em FH e semifinal em Esthar, s\u00f3 o primeiro.",
 				"Cutoffs: Balamb, Deling and Dollet, top 2. Timber, top 3. FH quarterfinal and Esthar semifinal, 1st only.",
-				"Cortes: Balamb, Deling y Dollet, los 2 primeros. Timber, los 3 primeros. Cuartos en FH y semifinal en Esthar, solo el 1.\u00ba"),
+				"Cortes: Balamb, Deling y Dollet, los 2 primeros. Timber, los 3 primeros. Cuartos en FH y semifinal en Esthar, solo el primero"),
 			pick("Em FH, a mesa contra a Rainha \u00e9 de cabe\u00e7a de chave. N\u00e3o vale ponto e n\u00e3o elimina ningu\u00e9m.",
 				"At FH, the match against the Queen is a seeding match. It scores nothing and eliminates no one.",
 				"En FH, la mesa contra la Reina es de cabeza de serie. No da puntos y no elimina a nadie."),
 			pick("A grande final \u00e9 uma mesa no Garden. Derrota d\u00e1 revanche na hora. O t\u00edtulo s\u00f3 muda de m\u00e3os com a vit\u00f3ria.",
 				"The grand final is one table at the Garden. A loss means an instant rematch. The title only changes hands with a win.",
 				"La gran final es una mesa en el Garden. La derrota da revancha al momento. El t\u00edtulo solo cambia de manos con la victoria."),
-			pick("Cada vit\u00f3ria: uma carta da m\u00e3o jogada. A carta especial do encontro sai s\u00f3 na primeira vez, \u00e0 parte, e nunca nessa m\u00e3o.",
-				"Every win: one card from the hand that was played. The encounter's special card is given only the first time, separately, and never in that hand.",
-				"Cada victoria: una carta de la mano jugada. La carta especial del encuentro sale solo la primera vez, aparte, y nunca en esa mano.")
+			pick("Cada vit\u00f3ria: escolha 1 carta do deck do advers\u00e1rio. No chefe da cidade, voc\u00ea ainda recebe 1 carta forte fixa, mostrada antes da escolha. Derrota n\u00e3o d\u00e1 nem tira carta.",
+				"Every win: choose 1 card from the opponent's deck. On a city boss, you also get 1 fixed strong card, shown before the choice. A loss gives and takes no card.",
+				"Cada victoria: elige 1 carta del mazo rival. En el jefe de la ciudad, tambi\u00e9n recibes 1 carta fuerte fija, mostrada antes de la elecci\u00f3n. La derrota no da ni quita carta.")
 		};
 	}
 
@@ -745,9 +779,9 @@ public final class I18n {
 	}
 
 	public static String championshipHint() {
-		return pick("Novo jogo usa Meu Deck. Se estiver vazio, a 1\u00aa partida cria o pack.",
+		return pick("Novo jogo usa Meu Deck. Se estiver vazio, a primeira partida cria o pack.",
 			"New game uses My Deck. If it is empty, match 1 creates the pack.",
-			"Nuevo juego usa Mi mazo. Si est\u00e1 vac\u00edo, la 1\u00aa partida crea el sobre.");
+			"Nuevo juego usa Mi mazo. Si est\u00e1 vac\u00edo, la primera partida crea el sobre.");
 	}
 
 	public static String championshipCards(int n) {
@@ -1407,7 +1441,7 @@ public final class I18n {
 		"No menu Cheats digite um c\u00f3digo e aperte Enter. cid = todas as cartas | edea = Guardian Forces (n\u00edveis 8-9) | balamb = personagens (n\u00edvel 10) | monster = monstros (n\u00edveis 1-7).",
 		"",
 		"#Hist\u00f3ria",
-		"Hist\u00f3ria original: voc\u00ea \u00e9 um aluno ou uma aluna de Balamb (a escolha \u00e9 feita ao criar a campanha) no Torneio Mundial. Squall orienta e n\u00e3o joga. O mesmo perfil guarda at\u00e9 15 campanhas. Cada vit\u00f3ria deixa escolher uma carta da m\u00e3o; a carta especial do encontro sai s\u00f3 na primeira vez. As partidas s\u00e3o escolhidas em Cidades, no mapa-m\u00fandi. Esc nas telas da campanha pergunta se voc\u00ea quer voltar ao menu (o progresso \u00e9 salvo); X volta uma tela. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
+		"Hist\u00f3ria original: voc\u00ea \u00e9 um aluno ou uma aluna de Balamb (a escolha \u00e9 feita ao criar a campanha) no Torneio Mundial. Squall orienta e n\u00e3o joga. O mesmo perfil guarda at\u00e9 15 campanhas, cada uma com o pr\u00f3prio deck, separado da cole\u00e7\u00e3o do perfil. Ao come\u00e7ar, voc\u00ea recebe um deck inicial de n\u00edveis 1 e 2. Antes de cada duelo voc\u00ea monta a m\u00e3o de 5 cartas. Cada vit\u00f3ria deixa escolher 1 carta do deck do advers\u00e1rio; no chefe da cidade voc\u00ea ganha tamb\u00e9m 1 carta forte fixa. Derrota n\u00e3o altera a cole\u00e7\u00e3o. As partidas s\u00e3o escolhidas em Cidades, no mapa-m\u00fandi. Esc nas telas da campanha pergunta se voc\u00ea quer voltar ao menu (o progresso \u00e9 salvo); X volta uma tela. Esc no meio da partida volta ao ponto salvo, sem apagar a campanha.",
 		"",
 		"#Lembrete",
 		"Coloque, compare, capture, domine. N\u00famero maior vence. Same procura igualdade. Plus procura somas iguais. Quem tiver mais cartas no fim ganha."
@@ -1460,7 +1494,7 @@ public final class I18n {
 		"In the Cheats menu type a code and press Enter. cid = all cards | edea = Guardian Forces (levels 8-9) | balamb = characters (level 10) | monster = monsters (levels 1-7).",
 		"",
 		"#Story",
-		"An original story: you are a Balamb student (chosen when the campaign is created) in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns. Each win lets you choose one card from the hand; the meeting's special card is given only the first time. Matches are picked in Cities, on the world map. Esc on campaign screens asks if you want to return to the menu (progress is saved); X goes back one screen. Leaving mid-match returns to the saved point without deleting the campaign.",
+		"An original story: you are a Balamb student (chosen when the campaign is created) in the World Tournament. Squall advises and does not play. One profile holds up to 15 campaigns, each with its own deck, kept apart from the profile album. A new campaign starts with a level 1-2 deck. Before each duel you build a 5-card hand. Every win lets you choose 1 card from the opponent's deck; a city boss also gives 1 fixed strong card. A loss does not change the collection. Matches are picked in Cities, on the world map. Esc on campaign screens asks if you want to return to the menu (progress is saved); X goes back one screen. Leaving mid-match returns to the saved point without deleting the campaign.",
 		"",
 		"#Reminder",
 		"Place, compare, capture, dominate. Higher number wins. Same looks for equal ranks. Plus looks for equal sums. Whoever has more cards at the end wins."
@@ -1513,7 +1547,7 @@ public final class I18n {
 		"En el men\u00fa Trucos escribe un c\u00f3digo y pulsa Enter. cid = todas las cartas | edea = Guardian Forces (niveles 8-9) | balamb = personajes (nivel 10) | monster = monstruos (niveles 1-7).",
 		"",
 		"#Historia",
-		"Historia original: eres un alumno o una alumna de Balamb (se elige al crear la campa\u00f1a) en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campa\u00f1as. Cada victoria deja elegir una carta de la mano; la carta especial del encuentro sale solo la primera vez. Las partidas se eligen en Ciudades, en el mapa mundial. Esc en las pantallas de la campa\u00f1a pregunta si quieres volver al men\u00fa (se guarda el progreso); X vuelve una pantalla. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campa\u00f1a.",
+		"Historia original: eres un alumno o una alumna de Balamb (se elige al crear la campaña) en el Torneo Mundial. Squall orienta y no juega. El mismo perfil guarda hasta 15 campañas, cada una con su propio mazo, separado de la colección del perfil. Al empezar recibes un mazo inicial de niveles 1 y 2. Antes de cada duelo montas la mano de 5 cartas. Cada victoria deja elegir 1 carta del mazo rival; en el jefe de la ciudad también ganas 1 carta fuerte fija. La derrota no cambia la colección. Las partidas se eligen en Ciudades, en el mapa mundial. Esc en las pantallas de la campaña pregunta si quieres volver al menú (se guarda el progreso); X vuelve una pantalla. Salir a mitad de la partida vuelve al punto guardado, sin borrar la campaña.",
 		"",
 		"#Recordatorio",
 		"Coloca, compara, captura, domina. El n\u00famero mayor gana. Same busca igualdad. Plus busca sumas iguales. Quien tenga m\u00e1s cartas al final gana."

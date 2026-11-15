@@ -19,14 +19,15 @@ import java.util.Random;
 /**
  * One story campaign. A profile can hold several of these.
  * The album, decks, championship blocks and trophies stay on the profile.
- * Cleared duels, standings inputs, rewards and the pending card choice stay here.
+ * Each campaign keeps its own card collection, seed, cleared duels and pending reward.
  */
 public final class StorySave {
 	/**
 	 * On-disk format. Version 1 was the single STORY_CLEARED list.
 	 * Version 3 adds {@code CAMP.n.GENDER} (the chosen protagonist).
+	 * Version 4 adds the campaign collection, the special-roll seed and seen rules.
 	 */
-	public static final int FORMAT = 3;
+	public static final int FORMAT = 4;
 
 	/** Protagonist: aluno (male student). */
 	public static final String MALE = "M";
@@ -56,6 +57,9 @@ public final class StorySave {
 	/** The player still has to choose the card. */
 	public static final String PICK = "PICK";
 
+	/** The boss prize is on screen and has not been added to the collection yet. */
+	public static final String AWARD = "AWARD";
+
 	private static final DateTimeFormatter WHEN = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
 	private String id = "";
@@ -74,6 +78,11 @@ public final class StorySave {
 	private boolean complete;
 	private boolean fromLegacy;
 	private boolean starterScene;
+	private long seed;
+	private final ArrayList<Integer> collection = new ArrayList<Integer>();
+	private final ArrayList<String> seenRules = new ArrayList<String>();
+	private boolean pendingSpecialGiven;
+	private boolean collectionReady;
 
 	private StorySave() {}
 
@@ -100,6 +109,8 @@ public final class StorySave {
 		save.createdAt = System.currentTimeMillis();
 		save.savedAt = save.createdAt;
 		save.id = "c" + Long.toString(save.createdAt, 36) + Integer.toString(new Random().nextInt(46656), 36);
+		save.starterScene = true;
+		StoryBalance.grantStarter(save);
 		return save;
 	}
 
@@ -224,6 +235,7 @@ public final class StorySave {
 	/**
 	 * Records a win that still needs its dialogue and card choice.
 	 * Cards are not granted here. A second call does not replace an open reward.
+	 * {@code specialId} is the city-boss prize; commons pass 0.
 	 */
 	public void armWin(String duelId, int[] hand, int specialId) {
 		if (duelId == null || duelId.isEmpty() || hasPending())
@@ -231,21 +243,41 @@ public final class StorySave {
 		pendingDuel = duelId;
 		pendingPhase = TALK;
 		pendingHand = copyHand(hand);
-		pendingSpecial = (!specialGranted(duelId) && specialId > 0 && !StoryCampaign.isSpecialInHand(pendingHand, specialId))
-			? specialId : 0;
-		if (StoryCampaign.isSpecial(pendingSpecial) && contains(pendingHand, pendingSpecial))
-			pendingSpecial = 0;
+		boolean boss = specialId > 0;
+		pendingSpecial = (boss && !specialGranted(duelId) && specialId > 0) ? specialId : 0;
+		pendingSpecialGiven = false;
 		touch();
 	}
 
-	/** The win dialogue finished. The card choice is still open. */
+	/** The win dialogue finished. Bosses go to the fixed prize; others go to the choice. */
 	public void advanceToPick() {
-		if (hasPending())
-			pendingPhase = PICK;
+		if (!hasPending())
+			return;
+		pendingPhase = (pendingSpecial > 0 && !pendingSpecialGiven) ? AWARD : PICK;
+	}
+
+	/** @return true when the fixed boss prize is waiting to be acknowledged */
+	public boolean awaitingAward() {
+		return hasPending() && AWARD.equals(pendingPhase);
 	}
 
 	/**
-	 * Grants the chosen card and, on the first win, the fixed special.
+	 * Marks the fixed boss prize as taken so a reload cannot grant it twice.
+	 * @return the prize id, or 0 if there is nothing to give
+	 */
+	public int takeBossReward() {
+		if (!hasPending() || pendingSpecial <= 0 || pendingSpecialGiven)
+			return 0;
+		pendingSpecialGiven = true;
+		if (!specials.contains(pendingDuel))
+			specials.add(pendingDuel);
+		pendingPhase = PICK;
+		touch();
+		return pendingSpecial;
+	}
+
+	/**
+	 * Grants the chosen card and, if the boss prize was not taken yet, that prize too.
 	 * @return the ids added, an empty array if there is nothing pending,
 	 *         or null if the choice is not one of the eligible cards
 	 */
@@ -254,8 +286,9 @@ public final class StorySave {
 			return new int[0];
 		if (!eligible(chosen))
 			return null;
-		int[] granted = (pendingSpecial > 0) ? new int[] { chosen, pendingSpecial } : new int[] { chosen };
-		if (pendingSpecial > 0 && !specials.contains(pendingDuel))
+		int bonus = (pendingSpecial > 0 && !pendingSpecialGiven) ? pendingSpecial : 0;
+		int[] granted = (bonus > 0) ? new int[] { chosen, bonus } : new int[] { chosen };
+		if (bonus > 0 && !specials.contains(pendingDuel))
 			specials.add(pendingDuel);
 		if (!cleared.contains(pendingDuel))
 			cleared.add(pendingDuel);
@@ -263,14 +296,19 @@ public final class StorySave {
 		pendingPhase = "";
 		pendingHand = new int[0];
 		pendingSpecial = 0;
+		pendingSpecialGiven = false;
 		touch();
 		return granted;
 	}
 
-	/** @return true if this hand card can be taken (not a fixed special) */
+	/** @return true if this card is in the opponent hand that was just played */
 	public boolean eligible(int cardId) {
-		return cardId > 0 && contains(pendingHand, cardId) && !StoryCampaign.isSpecial(cardId);
+		return cardId > 0 && contains(pendingHand, cardId);
 	}
+
+	public boolean isPendingSpecialGiven() { return pendingSpecialGiven; }
+
+	public void setPendingSpecialGiven(boolean value) { pendingSpecialGiven = value; }
 
 	public String clearedCsv() { return join(cleared); }
 
@@ -284,17 +322,104 @@ public final class StorySave {
 
 	public void setSpecialsCsv(String csv) { fill(specials, csv); }
 
+	/** Rewrites retired duel ids (for example {@code final}) without dropping the original token. */
+	public void remapDuelIds() {
+		remap(cleared);
+		remap(specials);
+		String mapped = StoryCampaign.canonicalId(pendingDuel);
+		if (!mapped.isEmpty() && !mapped.equals(pendingDuel))
+			pendingDuel = mapped;
+	}
+
+	private static void remap(ArrayList<String> list) {
+		ArrayList<String> extra = new ArrayList<String>();
+		for (int i = 0; i < list.size(); i++) {
+			String mapped = StoryCampaign.canonicalId(list.get(i));
+			if (!mapped.isEmpty() && !list.contains(mapped))
+				extra.add(mapped);
+		}
+		for (int i = 0; i < extra.size(); i++)
+			list.add(extra.get(i));
+	}
+
+
 	public void setPending(String duelId, String phase, int[] hand, int special) {
+		setPending(duelId, phase, hand, special, pendingSpecialGiven);
+	}
+
+	public void setPending(String duelId, String phase, int[] hand, int special, boolean specialGiven) {
 		pendingDuel = (duelId == null) ? "" : duelId;
-		pendingPhase = PICK.equals(phase) ? PICK : (pendingDuel.isEmpty() ? "" : TALK);
+		if (AWARD.equals(phase))
+			pendingPhase = AWARD;
+		else if (PICK.equals(phase))
+			pendingPhase = PICK;
+		else
+			pendingPhase = pendingDuel.isEmpty() ? "" : TALK;
 		pendingHand = copyHand(hand);
 		pendingSpecial = special > 0 ? special : 0;
+		pendingSpecialGiven = specialGiven && pendingSpecial > 0;
 		if (pendingDuel.isEmpty()) {
 			pendingPhase = "";
 			pendingHand = new int[0];
 			pendingSpecial = 0;
+			pendingSpecialGiven = false;
 		}
 	}
+
+
+	public long seed() { return seed; }
+
+	public void setSeed(long value) { seed = (value == 0L) ? 1L : value; }
+
+	public boolean isCollectionReady() { return collectionReady; }
+
+	public void setCollectionReady(boolean value) { collectionReady = value; }
+
+	public ArrayList<Integer> cards() { return collection; }
+
+	public int collectionSize() { return collection.size(); }
+
+	public void clearCollection() { collection.clear(); }
+
+	public void addCard(int cardId) {
+		if (cardId > 0)
+			collection.add(Integer.valueOf(cardId));
+	}
+
+	public boolean containsCard(int cardId) {
+		return collection.contains(Integer.valueOf(cardId));
+	}
+
+	public int copies(int cardId) {
+		int n = 0;
+		for (int i = 0; i < collection.size(); i++) {
+			if (collection.get(i).intValue() == cardId)
+				n++;
+		}
+		return n;
+	}
+
+	public String collectionCsv() { return formatIds(toArray(collection)); }
+
+	public void setCollectionCsv(String csv) {
+		collection.clear();
+		int[] ids = parseIds(csv);
+		for (int i = 0; i < ids.length; i++)
+			collection.add(Integer.valueOf(ids[i]));
+	}
+
+	public boolean hasSeenRule(String key) {
+		return key != null && seenRules.contains(key);
+	}
+
+	public void markRuleSeen(String key) {
+		if (key != null && !key.isEmpty() && !seenRules.contains(key))
+			seenRules.add(key);
+	}
+
+	public String seenRulesCsv() { return join(seenRules); }
+
+	public void setSeenRulesCsv(String csv) { fill(seenRules, csv); }
 
 	/** Copies a pre-campaign clear list without dropping unknown ids. */
 	public void absorbLegacy(String clearedCsv, String arrivalCsv) {
@@ -317,6 +442,13 @@ public final class StorySave {
 				return true;
 		}
 		return false;
+	}
+
+	private static int[] toArray(ArrayList<Integer> list) {
+		int[] out = new int[list.size()];
+		for (int i = 0; i < list.size(); i++)
+			out[i] = list.get(i).intValue();
+		return out;
 	}
 
 	private static int[] copyHand(int[] ids) {
