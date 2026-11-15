@@ -26,7 +26,7 @@ Export/import: `SaveTransfer` (AWT `FileDialog` no EDT, com janela dona e `dispo
 
 ## Áudio
 
-`AudioController.applyMusic()` liga/pausa o BGM. `AudioController.playCursor()` toca o SELECT só se `Options.isCursorSoundEnabled()`.
+`AudioController` tem dois leitos: `Bed.MENU` (`res/menu.ogg`, com fallback para `bgm.ogg` se o arquivo faltar) e `Bed.BATTLE` (`res/bgm.ogg`). `bedFor(screen)` devolve `null` na intro (áudio próprio), `BATTLE` em `GameScreen.MATCH` e `MENU` nas demais telas. `TripleTriad.syncMusic()` no `update()` chama `onScreen()` só quando a tela muda; a mesma faixa não reinicia. `applyMusic()` respeita a opção de música, não cobre o tema de vitória, e retoma o leito atual sem trocá-lo. `pauseMusic()` pausa o leito (vídeos da História e o encerramento do Campeonato). `playVictory()`/`stopVictory()` continuam no tema de vitória. `AudioController.playCursor()` toca o SELECT só se `Options.isCursorSoundEnabled()`.
 
 ## Cartas
 

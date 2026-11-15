@@ -42,13 +42,15 @@ public class Music {
 
 	/**
 	 * Loops the track at the current music volume.
+	 * If the track is already playing, only the volume is updated (no restart).
 	 */
 	public void loop() {
 		if (music == null)
 			return;
 		music.setLooping(true);
 		music.setVolume(Gfx.getMusicVolume());
-		music.play();
+		if (!music.isPlaying())
+			music.play();
 	}
 
 	/**
@@ -60,10 +62,15 @@ public class Music {
 	}
 
 	/**
-	 * Stops playback.
+	 * Stops playback and rewinds to the start.
 	 */
 	public void stop() {
 		if (music != null)
 			music.stop();
+	}
+
+	/** @return true while the track is audible (false when paused or stopped) */
+	public boolean isPlaying() {
+		return music != null && music.isPlaying();
 	}
 }

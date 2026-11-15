@@ -32,7 +32,7 @@
 
 - Branch `feat/1.3.0-video-endgame`: vídeo em loop na zerada do Campeonato (`gfx.VideoLoop` + `ChampionshipScreen.MODE_WON`). Fonte `res/endgame.mp4`; o jogo usa `res/endgame/frame_NNN.jpg` + `res/endgame.ogg`. Para trocar o vídeo: `ffmpeg -i endgame.mp4 -vf scale=640:360 -r 24 -q:v 7 res/endgame/frame_%03d.jpg` e `ffmpeg -i endgame.mp4 -vn -c:a libvorbis -q:a 4 res/endgame.ogg`
 
-- Mesma branch: abertura `ui.IntroScreen` (`GameScreen.INTRO`, `VideoLoop.setLooping(false)`, S pula, `AudioController.init(false)` + `introFinished()` liga a BGM) e save estilo Memory Card PS1 (`ui.MemoryCardScreen`, `GameScreen.MEMORY_CARD`). Saves em `Profile` como `ChampionshipSlot[15]` gravados no perfil como `SLOT.N.ROUND/WINS/HAND/OPPONENT/BAG/RULES/PLAY_MS/SAVED_AT`; `RUN_*` antigo migra para o bloco 01 em `migrateLegacyRun()`. Fim do auto-delete: `endChampionshipSave()` só grava o álbum
+- Mesma branch: abertura `ui.IntroScreen` (`GameScreen.INTRO`, `VideoLoop.setLooping(false)`, S pula, `AudioController.init(false)` + `introFinished()` muda a tela e então `syncMusic()` liga o tema do menu) e save estilo Memory Card PS1 (`ui.MemoryCardScreen`, `GameScreen.MEMORY_CARD`). Saves em `Profile` como `ChampionshipSlot[15]` gravados no perfil como `SLOT.N.ROUND/WINS/HAND/OPPONENT/BAG/RULES/PLAY_MS/SAVED_AT`; `RUN_*` antigo migra para o bloco 01 em `migrateLegacyRun()`. Fim do auto-delete: `endChampionshipSave()` só grava o álbum
 
 - Mesma branch: menu Cheats (`ui.CheatsScreen`, `GameScreen.CHEATS`). Categorias pelo nível em `cards/deck.txt`: 1-7 monstros (6-7 chefes contam como monstros), 8-9 GFs, 10 personagens. Adiciona só cartas que faltam e salva o perfil
 
@@ -43,7 +43,7 @@
 - Esc nas telas da campanha (mapa, diálogo, vídeo, protagonista, lista de mesas, recompensa, etapa, hub) abre `ExitConfirm` com `Purpose.RETURN_MENU` ("Voltar ao menu? O progresso será salvo."). Sim grava o perfil (`save.touch()` + `saveProfile()`) e volta ao menu principal. Não/Esc/X fecha a janela. Diálogos locais (apagar campanha, confirmar carta, nome) continuam usando Esc para cancelar.
 - X volta uma tela (mapa/duelos/protagonista/campanhas -> etapa ou hub; no diálogo, X pula o resto da cena). Z/S continuam pulando o vídeo.
 - Menu da etapa: **Cidades** (mapa) é o caminho para escolher os jogos. **Coleção** abre a galeria da campanha (`MyDeckScreen.enterStoryGallery`, sem apagar cartas). **Tabela** só aparece nas fases `Kind.GROUP`.
-- Falas: Nilo Vann só apresenta o jogo (nome, origem, regras, recompensa, etapa/placar; convite à revanche; anúncio da carta). Squall explica a regra na primeira aparição (`StoryScript.lessons`, chaves em `SEEN`). Adversários falam curto na mesa. Fujin em maiúsculas; Raijin com "ya know" em EN; Squall sem terceira pessoa. `StoryTextTest` também recusa glifos fora de ASCII + `áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡`.
+- Falas: Nilo Vann só apresenta o jogo (nome, origem, regras, recompensa, etapa/placar; convite à revanche; anúncio da carta). Squall explica a regra na primeira aparição (`StoryScript.lessons`, chaves em `SEEN`), com texto e, quando cabe, um tabuleiro miniatura (`Line.example` / `StoryRuleExample`) desenhado acima da caixa de diálogo. Os exemplos passam por `CardResult`. Lição já vista não se repete. Adversários falam curto na mesa. Fujin em maiúsculas; Raijin com "ya know" em EN; Squall sem terceira pessoa. `StoryTextTest` também recusa glifos fora de ASCII + `áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡`.
 
 ## Ao continuar
 

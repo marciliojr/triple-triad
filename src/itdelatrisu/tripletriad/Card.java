@@ -352,6 +352,13 @@ public class Card {
 	public int getPosition() { return position; }
 
 	/**
+	 * Sets the board position without starting the placement animation.
+	 * Used by rule examples and unit tests.
+	 * @param position the board position [0, 8], or -1 if not played
+	 */
+	public void setPosition(int position) { this.position = position; }
+
+	/**
 	 * Resets the card position to -1 (not played).
 	 */
 	public void resetPosition() { position = -1; }

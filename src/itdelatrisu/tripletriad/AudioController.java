@@ -27,8 +27,17 @@ import itdelatrisu.tripletriad.gfx.Sound;
  * Controller for all audio.
  */
 public class AudioController {
-	/** BGM track. */
-	private static Music bgm;
+	/** Which looping bed should be audible on the current screen. */
+	public enum Bed { MENU, BATTLE }
+
+	/** Battle/match track ({@code res/bgm.ogg}). */
+	private static Music battle;
+
+	/** Menu-and-hub track ({@code res/menu.ogg}), or unused if the file is missing. */
+	private static Music menu;
+
+	/** Bed selected for the current screen. */
+	private static Bed bed = Bed.MENU;
 
 	/** Sound effects. */
 	public enum Effect {
@@ -87,24 +96,78 @@ public class AudioController {
 	}
 
 	/**
-	 * Starts or pauses the BGM according to the music option.
+	 * Bed for a top-level screen: {@code null} means leave music alone
+	 * (the intro has its own audio).
 	 */
-	public static void applyMusic() {
-		if (bgm == null)
-			return;
-		if (Options.isMusicEnabled())
-			bgm.loop();
-		else
-			bgm.pause();
+	public static Bed bedFor(GameScreen screen) {
+		if (screen == null || screen == GameScreen.INTRO)
+			return null;
+		return (screen == GameScreen.MATCH) ? Bed.BATTLE : Bed.MENU;
 	}
 
 	/**
-	 * Pauses the BGM (e.g. while a video with its own audio plays).
-	 * Call {@link #applyMusic()} to resume.
+	 * Selects the bed for {@code screen} and applies it, without restarting
+	 * a track that is already playing. No-op during the intro.
+	 */
+	public static void onScreen(GameScreen screen) {
+		Bed next = bedFor(screen);
+		if (next == null)
+			return;
+		if (next != bed) {
+			Music outgoing = track(bed);
+			Music incoming = track(next);
+			if (outgoing != null && outgoing != incoming)
+				outgoing.stop();
+			bed = next;
+		}
+		if (!victoryPlaying)
+			applyMusic();
+	}
+
+	/** @return the loaded track for a bed, never starting playback */
+	private static Music track(Bed which) {
+		if (which == Bed.BATTLE)
+			return battle;
+		return (menu != null) ? menu : battle;
+	}
+
+	/**
+	 * Starts, resumes or pauses the current bed according to the music option.
+	 * Does not restart a track that is already playing. While the victory
+	 * theme is up, only that theme is toggled.
+	 */
+	public static void applyMusic() {
+		if (victoryPlaying) {
+			if (victory == null)
+				return;
+			if (Options.isMusicEnabled())
+				victory.loop();
+			else
+				victory.pause();
+			return;
+		}
+		Music want = track(bed);
+		if (want == null)
+			return;
+		Music other = track(bed == Bed.BATTLE ? Bed.MENU : Bed.BATTLE);
+		if (other != null && other != want && other.isPlaying())
+			other.pause();
+		if (Options.isMusicEnabled())
+			want.loop();
+		else
+			want.pause();
+	}
+
+	/**
+	 * Pauses the current bed (e.g. while a video with its own audio plays).
+	 * Call {@link #applyMusic()} to resume from the same place.
 	 */
 	public static void pauseMusic() {
-		if (bgm != null)
-			bgm.pause();
+		if (victoryPlaying && victory != null)
+			victory.pause();
+		Music want = track(bed);
+		if (want != null)
+			want.pause();
 	}
 
 	/** Victory track (lazy), or null. */
@@ -114,7 +177,7 @@ public class AudioController {
 	private static boolean victoryPlaying;
 
 	/**
-	 * Loops the victory track ({@code res/victory.ogg}) instead of the BGM.
+	 * Loops the victory track ({@code res/victory.ogg}) instead of the current bed.
 	 */
 	public static void playVictory() {
 		if (victoryPlaying || !Options.isMusicEnabled())
@@ -132,7 +195,7 @@ public class AudioController {
 	}
 
 	/**
-	 * Stops the victory track and resumes the BGM.
+	 * Stops the victory track and resumes the current bed.
 	 */
 	public static void stopVictory() {
 		if (!victoryPlaying)
@@ -147,24 +210,30 @@ public class AudioController {
 	private AudioController() {}
 
 	/**
-	 * Initializes sounds and starts the BGM track.
+	 * Initializes sounds and starts the menu bed.
 	 */
 	public static void init() {
 		init(true);
 	}
 
 	/**
-	 * Initializes sounds; optionally holds the BGM (e.g. until the intro ends).
-	 * @param startMusic false to load the BGM without playing it
+	 * Initializes sounds; optionally holds the beds (e.g. until the intro ends).
+	 * @param startMusic false to load the tracks without playing them
 	 */
 	public static void init(boolean startMusic) {
 		try {
-			bgm = new Music("bgm.ogg");
-			if (startMusic)
-				applyMusic();
-			Effect.init();
+			battle = new Music("bgm.ogg");
 		} catch (SlickException e) {
-			Log.error("Failed to load audio.", e);
+			Log.error("Failed to load battle music.", e);
 		}
+		try {
+			menu = new Music("menu.ogg");
+		} catch (SlickException e) {
+			Log.error("Failed to load menu music; battle theme will be used on menus.", e);
+			menu = null;
+		}
+		if (startMusic)
+			applyMusic();
+		Effect.init();
 	}
 }

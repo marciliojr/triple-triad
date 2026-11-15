@@ -12,7 +12,7 @@
 
 ## Assets
 
-- `res/` — UI, sprites, BGM (`bgm.ogg`), SFX, fonte `OpenSans-Light.ttf`, ícones
+- `res/` — UI, sprites, BGM de batalha (`bgm.ogg`), tema do menu (`menu.ogg`, OC ReMix "Aroma of Sugary Warmth"), SFX, fonte `OpenSans-Light.ttf`, ícones
 - `cards/` — `deck.txt` e `{id:03d}.png`
 - Resolução via `itdelatrisu.tripletriad.gfx.Assets` (cwd primeiro; depois a pasta de instalação do zip)
 
