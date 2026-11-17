@@ -123,6 +123,27 @@ public class Image {
 	}
 
 	/**
+	 * Draws scaled with nearest-neighbor filtering, then restores the previous
+	 * filter (normally linear). Used for small lesson cards so ranks stay crisp.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param w the width
+	 * @param h the height
+	 */
+	public void drawNearest(float x, float y, float w, float h) {
+		SpriteBatch batch = Gfx.sprites();
+		batch.flush();
+		TextureFilter oldMin = texture.getMinFilter();
+		TextureFilter oldMag = texture.getMagFilter();
+		texture.setFilter(TextureFilter.Nearest, TextureFilter.Nearest);
+		batch.setColor(1f, 1f, 1f, alpha);
+		batch.draw(region, x, y, w, h);
+		batch.setColor(1f, 1f, 1f, 1f);
+		batch.flush();
+		texture.setFilter(oldMin, oldMag);
+	}
+
+	/**
 	 * Draws centered on a point.
 	 * @param x the center x
 	 * @param y the center y

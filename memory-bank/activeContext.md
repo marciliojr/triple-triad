@@ -1,5 +1,7 @@
 # Active context
 
+Último trabalho (ainda sem commit): as cartas dos exemplos do Squall nas lições ficaram cerca de 1,85 a 2 vezes maiores, com filtro nearest e a caixa de diálogo mais baixa enquanto o exemplo aparece. Sem commit nem push.
+
 Último trabalho (ainda sem commit): o tema do menu `res/menu.ogg` passou a ser "Balamb Garden" (origem do arquivo desconhecida, provavelmente a trilha original da Square; uso pessoal não comercial). `chegada_dollet` (`video_5`) foi importado; `PENDING_VIDEOS` ficou vazio. Sem commit nem push.
 
 Último trabalho (ainda sem commit): itens 3, 5, 6 e 8 do modo História na `master` local — regras regionais que se espalham, revanche do chefe, tela Progresso e dificuldade da campanha. Save no formato 5 (`DIFFICULTY`, `CITYRULES`, `CARRY`, `PLAYS`, `QUEEN`, `WINS`, `LOSSES`, `CARDWON`). Saves 4 e anteriores abrem como Normal. `./gradlew clean build test` passou com 65 testes. Sem commit nem push.
@@ -47,7 +49,7 @@
 - Esc nas telas da campanha (mapa, diálogo, vídeo, protagonista, lista de mesas, recompensa, etapa, hub) abre `ExitConfirm` com `Purpose.RETURN_MENU` ("Voltar ao menu? O progresso será salvo."). Sim grava o perfil (`save.touch()` + `saveProfile()`) e volta ao menu principal. Não/Esc/X fecha a janela. Diálogos locais (apagar campanha, confirmar carta, nome) continuam usando Esc para cancelar.
 - X volta uma tela (mapa/duelos/protagonista/campanhas -> etapa ou hub; no diálogo, X pula o resto da cena). Z/S continuam pulando o vídeo.
 - Menu da etapa: **Cidades** (mapa) é o caminho para escolher os jogos. **Coleção** abre a galeria da campanha (`MyDeckScreen.enterStoryGallery`, sem apagar cartas). **Tabela** só aparece nas fases `Kind.GROUP`.
-- Falas: Nilo Vann só apresenta o jogo (nome, origem, regras, recompensa, etapa/placar; convite à revanche; anúncio da carta). Squall explica a regra na primeira aparição (`StoryScript.lessons`, chaves em `SEEN`), com texto e, quando cabe, um tabuleiro miniatura (`Line.example` / `StoryRuleExample`) desenhado acima da caixa de diálogo. Os exemplos passam por `CardResult`. Lição já vista não se repete. Adversários falam curto na mesa. Fujin em maiúsculas; Raijin com "ya know" em EN; Squall sem terceira pessoa. `StoryTextTest` também recusa glifos fora de ASCII + `áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡`.
+- Falas: Nilo Vann só apresenta o jogo (nome, origem, regras, recompensa, etapa/placar; convite à revanche; anúncio da carta). Squall explica a regra na primeira aparição (`StoryScript.lessons`, chaves em `SEEN`), com texto e, quando cabe, um tabuleiro 3x3 ou a mão da troca (`Line.example` / `StoryRuleExample`) desenhado acima da caixa de diálogo, com cartas cerca de 1,85 a 2 vezes maiores que o miniatura original, escala nearest e a caixa um pouco mais baixa para caber na tela. Os exemplos passam por `CardResult`. Lição já vista não se repete. Adversários falam curto na mesa. Fujin em maiúsculas; Raijin com "ya know" em EN; Squall sem terceira pessoa. `StoryTextTest` também recusa glifos fora de ASCII + `áàâãéêíóôõúüçÁÀÂÃÉÊÍÓÔÕÚÜÇñÑ¿¡`.
 
 ## Ao continuar
 

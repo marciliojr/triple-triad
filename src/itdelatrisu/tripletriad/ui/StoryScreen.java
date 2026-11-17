@@ -34,6 +34,7 @@ import itdelatrisu.tripletriad.story.StoryAssets;
 import itdelatrisu.tripletriad.story.StoryCampaign;
 import itdelatrisu.tripletriad.story.StoryMap;
 import itdelatrisu.tripletriad.story.StoryRuleExample;
+import itdelatrisu.tripletriad.story.StoryRuleExampleLayout;
 import itdelatrisu.tripletriad.story.StoryProgress;
 import itdelatrisu.tripletriad.story.StoryRematch;
 import itdelatrisu.tripletriad.story.StoryRules;
@@ -1543,10 +1544,15 @@ public class StoryScreen extends Screen {
 			renderStill(g, width, height, line);
 			return;
 		}
-		float boxW = width * 0.92f;
-		float boxH = height * 0.28f;
-		float boxX = (width - boxW) / 2f;
-		float boxY = height * 0.62f;
+		boolean example = line.hasExample();
+		StoryRuleExampleLayout layout = example
+			? StoryRuleExampleLayout.of(width, height,
+				line.example.kind == StoryRuleExample.Kind.HAND, line.example.ids.length)
+			: StoryRuleExampleLayout.dialogue(width, height);
+		float boxW = layout.boxW;
+		float boxH = layout.boxH;
+		float boxX = layout.boxX;
+		float boxY = layout.boxY;
 		Image box = StoryAssets.ui("caixa_dialogo.png");
 		if (box != null)
 			box.draw(boxX, boxY, boxW, boxH);
@@ -1589,54 +1595,42 @@ public class StoryScreen extends Screen {
 			small.drawString(textX, textY, wrapped.get(i), Color.white);
 			textY += small.getLineHeight();
 		}
-		if (line.hasExample())
-			renderRuleExample(g, width, height, line.example);
+		if (example)
+			renderRuleExample(g, layout, line.example);
 		HintBar.draw(I18n.hintStoryTalk(), height * 0.96f);
 	}
 
 	/**
-	 * Mini 3x3 (or a 5-card trade hand) drawn just above the dialogue box,
-	 * reusing {@link Card#drawSized}. Highlights the card that was just
+	 * 3x3 board (or a 5-card trade hand) drawn just above the dialogue box,
+	 * about 1.85 to 2 times the original mini size, with nearest-neighbor
+	 * scaling so the ranks stay crisp. Highlights the card that was just
 	 * played (gold) and the cards it flips (cyan), with a short arrow in
 	 * the gap when they share a side.
 	 */
-	private void renderRuleExample(Graphics g, int width, int height, StoryRuleExample example) {
-		float boxY = height * 0.62f;
+	private void renderRuleExample(Graphics g, StoryRuleExampleLayout layout, StoryRuleExample example) {
+		float size = layout.size;
+		float gap = layout.gap;
+		float pad = layout.pad;
+		float frameT = layout.frame;
 		if (example.kind == StoryRuleExample.Kind.HAND) {
 			int n = example.ids.length;
-			float size = Math.min(height * 0.12f, width * 0.1f);
-			float gap = size * 0.1f;
-			float total = n * size + Math.max(0, n - 1) * gap;
-			float x = (width - total) / 2f;
-			float y = boxY - size - height * 0.04f;
-			panel(g, x - 8f, y - 8f, total + 16f, size + 16f);
+			float x = layout.ox;
+			float y = layout.oy;
+			panel(g, x - pad, y - pad, layout.gridW + 2f * pad, layout.gridH + 2f * pad);
 			for (int i = 0; i < n; i++) {
 				Card card = exampleCard(example.ids[i]);
 				if (card != null)
-					card.drawSized(x, y, size, false, false);
+					card.drawSized(x, y, size, false, false, true);
 				if (i == example.placedPos)
-					frame(g, x, y, size, new Color(0.93f, 0.84f, 0.55f), 3f);
+					frame(g, x, y, size, new Color(0.93f, 0.84f, 0.55f), frameT);
 				x += size + gap;
 			}
 			return;
 		}
 
-		float size = Math.min(height * 0.115f, width * 0.12f);
-		float gap = size * 0.1f;
-		float grid = 3f * size + 2f * gap;
-		float ox = (width - grid) / 2f;
-		float oy = boxY - grid - height * 0.035f;
-		if (oy < height * 0.02f) {
-			float scale = (boxY - height * 0.055f) / grid;
-			if (scale < 1f) {
-				size *= scale;
-				gap *= scale;
-				grid = 3f * size + 2f * gap;
-				ox = (width - grid) / 2f;
-				oy = boxY - grid - height * 0.03f;
-			}
-		}
-		panel(g, ox - 8f, oy - 8f, grid + 16f, grid + 16f);
+		float ox = layout.ox;
+		float oy = layout.oy;
+		panel(g, ox - pad, oy - pad, layout.gridW + 2f * pad, layout.gridH + 2f * pad);
 		float[] cx = new float[9];
 		float[] cy = new float[9];
 		for (int pos = 0; pos < 9; pos++) {
@@ -1653,20 +1647,20 @@ public class StoryScreen extends Screen {
 				Image icon = example.elements[pos].getFirstFrame();
 				if (icon != null) {
 					float es = size * 0.28f;
-					icon.draw(x + 2f, y + 2f, es, es);
+					icon.drawNearest(x + 2f, y + 2f, es, es);
 				}
 			}
 			if (example.ids[pos] > 0) {
 				Card card = exampleCard(example.ids[pos]);
 				if (card != null) {
 					boolean owned = example.playerOwned[pos] || example.isFlip(pos);
-					card.drawSized(x, y, size, owned, false);
+					card.drawSized(x, y, size, owned, false, true);
 				}
 			}
 			if (example.isPlaced(pos))
-				frame(g, x, y, size, new Color(0.93f, 0.84f, 0.55f), 3f);
+				frame(g, x, y, size, new Color(0.93f, 0.84f, 0.55f), frameT);
 			else if (example.isFlip(pos))
-				frame(g, x, y, size, new Color(0.45f, 0.85f, 0.95f), 3f);
+				frame(g, x, y, size, new Color(0.45f, 0.85f, 0.95f), frameT);
 		}
 		for (int flip : example.flipPos) {
 			if (flip < 0 || flip > 8)
