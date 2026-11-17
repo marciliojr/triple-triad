@@ -269,6 +269,19 @@ public class Card {
 	 * @param gray true to use the gray backing
 	 */
 	public void drawSized(float x, float y, float size, boolean playerOwned, boolean gray) {
+		drawSized(x, y, size, playerOwned, gray, false);
+	}
+
+	/**
+	 * Draws the card at a given size.
+	 * @param x the x coordinate
+	 * @param y the y coordinate
+	 * @param size the width and height
+	 * @param playerOwned true to use the player (blue) backing
+	 * @param gray true to use the gray backing
+	 * @param nearest true to scale with nearest-neighbor filtering
+	 */
+	public void drawSized(float x, float y, float size, boolean playerOwned, boolean gray, boolean nearest) {
 		if (img == null)
 			loadCardImage();
 
@@ -279,8 +292,13 @@ public class Card {
 			colorImg = GameImage.CARD_BLUE.getImage();
 		else
 			colorImg = GameImage.CARD_RED.getImage();
-		colorImg.draw(x, y, size, size);
-		img.draw(x, y, size, size);
+		if (nearest) {
+			colorImg.drawNearest(x, y, size, size);
+			img.drawNearest(x, y, size, size);
+		} else {
+			colorImg.draw(x, y, size, size);
+			img.draw(x, y, size, size);
+		}
 	}
 
 	/**
