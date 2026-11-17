@@ -262,9 +262,8 @@ public final class StoryCampaign {
 		95, 96, 97, 98, 99, 108, 109
 	};
 
-	/** Clips that are not in the tree yet. The scenes still play on the still background. */
+	/** Clips still missing from the tree. Empty: every campaign id now has frames. */
 	public static final String[] PENDING_VIDEOS = {
-		"chegada_dollet"
 	};
 
 	/** Closing clip after the player wins the grand final, before the ceremony lines. */

@@ -51,6 +51,8 @@
 - [x] Tema do menu `res/menu.ogg` (OC ReMix "Aroma of Sugary Warmth"); `bgm.ogg` só nas partidas; troca de leito sem reiniciar a mesma faixa (`AudioControllerTest`)
 - [x] Lições do Squall com explicação e exemplo de mesa (tabuleiro 3x3 ou mão da troca na caixa de diálogo), validados em `StoryRuleExampleTest`
 - [x] Modo História formato 5: regras regionais que se espalham (FFVIII), visita da Rainha por cidade, revanche opcional do chefe com rara única, tela Progresso e dificuldade Fácil/Normal/Difícil (saves antigos abrem como Normal). Testes em `StoryModeV5Test`
+- [x] Tema do menu `res/menu.ogg` trocado para "Balamb Garden" de Final Fantasy VIII (origem desconhecida, provavelmente a trilha original da Square; uso pessoal não comercial); a OC ReMix "Aroma of Sugary Warmth" deixou de ser usada. `bgm.ogg` continua só nas partidas
+- [x] Modo História: vídeo `chegada_dollet` (video_5) importado; nenhum clipe da campanha permanece pendente
 
 
 ## Não feito (de propósito)

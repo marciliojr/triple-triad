@@ -10,11 +10,11 @@ Importado
 - video_2.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_balamb_town.mp4 e convertido para VideoLoop
 - video_3.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_timber.mp4 e convertido para VideoLoop
 - video_4.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_deling.mp4 e convertido para VideoLoop
+- video_5.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_dollet.mp4 e convertido para VideoLoop
 - video_6.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_fh.mp4 e convertido para VideoLoop
 - video_7.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como chegada_esthar.mp4 e convertido para VideoLoop
 - video_8.mp4 (mp4, h264 1280x720, aac, 10s, 24 fps) copiado como final_historia.mp4 e convertido para VideoLoop
 - video_9.mp4 (mp4, h264 1280x720, aac, 20s, 24 fps) copiado como encerramento_campeao.mp4 e convertido para VideoLoop
-(video_5 ainda nao chegou; chegada_dollet continua no fundo estatico)
 Manifestos de origem preservados em backgrounds/MANIFESTO.txt, portraits/MANIFESTO.txt e ui/MANIFESTO.txt.
 
 Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais res/story/<id>.ogg)
@@ -22,17 +22,18 @@ Videos presentes (quadros res/story/<id>/frame_NNN.jpg a 24 fps, 640x360, mais r
 - chegada_balamb_town
 - chegada_timber (video_3)
 - chegada_deling (video_4)
+- chegada_dollet (video_5)
 - chegada_fh (video_6)
 - chegada_esthar (video_7)
 - final_historia (video_8)
 - encerramento_campeao (video_9)
 
 Videos ausentes (a campanha ja aponta para estes ids; sem os quadros, usa o fundo estatico e o dialogo)
-- chegada_dollet
+- nenhum
 
-Audio ausente como arquivo solto
-O diretorio de recursos nao tem ogg, wav, mp3 nem flac fora das faixas embutidas nos dois mp4.
-Nao ha trilha propria da campanha. Fallback: a BGM do jogo (res/bgm.ogg) continua nas cenas sem video.
+Audio ausente como arquivo solto da campanha
+Nao ha trilha propria da Historia alem do audio dos clipes. Fallback: a BGM do jogo (res/bgm.ogg) continua nas cenas sem video.
+O arquivo Balamb-Garden-Final-fantasy-VIII.mp3 encontrado na pasta de origem foi convertido para o tema do menu (res/menu.ogg, Vorbis q4); o original nao foi movido. A origem desse arquivo e desconhecida (provavelmente a trilha original da Square); uso pessoal nao comercial.
 Se o clipe tiver .ogg, a BGM pausa e o VideoLoop toca essa faixa. Se o .ogg nao existir, o video fica mudo e a BGM segue.
 Caminhos /workspace/ de outra maquina nao sao usados.
 
